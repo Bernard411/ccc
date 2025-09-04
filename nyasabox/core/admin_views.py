@@ -180,28 +180,23 @@ def admin_create_blog(request):
         content = request.POST.get('content')
         category_id = request.POST.get('category')
         featured_image = request.FILES.get('featured_image')
-        is_published = request.POST.get('is_published') == 'on'
-        is_featured = request.POST.get('featured_post') == 'on'
-        excerpt = request.POST.get('excerpt', '')[:200]  # Limit to 200 chars
-        tags = request.POST.get('tags', '')
         
+        # Only use fields that actually exist in your BlogPost model
         if title and content:
             category = None
             if category_id:
                 category = get_object_or_404(BlogCategory, id=category_id)
             
+            # Create blog post with only existing fields
             blog_post = BlogPost(
                 title=title,
                 content=content,
                 category=category,
-                author=request.user,
-                is_published=is_published,
-                is_featured=is_featured,
-                excerpt=excerpt,
-                tags=tags
+                author=request.user
             )
             
-            if featured_image:
+            # Only add featured_image if the field exists in the model
+            if featured_image and hasattr(BlogPost, 'featured_image'):
                 blog_post.featured_image = featured_image
                 
             blog_post.save()

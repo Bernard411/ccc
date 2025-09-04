@@ -189,9 +189,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_blog_management' %}active{% endif %}" 
+                       href="{% url 'admin_blog_management' %}">
+                        <i class="bi bi-journal-text"></i> Blog Management
+                    </a>
+                </li>
+                  <li class="nav-item">
                     <a class="nav-link {% if request.resolver_match.url_name == 'create_blog' %}active{% endif %}" 
                        href="{% url 'create_blog' %}">
-                        <i class="bi bi-journal-text"></i> Blog Management
+                        <i class="bi bi-journal-text"></i> Blogs
                     </a>
                 </li>
                 <li class="nav-item">

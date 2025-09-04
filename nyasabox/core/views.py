@@ -192,7 +192,7 @@ def blog_detail(request, slug):
     context = {
         'post': post,
     }
-    return render(request, 'blog/blog_detail.html', context)
+    return render(request, 'blog_detail.html', context)
 
 
 from django.shortcuts import render, redirect

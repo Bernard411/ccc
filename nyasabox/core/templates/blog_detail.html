@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <article class="blog-post">
+            <!-- Blog Header -->
+            <div class="blog-header mb-4">
+                {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="img-fluid rounded mb-3" style="max-height: 400px; width: 100%; object-fit: cover;">
+                {% endif %}
+                
+                <h1 class="display-5 fw-bold">{{ post.title }}</h1>
+                
+                <div class="blog-meta text-muted mb-3">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person me-2"></i>
+                            <span>By {{ post.author.username }}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-calendar me-2"></i>
+                            <span>{{ post.created_at|date:"F j, Y" }}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-eye me-2"></i>
+                            <span>{{ post.views }} views</span>
+                        </div>
+                        {% if post.category %}
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-tag me-2"></i>
+                            <span class="badge bg-secondary">{{ post.category.name }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Content -->
+            <div class="blog-content mb-5">
+                {{ post.content|linebreaks }}
+            </div>
+
+            <!-- Blog Footer -->
+            <div class="blog-footer border-top pt-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Share this post:</h6>
+                        <div class="d-flex gap-2">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
+                               target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-facebook"></i> Facebook
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ post.title|urlencode }}" 
+                               target="_blank" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-twitter"></i> Twitter
+                            </a>
+                            <a href="whatsapp://send?text=Check out this blog post: {{ post.title }} {{ request.build_absolute_uri }}" 
+                               class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-whatsapp"></i> WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted">
+                            Last updated: {{ post.updated_at|date:"F j, Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Posts -->
+            {% if related_posts %}
+            <div class="related-posts mt-5">
+                <h4 class="mb-4">Related Posts</h4>
+                <div class="row">
+                    {% for related_post in related_posts %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            {% if related_post.featured_image %}
+                            <img src="{{ related_post.featured_image.url }}" class="card-img-top" alt="{{ related_post.title }}" style="height: 150px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ related_post.title|truncatewords:8 }}</h5>
+                                <p class="card-text small text-muted">
+                                    {{ related_post.created_at|date:"M j, Y" }} • {{ related_post.views }} views
+                                </p>
+                                <a href="{% url 'blog_detail' related_post.slug %}" class="btn btn-sm btn-outline-primary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Comments Section -->
+            <div class="comments-section mt-5">
+                <h4 class="mb-4">Comments</h4>
+                
+                {% if user.is_authenticated %}
+                <div class="comment-form mb-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Add a comment</label>
+                            <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Share your thoughts..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">Login</a> to post comments.
+                </div>
+                {% endif %}
+
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="{% static 'images/default-avatar.png' %}" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
+                                <div>
+                                    <h6 class="card-title mb-0">{{ comment.user.username }}</h6>
+                                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ comment.text }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-chat-dots" style="font-size: 2rem;"></i>
+                        <p class="mt-2">No comments yet. Be the first to comment!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Social share buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Copy URL to clipboard
+    const shareButtons = document.querySelectorAll('.btn-share');
+    shareButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const url = '{{ request.build_absolute_uri }}';
+            navigator.clipboard.writeText(url).then(() => {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+    });
+    
+    // Smooth scrolling for comments
+    const commentForm = document.querySelector('.comment-form');
+    if (commentForm && window.location.hash === '#comments') {
+        commentForm.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+</script>
+
+<style>
+.blog-header {
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 1.5rem;
+}
+
+.blog-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+}
+
+.blog-content p {
+    margin-bottom: 1.5rem;
+}
+
+.blog-content h2, .blog-content h3, .blog-content h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.blog-meta .badge {
+    font-size: 0.8rem;
+}
+
+.comments-section {
+    border-top: 2px solid #f0f0f0;
+    padding-top: 2rem;
+}
+
+.comment-form {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.comments-list .card {
+    border: none;
+    border-left: 4px solid #0d6efd;
+}
+
+.related-posts .card {
+    transition: transform 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.related-posts .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.blog-footer {
+    border-top: 2px solid #f0f0f0;
+}
+
+@media (max-width: 768px) {
+    .blog-header h1 {
+        font-size: 2rem;
+    }
+    
+    .blog-content {
+        font-size: 1rem;
+    }
+    
+    .blog-meta .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+    }
+}
+</style>
+{% endblock %}
