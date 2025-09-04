@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Latest Albums</h2>
+        <div class="row">
+            {% for album in latest_albums %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="{{ album.cover_art.url }}" class="card-img-top" alt="{{ album.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ album.title }}</h5>
+                        <p class="card-text">{{ album.artist.name }}</p>
+                        <a href="{{ album.get_absolute_url }}" class="btn btn-primary btn-sm">View Album</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2 class="mb-4 mt-5">Latest Singles</h2>
+        <div class="list-group">
+            {% for track in latest_tracks %}
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ track.title }}</h5>
+                    <small>{{ track.duration|time:"H:i:s" }}</small>
+                </div>
+                <p class="mb-1">{{ track.artist.name }}</p>
+                <div class="btn-group btn-group-sm">
+                    <a href="{{ track.get_absolute_url }}" class="btn btn-outline-primary">Listen</a>
+                    <a href="{% url 'download_track' track.slug %}" class="btn btn-outline-success">Download</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Popular Tracks</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for track in popular_tracks %}
+                    <a href="{{ track.get_absolute_url }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ track.title }}</h6>
+                            <small>{{ track.downloads }} downloads</small>
+                        </div>
+                        <small class="text-muted">{{ track.artist.name }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'upload' %}" class="btn btn-primary">Upload Music</a>
+                    <a href="{% url 'blog_list' %}" class="btn btn-outline-primary">Read Blogs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

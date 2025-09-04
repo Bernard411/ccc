@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Distribution Status</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-{% if distribution_request.status == 'distributed' %}success
+                                       {% elif distribution_request.status == 'rejected' %}danger
+                                       {% elif distribution_request.status == 'processing' %}info
+                                       {% elif distribution_request.status == 'paid' %}warning
+                                       {% else %}secondary{% endif %}">
+                    <h5>Status: {{ distribution_request.get_status_display }}</h5>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Order Details</h5>
+                        <p><strong>Request ID:</strong> #{{ distribution_request.id }}</p>
+                        <p><strong>Request Date:</strong> {{ distribution_request.requested_at|date:"M d, Y H:i" }}</p>
+                        <p><strong>Number of Tracks:</strong> {{ distribution_request.tracks.count }}</p>
+                        <p><strong>Total Amount:</strong> MWK {{ distribution_request.total_amount|floatformat:2 }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Platforms</h5>
+                        <ul>
+                            {% for platform in distribution_request.platforms.all %}
+                            <li>{{ platform.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <h5>Tracks</h5>
+                <div class="list-group mb-4">
+                    {% for track in distribution_request.tracks.all %}
+                    <div class="list-group-item">
+                        <strong>{{ track.title }}</strong> - {{ track.artist.name }}
+                        {% if track.album %}({{ track.album.title }}){% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if distribution_request.payment_reference %}
+                <p><strong>Payment Reference:</strong> {{ distribution_request.payment_reference }}</p>
+                {% endif %}
+                
+                <a href="{% url 'distribution_history' %}" class="btn btn-primary">View All Requests</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h2 class="mb-4">Upload Music</h2>
+        
+        <ul class="nav nav-tabs" id="uploadTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="album-tab" data-bs-toggle="tab" data-bs-target="#album" type="button" role="tab">Album</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="single-tab" data-bs-toggle="tab" data-bs-target="#single" type="button" role="tab">Single Track</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="uploadTabsContent">
+            <div class="tab-pane fade show active" id="album" role="tabpanel">
+                <h4 class="mb-3">Upload Album</h4>
+                <form method="post" enctype="multipart/form-data" id="albumForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="album">
+                    
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">Album Title</label>
+                        {{ album_form.title }}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_artist" class="form-label">Artist</label>
+                            {{ album_form.artist }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_genre" class="form-label">Genre</label>
+                            {{ album_form.genre }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_release_date" class="form-label">Release Date</label>
+                            {{ album_form.release_date }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_cover_art" class="form-label">Cover Art</label>
+                            {{ album_form.cover_art }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Description</label>
+                        {{ album_form.description }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tracks</label>
+                        <div id="track-fields">
+                            <div class="track-field mb-2">
+                                <div class="input-group">
+                                    <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
+                                    <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" required>
+                                    <button type="button" class="btn btn-danger remove-track">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary mt-2" id="add-track">Add Another Track</button>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Upload Album</button>
+                </form>
+            </div>
+            
+            <div class="tab-pane fade" id="single" role="tabpanel">
+                <h4 class="mb-3">Upload Single Track</h4>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="track">
+                    
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">Track Title</label>
+                        {{ track_form.title }}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_artist" class="form-label">Artist</label>
+                            {{ track_form.artist }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_genre" class="form-label">Genre</label>
+                            {{ track_form.genre }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_audio_file" class="form-label">Audio File</label>
+                        {{ track_form.audio_file }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Upload Track</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add track field
+    document.getElementById('add-track').addEventListener('click', function() {
+        const trackFields = document.getElementById('track-fields');
+        const newField = document.createElement('div');
+        newField.className = 'track-field mb-2';
+        newField.innerHTML = `
+            <div class="input-group">
+                <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
+                <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" required>
+                <button type="button" class="btn btn-danger remove-track">Remove</button>
+            </div>
+        `;
+        trackFields.appendChild(newField);
+        
+        // Add event listener to remove button
+        newField.querySelector('.remove-track').addEventListener('click', function() {
+            trackFields.removeChild(newField);
+        });
+    });
+    
+    // Remove track field
+    document.querySelectorAll('.remove-track').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.track-field').remove();
+        });
+    });
+});
+</script>
+{% endblock %}

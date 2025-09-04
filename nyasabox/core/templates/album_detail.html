@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <img src="{{ album.cover_art.url }}" class="img-fluid rounded" alt="{{ album.title }}">
+        
+        <div class="mt-3">
+            <h5>Album Info</h5>
+            <p><strong>Artist:</strong> {{ album.artist.name }}</p>
+            <p><strong>Release Date:</strong> {{ album.release_date }}</p>
+            <p><strong>Genre:</strong> {{ album.genre.name }}</p>
+            <p><strong>Uploaded by:</strong> {{ album.uploader.username }}</p>
+        </div>
+        
+        <div class="mt-3">
+            <button class="btn btn-outline-primary btn-sm" onclick="shareAlbum()">
+                <i class="bi bi-share"></i> Share
+            </button>
+            <a href="#" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-download"></i> Download All
+            </a>
+        </div>
+        <!-- Add this near the share/download buttons -->
+{% if user == album.uploader %}
+<div class="mt-3">
+    <a href="{% url 'edit_album' album.slug %}" class="btn btn-outline-warning btn-sm">
+        <i class="bi bi-pencil"></i> Edit
+    </a>
+    <a href="{% url 'delete_album' album.slug %}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-trash"></i> Delete
+    </a>
+</div>
+{% endif %}
+        </div>
+        
+    </div>
+    
+    <div class="col-md-8">
+        <h2>{{ album.title }}</h2>
+        <p class="text-muted">{{ album.description }}</p>
+        
+        <h4 class="mt-4">Tracks</h4>
+        <div class="list-group">
+            {% for track in tracks %}
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">{{ track.track_number }}. {{ track.title }}</h6>
+                        <small class="text-muted">{{ track.duration|time:"H:i:s" }}</small>
+                    </div>
+                    <div class="btn-group">
+                        <a href="{{ track.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Play</a>
+                        <a href="{% url 'download_track' track.slug %}" class="btn btn-sm btn-outline-success">Download</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <h4 class="mt-4">Comments</h4>
+        {% if user.is_authenticated %}
+        <form method="post" class="mb-3">
+            {% csrf_token %}
+            {{ comment_form.text }}
+            <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+        </form>
+        {% else %}
+        <p><a href="{% url 'login' %}">Login</a> to post comments</p>
+        {% endif %}
+        
+        <div class="comments">
+            {% for comment in album.comments.all %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h6 class="card-title">{{ comment.user.username }}</h6>
+                    <p class="card-text">{{ comment.text }}</p>
+                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                </div>
+            </div>
+            {% empty %}
+            <p>No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function shareAlbum() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ album.title }}',
+            text: 'Check out this album on Nyasa Box',
+            url: window.location.href
+        })
+        .catch(console.error);
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        alert('Share this link: ' + window.location.href);
+    }
+}
+</script>
+{% endblock %}

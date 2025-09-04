@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <!-- Track Info Card -->
+        <div class="card mb-4">
+            {% if track.album %}
+            <img src="{{ track.album.cover_art.url }}" class="card-img-top" alt="{{ track.album.title }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+            <div class="text-center py-5 bg-light">
+                <i class="bi bi-music-note-beamed" style="font-size: 5rem;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h3 class="card-title">{{ track.title }}</h3>
+                <p class="card-text">
+                    <strong>Artist:</strong> {{ track.artist }}
+                </p>
+                
+                {% if track.album %}
+                <p class="card-text">
+                    <strong>Album:</strong> 
+                    <a href="{% url 'album_detail' track.album.slug %}" class="text-decoration-none">
+                        {{ track.album.title }}
+                    </a>
+                </p>
+                {% endif %}
+                
+                <p class="card-text">
+                    <strong>Genre:</strong> {{ track.get_genre_display }}
+                </p>
+                
+                <p class="card-text">
+                    <strong>Uploaded by:</strong> 
+                    <a href="{% url 'user_profile' track.uploader.username %}" class="text-decoration-none">
+                        {{ track.uploader.username }}
+                    </a>
+                </p>
+                
+                <p class="card-text">
+                    <strong>Uploaded:</strong> {{ track.created_at|timesince }} ago
+                </p>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-success">
+                        <i class="bi bi-download"></i> {{ track.downloads }} downloads
+                    </span>
+                    <span class="badge bg-primary">
+                        <i class="bi bi-heart"></i> <span id="like-count">{{ track.likes.count }}</span> likes
+                    </span>
+                </div>
+                
+                <!-- Audio Player -->
+                <div class="audio-player mb-3">
+                    <audio controls class="w-100" id="track-player">
+                        <source src="{{ track.audio_file.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                    <a href="{% url 'download_track' track.slug %}" class="btn btn-success">
+                        <i class="bi bi-download"></i> Download
+                    </a>
+                    
+                    <button class="btn btn-primary" id="like-button" data-track-slug="{{ track.slug }}">
+                        <i class="bi bi-heart{% if user not in track.likes.all %}-empty{% endif %}"></i>
+                        <span id="like-text">
+                            {% if user in track.likes.all %}Unlike{% else %}Like{% endif %}
+                        </span>
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary" onclick="shareTrack()">
+                        <i class="bi bi-share"></i> Share
+                    </button>
+                    
+                    {% if user == track.uploader %}
+                    <div class="btn-group">
+                        <a href="{% url 'edit_track' track.slug %}" class="btn btn-outline-warning">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_track' track.slug %}" class="btn btn-outline-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Share Options -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Share This Track</h5>
+            </div>
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="share-url" value="{{ request.build_absolute_uri }}" readonly>
+                    <button class="btn btn-outline-secondary" onclick="copyShareUrl()">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </div>
+                
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
+                       target="_blank" class="btn btn-outline-primary">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text=Check out {{ track.title|urlencode }} by {{ track.artist.name|urlencode }} on Nyasa Box" 
+                       target="_blank" class="btn btn-outline-info">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="whatsapp://send?text=Check out {{ track.title }} by {{ track.artist.name }} on Nyasa Box: {{ request.build_absolute_uri }}" 
+                       class="btn btn-outline-success">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <!-- Comments Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Comments ({{ track.comments.count }})</h4>
+            </div>
+            <div class="card-body">
+                {% if user.is_authenticated %}
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ comment_form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Comment</button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">Login</a> to post comments.
+                </div>
+                {% endif %}
+                
+                <div class="comments" style="max-height: 500px; overflow-y: auto;">
+                    {% for comment in track.comments.all %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="{{ comment.user.profile.profile_picture.url }}" 
+                                     class="rounded-circle me-2" 
+                                     style="width: 32px; height: 32px; object-fit: cover;"
+                                     alt="{{ comment.user.username }}">
+                                <div>
+                                    <h6 class="card-title mb-0">{{ comment.user.username }}</h6>
+                                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ comment.text }}</p>
+                            
+                            {% if user == comment.user or user == track.uploader %}
+                            <form method="post" action="{% url 'delete_comment' comment.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-chat-dots" style="font-size: 2rem;"></i>
+                        <p>No comments yet. Be the first to comment!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Similar Tracks -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Similar Tracks</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for similar_track in similar_tracks %}
+                    <a href="{% url 'track_detail' similar_track.slug %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ similar_track.title }}</h6>
+                                <small class="text-muted">{{ similar_track.artist.name }}</small>
+                            </div>
+                            <div>
+                                <span class="badge bg-secondary me-2">{{ similar_track.duration|time:"i:s" }}</span>
+                                <span class="badge bg-success">{{ similar_track.downloads }} downloads</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        No similar tracks found.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Like functionality
+document.getElementById('like-button').addEventListener('click', function() {
+    const trackSlug = this.dataset.trackSlug;
+    const likeButton = this;
+    const likeText = document.getElementById('like-text');
+    const likeCount = document.getElementById('like-count');
+    
+    fetch(`/track/${trackSlug}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        likeText.textContent = data.liked ? 'Unlike' : 'Like';
+        likeCount.textContent = data.likes_count;
+        
+        // Update heart icon
+        const heartIcon = likeButton.querySelector('i');
+        if (data.liked) {
+            heartIcon.classList.remove('bi-heart-empty');
+            heartIcon.classList.add('bi-heart');
+        } else {
+            heartIcon.classList.remove('bi-heart');
+            heartIcon.classList.add('bi-heart-empty');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+// Share functionality
+function shareTrack() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ track.title }}',
+            text: 'Check out this track on Nyasa Box',
+            url: window.location.href
+        })
+        .catch(console.error);
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        document.getElementById('share-url').select();
+        document.execCommand('copy');
+        alert('Link copied to clipboard!');
+    }
+}
+
+// Copy share URL
+function copyShareUrl() {
+    const shareUrl = document.getElementById('share-url');
+    shareUrl.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = event.target.closest('button');
+    const originalHtml = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-check"></i>';
+    
+    setTimeout(() => {
+        button.innerHTML = originalHtml;
+    }, 2000);
+}
+
+// Audio player event tracking
+document.getElementById('track-player').addEventListener('play', function() {
+    // You can add analytics here to track plays
+    console.log('Track started playing: {{ track.title }}');
+});
+
+document.getElementById('track-player').addEventListener('ended', function() {
+    // Track when users listen to the entire track
+    console.log('Track finished playing: {{ track.title }}');
+});
+</script>
+
+<style>
+.audio-player audio {
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.comments::-webkit-scrollbar {
+    width: 6px;
+}
+
+.comments::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.comments::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.comments::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#share-url {
+    font-size: 0.9rem;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.list-group-item {
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}

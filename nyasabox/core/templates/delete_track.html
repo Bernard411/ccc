@@ -1,0 +1,40 @@
+{% extends 'music/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h3>Delete Track</h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">Are you sure you want to delete the track "<strong>{{ track.title }}</strong>" by {{ track.artist.name }}?</p>
+                
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Track Details:</strong>
+                    <ul>
+                        <li>{{ track.downloads }} downloads</li>
+                        <li>{{ track.likes.count }} likes</li>
+                        <li>Created {{ track.created_at|timesince }} ago</li>
+                        {% if track.album %}
+                        <li>Part of album: {{ track.album.title }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">Yes, Delete Track</button>
+                        <a href="{% url 'track_detail' track.slug %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

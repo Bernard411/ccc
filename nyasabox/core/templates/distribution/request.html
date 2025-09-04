@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3>Music Distribution Request</h3>
+            </div>
+            <div class="card-body">
+                {% if not user_has_tracks %}
+                <div class="alert alert-warning">
+                    <h5>No Tracks Available</h5>
+                    <p>You don't have any tracks uploaded yet. Please upload music first.</p>
+                    <a href="{% url 'upload' %}" class="btn btn-warning">Upload Music</a>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <h5>Pricing Information</h5>
+                    <p>Distribution cost: MWK 1,667 per song</p>
+                    <p>Minimum 1 song, maximum 20 songs per request</p>
+                    <p>Example: 6 songs = MWK 10,000</p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <h5>Select Platforms</h5>
+                        <div class="row">
+                            {% for platform in platforms %}
+                            <div class="col-md-4 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="platforms" 
+                                           value="{{ platform.id }}" id="platform-{{ platform.id }}">
+                                    <label class="form-check-label" for="platform-{{ platform.id }}">
+                                        {% if platform.logo %}
+                                        <img src="{{ platform.logo.url }}" alt="{{ platform.name }}" 
+                                             style="height: 30px; margin-right: 10px;">
+                                        {% endif %}
+                                        {{ platform.name }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if form.platforms.errors %}
+                        <div class="text-danger">{{ form.platforms.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Select Tracks</h5>
+                        <p class="text-muted">Only your tracks that haven't been distributed yet are shown.</p>
+                        
+                        {% if form.tracks.field.queryset.exists %}
+                        <div class="list-group">
+                            {% for track in form.tracks.field.queryset %}
+                            <div class="list-group-item">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="tracks" 
+                                           value="{{ track.id }}" id="track-{{ track.id }}">
+                                    <label class="form-check-label" for="track-{{ track.id }}">
+                                        <strong>{{ track.title }}</strong> - {{ track.artist }}
+                                        {% if track.album %}
+                                        (Album: {{ track.album.title }})
+                                        {% endif %}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <p>All your tracks have already been distributed or are in progress.</p>
+                            <a href="{% url 'upload' %}" class="btn btn-warning">Upload More Music</a>
+                        </div>
+                        {% endif %}
+                        {% if form.tracks.errors %}
+                        <div class="text-danger">{{ form.tracks.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if form.tracks.field.queryset.exists %}
+                    <div class="mb-3">
+                        <h5>Cost Calculation</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <p id="cost-calculation">Select tracks to see cost</p>
+                                <p class="text-muted small">Price: MWK 1,667 per track</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg">Continue to Payment</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Supported Platforms</h5>
+            </div>
+            <div class="card-body">
+                <p>We distribute your music to all major streaming platforms including:</p>
+                <ul>
+                    <li>Spotify</li>
+                    <li>Apple Music</li>
+                    <li>YouTube Music</li>
+                    <li>Amazon Music</li>
+                    <li>Deezer</li>
+                    <li>Tidal</li>
+                    <li>Boomplay</li>
+                    <li>And more...</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Payment Methods</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-phone" style="font-size: 2rem;"></i>
+                        <p>Airtel Money</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-phone" style="font-size: 2rem;"></i>
+                        <p>TNM Mpamba</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const trackCheckboxes = document.querySelectorAll('input[name="tracks"]');
+    const costElement = document.getElementById('cost-calculation');
+    const pricePerTrack = {{ base_price_per_track }}; // This is now a float
+    
+    function updateCostCalculation() {
+        const selectedTracks = document.querySelectorAll('input[name="tracks"]:checked').length;
+        const totalCost = selectedTracks * pricePerTrack;
+        
+        if (selectedTracks > 0) {
+            costElement.innerHTML = `
+                <strong>${selectedTracks} track(s) selected</strong><br>
+                Total: MWK ${totalCost.toFixed(2)}
+            `;
+        } else {
+            costElement.textContent = 'Select tracks to see cost';
+        }
+    }
+    
+    trackCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateCostCalculation);
+    });
+    
+    // Initial calculation
+    updateCostCalculation();
+});
+</script>
+
+{% endblock %}

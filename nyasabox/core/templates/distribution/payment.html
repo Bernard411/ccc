@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3>Payment</h3>
+            </div>
+            <div class="card-body">
+               <div class="alert alert-info">
+                    <h5>Order Summary</h5>
+                    <p><strong>{{ track_count }} track(s)</strong> for distribution</p>
+                    <p><strong>Total Amount:</strong> MWK {{ total_amount|floatformat:2 }}</p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Select Payment Method</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment_method" 
+                                   value="airtel_money" id="airtel" checked>
+                            <label class="form-check-label" for="airtel">
+                                Airtel Money
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" 
+                                   value="tnm_mpamba" id="tnm">
+                            <label class="form-check-label" for="tnm">
+                                TNM Mpamba
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" 
+                               placeholder="e.g., 0881234567" required pattern="[0-9]{9,10}">
+                        <div class="form-text">Enter your mobile money number</div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6>Payment Instructions:</h6>
+                        <ol class="small">
+                            <li>Click "Proceed with Payment"</li>
+                            <li>You will receive a mobile money prompt</li>
+                            <li>Enter your PIN to complete payment</li>
+                            <li>Do not navigate away from this page during payment</li>
+                        </ol>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        Proceed with Payment - MWK {{ total_amount|floatformat:2 }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

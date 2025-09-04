@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="{{ user.profile.profile_picture.url }}" 
+                     class="rounded-circle img-fluid mb-3" 
+                     style="width: 150px; height: 150px; object-fit: cover;"
+                     alt="Profile Picture">
+                <h4>{{ user.username }}</h4>
+                <p class="text-muted">{{ user.profile.bio|default:"No bio yet" }}</p>
+                
+                {% if user.profile.location %}
+                <p><i class="bi bi-geo-alt"></i> {{ user.profile.location }}</p>
+                {% endif %}
+                
+                {% if user.profile.website %}
+                <p><i class="bi bi-globe"></i> <a href="{{ user.profile.website }}" target="_blank">{{ user.profile.website }}</a></p>
+                {% endif %}
+                
+                <p><i class="bi bi-calendar"></i> Joined: {{ user.date_joined|date:"F Y" }}</p>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'my_uploads' %}" class="btn btn-primary">
+                        <i class="bi bi-music-note-list"></i> My Uploads
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Edit Profile</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3">Account Information</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            {{ user_form.username }}
+                            {% if user_form.username.errors %}
+                                <div class="text-danger">{{ user_form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                                <div class="text-danger">{{ user_form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            {{ user_form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h5 class="mb-3">Profile Information</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        {{ profile_form.bio }}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Location</label>
+                            {{ profile_form.location }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Birth Date</label>
+                            {{ profile_form.birth_date }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Website</label>
+                        {{ profile_form.website }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
+                        {{ profile_form.profile_picture }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], 
+    input[type="email"], 
+    input[type="url"], 
+    input[type="date"], 
+    textarea {
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+    
+    input[type="file"] {
+        padding: 0.375rem 0;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Entertainment Blogs</h2>
+        
+        {% for post in posts %}
+        <div class="card mb-4">
+            {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h3 class="card-title">{{ post.title }}</h3>
+                <p class="card-text">
+                    <small class="text-muted">
+                        By {{ post.author.username }} on {{ post.created_at|date:"F d, Y" }}
+                        | {{ post.views }} views
+                    </small>
+                </p>
+                <p class="card-text">{{ post.content|truncatewords:50 }}</p>
+                <a href="{% url 'blog_detail' post.slug %}" class="btn btn-primary">Read More</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Blog Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for category in categories %}
+                    <a href="#" class="list-group-item list-group-item-action">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Popular Posts</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for post in posts|slice:":5" %}
+                    <a href="{% url 'blog_detail' post.slug %}" class="list-group-item list-group-item-action">
+                        {{ post.title }}
+                        <small class="text-muted d-block">{{ post.views }} views</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
