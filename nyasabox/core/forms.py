@@ -1,13 +1,20 @@
 from django import forms
 from .models import Album, Track, Comment
 
+from django import forms
+from .models import Album, Track, Comment, GENRE_CHOICES
+
 class AlbumForm(forms.ModelForm):
     class Meta:
         model = Album
         fields = ['title', 'artist', 'genre', 'release_date', 'cover_art', 'description']
         widgets = {
-            'release_date': forms.DateInput(attrs={'type': 'date'}),
+            'release_date': forms.DateInput(attrs={'type': 'date', 'required': True}),
             'description': forms.Textarea(attrs={'rows': 4}),
+            'artist': forms.TextInput(attrs={'placeholder': 'Enter artist name', 'required': True}),
+            'genre': forms.Select(attrs={'required': True}, choices=GENRE_CHOICES),
+            'title': forms.TextInput(attrs={'required': True}),
+            'cover_art': forms.FileInput(attrs={'required': True}),
         }
 
 class TrackForm(forms.ModelForm):
@@ -16,7 +23,23 @@ class TrackForm(forms.ModelForm):
         fields = ['title', 'album', 'artist', 'genre', 'audio_file', 'track_number']
         widgets = {
             'track_number': forms.NumberInput(attrs={'min': 1}),
+            'artist': forms.TextInput(attrs={'placeholder': 'Enter artist name', 'required': True}),
+            'genre': forms.Select(attrs={'required': True}, choices=GENRE_CHOICES),
+            'title': forms.TextInput(attrs={'required': True}),
+            'audio_file': forms.FileInput(attrs={'required': True}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only show albums uploaded by the current user
+        if 'initial' in kwargs and 'user' in kwargs['initial']:
+            user = kwargs['initial']['user']
+            self.fields['album'].queryset = Album.objects.filter(uploader=user)
+        
+        # Make album field not required
+        self.fields['album'].required = False
+        self.fields['track_number'].required = False
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

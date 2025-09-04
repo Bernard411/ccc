@@ -1,0 +1,275 @@
+{% extends 'peza/dashboard.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+       
+        
+        <div class="col-md-9 col-lg-10 ms-auto">
+            <div class="container-fluid mt-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Upload Music Content</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="uploadTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="album-tab" data-bs-toggle="tab" data-bs-target="#album" type="button" role="tab">
+                                <i class="bi bi-collection-play"></i> Upload Album
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="single-tab" data-bs-toggle="tab" data-bs-target="#single" type="button" role="tab">
+                                <i class="bi bi-music-note-beamed"></i> Upload Single Track
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bulk-tab" data-bs-toggle="tab" data-bs-target="#bulk" type="button" role="tab">
+                                <i class="bi bi-cloud-upload"></i> Bulk Upload
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content p-4" id="uploadTabsContent">
+                        <!-- Album Upload Tab -->
+                        <div class="tab-pane fade show active" id="album" role="tabpanel">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="upload_type" value="album">
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Album Title *</label>
+                                            <input type="text" name="album_title" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Artist Name *</label>
+                                            <input type="text" name="artist" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Genre *</label>
+                                            <select name="genre" class="form-select" required>
+                                                <option value="">Select Genre</option>
+                                                <option value="afrobeat">Afrobeat</option>
+                                                <option value="amapiano">Amapiano</option>
+                                                <option value="gospel">Gospel</option>
+                                                <option value="hiphop">Hip Hop</option>
+                                                <option value="rumba">Rumba</option>
+                                                <option value="reggae">Reggae</option>
+                                                <option value="pop">Pop</option>
+                                                <option value="rnb">R&B</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Release Date *</label>
+                                            <input type="date" name="release_date" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Cover Art *</label>
+                                    <input type="file" name="cover_art" class="form-control" accept="image/*" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea name="description" class="form-control" rows="3"></textarea>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Tracks *</label>
+                                    <div id="track-fields">
+                                        <div class="track-field mb-2 p-3 border rounded">
+                                            <div class="row g-2">
+                                                <div class="col-md-5">
+                                                    <input type="file" name="track_files" class="form-control" accept="audio/*" required multiple>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <small class="text-muted">Select multiple tracks for the album</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Files will be automatically numbered in alphabetical order</small>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload"></i> Upload Album
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Single Track Upload Tab -->
+                        <div class="tab-pane fade" id="single" role="tabpanel">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="upload_type" value="single">
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Track Title *</label>
+                                            <input type="text" name="track_title" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Artist Name *</label>
+                                            <input type="text" name="artist" class="form-control" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Genre *</label>
+                                            <select name="genre" class="form-select" required>
+                                                <option value="">Select Genre</option>
+                                                <option value="afrobeat">Afrobeat</option>
+                                                <option value="amapiano">Amapiano</option>
+                                                <option value="gospel">Gospel</option>
+                                                <option value="hiphop">Hip Hop</option>
+                                                <option value="rumba">Rumba</option>
+                                                <option value="reggae">Reggae</option>
+                                                <option value="pop">Pop</option>
+                                                <option value="rnb">R&B</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Album (Optional)</label>
+                                            <select name="album" class="form-select">
+                                                <option value="">Select Album</option>
+                                                {% for album in albums %}
+                                                <option value="{{ album.id }}">{{ album.title }} - {{ album.artist }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Audio File *</label>
+                                    <input type="file" name="audio_file" class="form-control" accept="audio/*" required>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload"></i> Upload Track
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Bulk Upload Tab -->
+                        <div class="tab-pane fade" id="bulk" role="tabpanel">
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-info-circle"></i> Bulk Upload Instructions</h6>
+                                <p>Upload multiple tracks at once. Each track should have proper metadata embedded.</p>
+                                <p>Supported formats: MP3, WAV, FLAC, M4A</p>
+                            </div>
+                            
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="upload_type" value="bulk">
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Select Audio Files *</label>
+                                    <input type="file" name="bulk_files" class="form-control" accept="audio/*" multiple required>
+                                    <small class="text-muted">Hold Ctrl/Cmd to select multiple files</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Default Artist (if not in metadata)</label>
+                                    <input type="text" name="default_artist" class="form-control">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Default Genre (if not in metadata)</label>
+                                    <select name="default_genre" class="form-select">
+                                        <option value="">Select Genre</option>
+                                        <option value="afrobeat">Afrobeat</option>
+                                        <option value="amapiano">Amapiano</option>
+                                        <option value="gospel">Gospel</option>
+                                        <option value="hiphop">Hip Hop</option>
+                                        <option value="rumba">Rumba</option>
+                                        <option value="reggae">Reggae</option>
+                                        <option value="pop">Pop</option>
+                                        <option value="rnb">R&B</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-cloud-upload"></i> Start Bulk Upload
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab functionality
+    const triggerTabList = document.querySelectorAll('#uploadTabs button');
+    triggerTabList.forEach(triggerEl => {
+        new bootstrap.Tab(triggerEl);
+    });
+    
+    // File input styling
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0]?.name || 'No file chosen';
+            const nextElement = this.nextElementSibling;
+            if (nextElement && nextElement.classList.contains('form-text')) {
+                nextElement.textContent = fileName;
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom-color: #0d6efd;
+    color: #0d6efd;
+    background: transparent;
+}
+
+.track-field {
+    background-color: #f8f9fa;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
+{% endblock %}

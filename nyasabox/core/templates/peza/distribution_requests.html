@@ -1,0 +1,88 @@
+{% extends 'peza/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+ 
+        
+        <div class="col-md-9 col-lg-10 ms-auto">
+            <div class="container-fluid mt-4">
+                <h2>Distribution Requests</h2>
+                
+                <!-- Filter Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" class="row g-3">
+                            <div class="col-md-6">
+                                <select name="status" class="form-select" onchange="this.form.submit()">
+                                    <option value="">All Statuses</option>
+                                    {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Artist</th>
+                                        <th>Tracks</th>
+                                        <th>Platforms</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Requested</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dist in distribution_requests %}
+                                    <tr>
+                                        <td>#{{ dist.id }}</td>
+                                        <td>{{ dist.artist.username }}</td>
+                                        <td>{{ dist.tracks.count }}</td>
+                                        <td>
+                                            {% for platform in dist.platforms.all %}
+                                            <span class="badge bg-secondary">{{ platform.name }}</span>
+                                            {% endfor %}
+                                        </td>
+                                        <td>MWK {{ dist.total_amount|floatformat:2 }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if dist.status == 'paid' %}success{% elif dist.status == 'pending' %}warning{% else %}info{% endif %}">
+                                                {{ dist.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ dist.requested_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <form method="post" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="request_id" value="{{ dist.id }}">
+                                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                    {% for value, label in status_choices %}
+                                                    <option value="{{ value }}" {% if dist.status == value %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

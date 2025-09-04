@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, admin_views
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -29,19 +29,36 @@ urlpatterns = [
     path('profile/change-password/', views.change_password_view, name='change_password'),
     path('profile/delete-account/', views.delete_account_view, name='delete_account'),
     path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
+    path('settings/', views.settings_view, name='settings'),
     
 
     path('request/', views.distribution_request, name='distribution_request'),
     path('payment/<int:request_id>/', views.distribution_payment, name='distribution_payment'),
     path('status/<int:request_id>/', views.distribution_status, name='distribution_status'),
     path('history/', views.distribution_history, name='distribution_history'),
-    path('admin/requests/', views.admin_distribution_requests, name='admin_distribution_requests'),
-    path('admin/update-status/<int:request_id>/', views.admin_update_status, name='admin_update_status'),
+    path('xyz/requests/', views.admin_distribution_requests, name='admin_distribution_requests'),
+    path('xyz/update-status/<int:request_id>/', views.admin_update_status, name='admin_update_status'),
+    path('profile/stats/', views.account_stats_view, name='account_stats'),
+    path('xyz/dashboard/', admin_views.admin_dashboard, name='admin_dashboard'),
+    path('xyz/users/', admin_views.admin_users, name='admin_users'),
+    path('xyz/albums/', admin_views.admin_albums, name='admin_albums'),
+    path('xyz/tracks/', admin_views.admin_tracks, name='admin_tracks'),
+    path('xyz/distribution-requests/', admin_views.admin_distribution_requests, name='admin_distribution_requests'),
+    path('xyz/upload-content/', admin_views.admin_upload_content, name='admin_upload_content'),
+    path('xyz/blog-management/', admin_views.admin_blog_management, name='admin_blog_management'),
+    path('xyz/blog-create/', admin_views.admin_create_blog, name='create_blog'),
+    
+    path('xyz/revenue/', admin_views.admin_revenue, name='admin_revenue'),
+    path('edit-blog/<int:post_id>/', admin_views.admin_edit_blog, name='admin_edit_blog'),
+    path('create-blog-preview/', admin_views.admin_create_blog_preview, name='admin_create_blog_preview'),
 
 
     # Generic slug should always come LAST
     path('<slug:slug>/', views.blog_detail, name='blog_detail'),
     
+
+
+
     
 
  

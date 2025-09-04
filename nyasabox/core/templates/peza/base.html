@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Nyasa Box</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .admin-sidebar {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 1rem;
+            margin-left: 0px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 250px;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .admin-content {
+            margin-left: 0px;
+            margin-top: 80px;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .sidebar-brand {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .sidebar-brand h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .sidebar-brand .text-muted {
+            color: #bdc3c7 !important;
+        }
+        
+        .nav-link {
+            color: #ecf0f1;
+            padding: 0.75rem 1rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-left-color: #3498db;
+            color: #ffffff;
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.15);
+            border-left-color: #3498db;
+            color: #ffffff;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .stats-card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            border-top: none;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .badge {
+            font-weight: 500;
+        }
+        
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            padding: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .logout-btn {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(231, 76, 60, 0.3);
+            color: #ffffff;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .admin-header,
+            .admin-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-brand">
+            <h3>Nyasa Box</h3>
+            <small class="text-muted">Admin Dashboard</small>
+        </div>
+        
+        <div class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" 
+                       href="{% url 'admin_dashboard' %}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}" 
+                       href="{% url 'admin_users' %}">
+                        <i class="bi bi-people"></i> User Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_albums' %}active{% endif %}" 
+                       href="{% url 'admin_albums' %}">
+                        <i class="bi bi-collection-play"></i> Albums
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_tracks' %}active{% endif %}" 
+                       href="{% url 'admin_tracks' %}">
+                        <i class="bi bi-music-note-beamed"></i> Tracks
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_distribution_requests' %}active{% endif %}" 
+                       href="{% url 'admin_distribution_requests' %}">
+                        <i class="bi bi-cloud-upload"></i> Distribution
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_upload_content' %}active{% endif %}" 
+                       href="{% url 'admin_upload_content' %}">
+                        <i class="bi bi-upload"></i> Upload Content
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'create_blog' %}active{% endif %}" 
+                       href="{% url 'create_blog' %}">
+                        <i class="bi bi-journal-text"></i> Blog Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_revenue' %}active{% endif %}" 
+                       href="{% url 'admin_revenue' %}">
+                        <i class="bi bi-currency-dollar"></i> Revenue
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- User Info -->
+        <div class="user-info">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <strong>{{ user.username }}</strong>
+                    <br>
+                    <small class="text-muted">Super Admin</small>
+                </div>
+            </div>
+            <form method="post" action="{% url 'logout' %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm logout-btn w-100">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                {% block page_title %}Admin Dashboard{% endblock %}
+            </h4>
+            <div>
+                <span class="badge bg-light text-dark">
+                    <i class="bi bi-calendar"></i> {% now "F j, Y" %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-content">
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        <!-- Page content will be inserted here -->
+        {% endblock %}
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+        
+        // Active menu item highlighting
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUrl = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentUrl) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}
+    <!-- Page-specific JavaScript will be inserted here -->
+    {% endblock %}
+</body>
+</html>

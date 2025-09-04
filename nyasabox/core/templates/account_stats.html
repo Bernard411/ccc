@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Account Statistics</h2>
+            <a href="{% url 'settings' %}" class="btn btn-secondary">Back to Settings</a>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center bg-primary text-white">
+                    <div class="card-body">
+                        <i class="bi bi-collection-play" style="font-size: 2rem;"></i>
+                        <h5 class="card-title mt-2">{{ total_albums }}</h5>
+                        <p class="card-text">Albums</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center bg-success text-white">
+                    <div class="card-body">
+                        <i class="bi bi-music-note-beamed" style="font-size: 2rem;"></i>
+                        <h5 class="card-title mt-2">{{ total_tracks }}</h5>
+                        <p class="card-text">Tracks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center bg-info text-white">
+                    <div class="card-body">
+                        <i class="bi bi-download" style="font-size: 2rem;"></i>
+                        <h5 class="card-title mt-2">{{ total_downloads }}</h5>
+                        <p class="card-text">Downloads</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center bg-warning text-white">
+                    <div class="card-body">
+                        <i class="bi bi-heart" style="font-size: 2rem;"></i>
+                        <h5 class="card-title mt-2">{{ total_likes }}</h5>
+                        <p class="card-text">Likes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Last login</span>
+                            <span class="text-muted">{{ user.last_login|date:"M d, Y H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Account created</span>
+                            <span class="text-muted">{{ user.date_joined|date:"M d, Y H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Email address</span>
+                            <span class="text-muted">{{ user.email|default:"Not set" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url 'my_uploads' %}" class="btn btn-primary">
+                <i class="bi bi-music-note-list"></i> View My Uploads
+            </a>
+            <a href="{% url 'profile' %}" class="btn btn-outline-primary ms-2">
+                <i class="bi bi-pencil"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

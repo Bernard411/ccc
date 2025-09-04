@@ -22,52 +22,85 @@
                     <input type="hidden" name="form_type" value="album">
                     
                     <div class="mb-3">
-                        <label for="id_title" class="form-label">Album Title</label>
+                        <label class="form-label">Album Title *</label>
                         {{ album_form.title }}
+                        {% if album_form.title.errors %}
+                            <div class="text-danger">{{ album_form.title.errors }}</div>
+                        {% endif %}
                     </div>
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="id_artist" class="form-label">Artist</label>
+                            <label class="form-label">Artist Name *</label>
                             {{ album_form.artist }}
+                            {% if album_form.artist.errors %}
+                                <div class="text-danger">{{ album_form.artist.errors }}</div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label for="id_genre" class="form-label">Genre</label>
+                            <label class="form-label">Genre *</label>
                             {{ album_form.genre }}
+                            {% if album_form.genre.errors %}
+                                <div class="text-danger">{{ album_form.genre.errors }}</div>
+                            {% endif %}
                         </div>
                     </div>
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="id_release_date" class="form-label">Release Date</label>
+                            <label class="form-label">Release Date *</label>
                             {{ album_form.release_date }}
+                            {% if album_form.release_date.errors %}
+                                <div class="text-danger">{{ album_form.release_date.errors }}</div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label for="id_cover_art" class="form-label">Cover Art</label>
+                            <label class="form-label">Cover Art *</label>
                             {{ album_form.cover_art }}
+                            {% if album_form.cover_art.errors %}
+                                <div class="text-danger">{{ album_form.cover_art.errors }}</div>
+                            {% endif %}
                         </div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="id_description" class="form-label">Description</label>
+                        <label class="form-label">Description</label>
                         {{ album_form.description }}
                     </div>
                     
-                    <div class="mb-3">
-                        <label class="form-label">Tracks</label>
+                    <div class="mb-4">
+                        <label class="form-label">Tracks *</label>
+                        <p class="text-muted small">Add at least one track to your album</p>
+                        
                         <div id="track-fields">
                             <div class="track-field mb-2">
-                                <div class="input-group">
-                                    <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
-                                    <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" required>
-                                    <button type="button" class="btn btn-danger remove-track">Remove</button>
+                                <div class="row g-2">
+                                    <div class="col-md-5">
+                                        <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" value="1" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" name="track_titles[]" class="form-control" placeholder="Track Title" required>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-danger remove-track w-100" disabled>
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-secondary mt-2" id="add-track">Add Another Track</button>
+                        
+                        <button type="button" class="btn btn-secondary mt-2" id="add-track">
+                            <i class="bi bi-plus"></i> Add Another Track
+                        </button>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Upload Album</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Upload Album
+                    </button>
                 </form>
             </div>
             
@@ -78,27 +111,52 @@
                     <input type="hidden" name="form_type" value="track">
                     
                     <div class="mb-3">
-                        <label for="id_title" class="form-label">Track Title</label>
+                        <label class="form-label">Track Title *</label>
                         {{ track_form.title }}
+                        {% if track_form.title.errors %}
+                            <div class="text-danger">{{ track_form.title.errors }}</div>
+                        {% endif %}
                     </div>
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="id_artist" class="form-label">Artist</label>
+                            <label class="form-label">Artist Name *</label>
                             {{ track_form.artist }}
+                            {% if track_form.artist.errors %}
+                                <div class="text-danger">{{ track_form.artist.errors }}</div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <label for="id_genre" class="form-label">Genre</label>
+                            <label class="form-label">Album (Optional)</label>
+                            {{ track_form.album }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Genre *</label>
                             {{ track_form.genre }}
+                            {% if track_form.genre.errors %}
+                                <div class="text-danger">{{ track_form.genre.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Track Number (if album)</label>
+                            {{ track_form.track_number }}
                         </div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="id_audio_file" class="form-label">Audio File</label>
+                        <label class="form-label">Audio File *</label>
                         {{ track_form.audio_file }}
+                        {% if track_form.audio_file.errors %}
+                            <div class="text-danger">{{ track_form.audio_file.errors }}</div>
+                        {% endif %}
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Upload Track</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Upload Track
+                    </button>
                 </form>
             </div>
         </div>
@@ -109,16 +167,30 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const trackFields = document.getElementById('track-fields');
+    const addTrackButton = document.getElementById('add-track');
+    
     // Add track field
-    document.getElementById('add-track').addEventListener('click', function() {
-        const trackFields = document.getElementById('track-fields');
+    addTrackButton.addEventListener('click', function() {
+        const trackCount = document.querySelectorAll('.track-field').length;
         const newField = document.createElement('div');
         newField.className = 'track-field mb-2';
         newField.innerHTML = `
-            <div class="input-group">
-                <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
-                <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" required>
-                <button type="button" class="btn btn-danger remove-track">Remove</button>
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" value="${trackCount + 1}" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="track_titles[]" class="form-control" placeholder="Track Title" required>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger remove-track w-100">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
             </div>
         `;
         trackFields.appendChild(newField);
@@ -126,15 +198,50 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event listener to remove button
         newField.querySelector('.remove-track').addEventListener('click', function() {
             trackFields.removeChild(newField);
+            updateRemoveButtons();
         });
+        
+        updateRemoveButtons();
     });
     
-    // Remove track field
-    document.querySelectorAll('.remove-track').forEach(button => {
-        button.addEventListener('click', function() {
-            this.closest('.track-field').remove();
+    // Update remove buttons state
+    function updateRemoveButtons() {
+        const removeButtons = document.querySelectorAll('.remove-track');
+        removeButtons.forEach((button, index) => {
+            if (index === 0) {
+                button.disabled = true;
+            } else {
+                button.disabled = false;
+            }
         });
-    });
+    }
+    
+    // Initial update
+    updateRemoveButtons();
 });
 </script>
+
+<style>
+.track-field {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.remove-track:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+input[type="text"], 
+input[type="number"], 
+select, 
+textarea {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+</style>
 {% endblock %}

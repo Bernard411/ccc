@@ -88,45 +88,85 @@ def download_track(request, slug):
 @login_required
 def upload_music(request):
     if request.method == 'POST':
-        album_form = AlbumForm(request.POST, request.FILES)
-        track_form = TrackForm(request.POST, request.FILES)
+        # Check which form was submitted
+        if 'form_type' in request.POST and request.POST['form_type'] == 'album':
+            album_form = AlbumForm(request.POST, request.FILES)
+            if album_form.is_valid():
+                album = album_form.save(commit=False)
+                album.uploader = request.user
+                album.save()
+                
+                # Process track files
+                track_files = request.FILES.getlist('track_files[]')
+                track_numbers = request.POST.getlist('track_numbers[]')
+                track_titles = request.POST.getlist('track_titles[]')
+                
+                for i, (track_file, track_number, track_title) in enumerate(zip(track_files, track_numbers, track_titles)):
+                    if track_file and track_title:  # Ensure we have both file and title
+                        track = Track(
+                            title=track_title,
+                            album=album,
+                            artist=album.artist,  # Use album artist
+                            genre=album.genre,    # Use album genre
+                            audio_file=track_file,
+                            track_number=track_number,
+                            uploader=request.user
+                        )
+                        track.save()
+                
+                messages.success(request, f'Album "{album.title}" uploaded successfully with {len(track_files)} tracks!')
+                return redirect('album_detail', slug=album.slug)
         
-        if album_form.is_valid():
-            album = album_form.save(commit=False)
-            album.uploader = request.user
-            album.save()
-            return redirect('album_detail', slug=album.slug)
-        
-        if track_form.is_valid():
-            track = track_form.save(commit=False)
-            track.uploader = request.user
-            track.save()
-            return redirect('track_detail', slug=track.slug)
+        elif 'form_type' in request.POST and request.POST['form_type'] == 'track':
+            track_form = TrackForm(request.POST, request.FILES, initial={'user': request.user})
+            if track_form.is_valid():
+                track = track_form.save(commit=False)
+                track.uploader = request.user
+                
+                # If no genre is selected but album is selected, use album's genre
+                if not track.genre and track.album:
+                    track.genre = track.album.genre
+                
+                track.save()
+                messages.success(request, f'Track "{track.title}" uploaded successfully!')
+                return redirect('track_detail', slug=track.slug)
     
     else:
         album_form = AlbumForm()
-        track_form = TrackForm()
+        track_form = TrackForm(initial={'user': request.user})
     
     context = {
         'album_form': album_form,
         'track_form': track_form,
     }
     return render(request, 'upload.html', context)
-
 def search(request):
     query = request.GET.get('q')
-    results = []
+    track_results = []
+    album_results = []
     
     if query:
-        results = Track.objects.filter(
+        # Search tracks
+        track_results = Track.objects.filter(
             Q(title__icontains=query) |
-            Q(artist__name__icontains=query) |
+            Q(artist__icontains=query) |
             Q(album__title__icontains=query)
         ).distinct()
+        
+        # Search albums
+        album_results = Album.objects.filter(
+            Q(title__icontains=query) |
+            Q(artist__icontains=query) |
+            Q(description__icontains=query)
+        ).distinct()
+    
+    total_results = len(track_results) + len(album_results)
     
     context = {
-        'results': results,
+        'track_results': track_results,
+        'album_results': album_results,
         'query': query,
+        'total_results': total_results,
     }
     return render(request, 'search.html', context)
 
@@ -186,6 +226,11 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Welcome back, {username}!')
+                
+                # Redirect admins to admin dashboard
+                if user.is_superuser:
+                    return redirect('admin_dashboard')
+                
                 next_url = request.GET.get('next', 'index')
                 return redirect(next_url)
         else:
@@ -380,40 +425,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 
-# ... existing views ...
 
-@login_required
-def delete_account_view(request):
-    if request.method == 'POST':
-        # Verify password
-        password = request.POST.get('password')
-        user = authenticate(username=request.user.username, password=password)
-        
-        if user is not None:
-            # Delete user account
-            user.delete()
-            messages.success(request, 'Your account has been deleted successfully.')
-            return redirect('index')
-        else:
-            messages.error(request, 'Invalid password. Account deletion failed.')
-    
-    return render(request, 'delete_account.html')
-
-@login_required
-def change_password_view(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('profile')
-        else:
-            messages.error(request, 'Please correct the error below.')
-    else:
-        form = PasswordChangeForm(request.user)
-    
-    return render(request, 'change_password.html', {'form': form})
 
 
 @login_required
@@ -570,3 +582,67 @@ def admin_update_status(request, request_id):
             messages.success(request, f'Status updated to {new_status}.')
     
     return redirect('admin_distribution_requests')
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
+from .forms import UserUpdateForm, ProfileUpdateForm
+from .models import Album, Track
+
+@login_required
+def settings_view(request):
+    return render(request, 'settings.html')
+
+@login_required
+def change_password_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important to keep user logged in
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('settings')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    return render(request, 'change_password.html', {'form': form})
+
+@login_required
+def delete_account_view(request):
+    if request.method == 'POST':
+        # Verify password
+        password = request.POST.get('password')
+        user = authenticate(username=request.user.username, password=password)
+        
+        if user is not None:
+            # Delete user account and all associated data
+            user.delete()
+            messages.success(request, 'Your account has been deleted successfully.')
+            return redirect('index')
+        else:
+            messages.error(request, 'Invalid password. Account deletion failed.')
+    
+    return render(request, 'delete_account.html')
+
+@login_required
+def account_stats_view(request):
+    # Get user statistics
+    total_albums = Album.objects.filter(uploader=request.user).count()
+    total_tracks = Track.objects.filter(uploader=request.user).count()
+    total_downloads = sum(track.downloads for track in Track.objects.filter(uploader=request.user))
+    total_likes = sum(track.likes.count() for track in Track.objects.filter(uploader=request.user))
+    
+    context = {
+        'total_albums': total_albums,
+        'total_tracks': total_tracks,
+        'total_downloads': total_downloads,
+        'total_likes': total_likes,
+    }
+    return render(request, 'account_stats.html', context)

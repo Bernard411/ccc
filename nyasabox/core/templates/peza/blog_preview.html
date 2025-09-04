@@ -1,0 +1,47 @@
+{% extends 'peza/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+
+        
+        <div class="col-md-9 col-lg-10 ms-auto">
+            <div class="container-fluid mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Blog Post Preview</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> This is a preview of how your blog post will appear.
+                </div>
+                
+                <h1>{{ preview_title }}</h1>
+                <hr>
+                
+                <div class="blog-content">
+                    {{ preview_content|linebreaks }}
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'admin_create_blog' %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Back to Editor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.blog-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.blog-content p {
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}

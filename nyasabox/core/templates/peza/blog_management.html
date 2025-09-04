@@ -1,0 +1,175 @@
+{% extends 'peza/dashboard.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+       
+        
+        <div class="col-md-9 col-lg-10 ms-auto">
+            <div class="container-fluid mt-4">
+            <!-- Create New Blog Post Card -->
+         
+
+            <!-- Blog Posts List Card -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-journal-text"></i> Manage Blog Posts</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Author</th>
+                                    <th>Views</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for post in blog_posts %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ post.title }}</strong>
+                                        {% if post.featured_image %}
+                                        <i class="bi bi-image text-info" title="Has featured image"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if post.category %}
+                                        <span class="badge bg-secondary">{{ post.category.name }}</span>
+                                        {% else %}
+                                        <span class="text-muted">None</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ post.author.username }}</td>
+                                    <td>{{ post.views }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if post.is_published %}success{% else %}warning{% endif %}">
+                                            {{ post.is_published|yesno:"Published,Draft" }}
+                                        </span>
+                                    </td>
+                                    <td>{{ post.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'blog_detail' post.slug %}" class="btn btn-outline-primary" target="_blank">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'admin_edit_blog' post.id %}" class="btn btn-outline-warning">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="post_id" value="{{ post.id }}">
+                                                <input type="hidden" name="action" value="toggle_publish">
+                                                <button type="submit" class="btn btn-outline-{% if post.is_published %}warning{% else %}success{% endif %}">
+                                                    <i class="bi bi-{% if post.is_published %}x-circle{% else %}check-circle{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                            <form method="post" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="post_id" value="{{ post.id }}">
+                                                <input type="hidden" name="action" value="delete">
+                                                <button type="submit" class="btn btn-outline-danger" 
+                                                        onclick="return confirm('Are you sure you want to delete this post?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <i class="bi bi-journal-x" style="font-size: 2rem;"></i>
+                                        <p class="mt-2">No blog posts found.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if blog_posts.has_other_pages %}
+                    <nav aria-label="Blog posts pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if blog_posts.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ blog_posts.previous_page_number }}">Previous</a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in blog_posts.paginator.page_range %}
+                            <li class="page-item {% if blog_posts.number == i %}active{% endif %}">
+                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+                            
+                            {% if blog_posts.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ blog_posts.next_page_number }}">Next</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Confirm before deleting
+    const deleteForms = document.querySelectorAll('form[action="delete"]');
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+                e.preventDefault();
+            }
+        });
+    });
+    
+    // Enhanced textarea for blog content
+    const contentTextarea = document.querySelector('textarea[name="content"]');
+    if (contentTextarea) {
+        contentTextarea.addEventListener('focus', function() {
+            this.style.minHeight = '200px';
+        });
+    }
+});
+</script>
+
+<style>
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.btn-group .btn {
+    border-radius: 0.25rem;
+    margin-right: 0.25rem;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.badge {
+    font-weight: 500;
+}
+</style>
+{% endblock %}

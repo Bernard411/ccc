@@ -1,4 +1,4 @@
-{% extends 'music/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -19,9 +19,10 @@
                     <h5>What will be deleted:</h5>
                     <ul>
                         <li>Your profile information</li>
-                        <li>All albums you've uploaded ({{ user.album_set.count }})</li>
-                        <li>All tracks you've uploaded ({{ user.track_set.count }})</li>
+                        <li>All albums you've uploaded</li>
+                        <li>All tracks you've uploaded</li>
                         <li>Your comments and activity</li>
+                        <li>Your distribution requests</li>
                     </ul>
                 </div>
                 
@@ -34,7 +35,7 @@
                     
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-danger">Permanently Delete My Account</button>
-                        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
+                        <a href="{% url 'settings' %}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>

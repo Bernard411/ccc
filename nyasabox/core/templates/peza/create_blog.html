@@ -1,0 +1,216 @@
+{% extends 'peza/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+
+        
+        <div class="col-md-9 col-lg-10 ms-auto">
+            <div class="container-fluid mt-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Create New Blog Post</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Title *</label>
+                                    <input type="text" name="title" class="form-control" 
+                                           placeholder="Enter blog post title" required
+                                           value="{{ request.POST.title }}">
+                                    {% if messages and request.POST.title == '' %}
+                                        <div class="text-danger">Title is required</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select name="category" class="form-select">
+                                        <option value="">Select Category</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}" 
+                                                {% if request.POST.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ category.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Featured Image</label>
+                            <input type="file" name="featured_image" class="form-control" accept="image/*">
+                            <small class="text-muted">Optional: Upload a featured image for the blog post</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Content *</label>
+                            <textarea name="content" class="form-control" rows="12" 
+                                      placeholder="Write your blog post content here..." 
+                                      required>{{ request.POST.content }}</textarea>
+                            {% if messages and request.POST.content == '' %}
+                                <div class="text-danger">Content is required</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Tags (Optional)</label>
+                                    <input type="text" name="tags" class="form-control" 
+                                           placeholder="Enter tags separated by commas"
+                                           value="{{ request.POST.tags }}">
+                                    <small class="text-muted">Example: music, entertainment, artists</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Publishing Options</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="is_published" class="form-check-input" id="publishCheck" checked>
+                                        <label class="form-check-label" for="publishCheck">Publish immediately</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="featured_post" class="form-check-input" id="featuredCheck">
+                                        <label class="form-check-label" for="featuredCheck">Mark as featured post</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Excerpt (Optional)</label>
+                            <textarea name="excerpt" class="form-control" rows="3" 
+                                      placeholder="Short description of the blog post">{{ request.POST.excerpt }}</textarea>
+                            <small class="text-muted">A brief summary that will appear in blog listings</small>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Create Post
+                            </button>
+                            <a href="{% url 'admin_blog_management' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                            <button type="button" class="btn btn-outline-info" id="previewBtn">
+                                <i class="bi bi-eye"></i> Preview
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview functionality
+    const previewBtn = document.getElementById('previewBtn');
+    const contentTextarea = document.querySelector('textarea[name="content"]');
+    const titleInput = document.querySelector('input[name="title"]');
+    
+    previewBtn.addEventListener('click', function() {
+        if (titleInput.value && contentTextarea.value) {
+            // Create a form for preview
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "admin_create_blog_preview" %}';
+            form.style.display = 'none';
+            
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = '{{ csrf_token }}';
+            form.appendChild(csrfInput);
+            
+            // Add content fields
+            const titleInputClone = titleInput.cloneNode(true);
+            const contentInputClone = contentTextarea.cloneNode(true);
+            form.appendChild(titleInputClone);
+            form.appendChild(contentInputClone);
+            
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            alert('Please fill in title and content to preview.');
+        }
+    });
+    
+    // Character count for excerpt
+    const excerptTextarea = document.querySelector('textarea[name="excerpt"]');
+    if (excerptTextarea) {
+        const charCount = document.createElement('small');
+        charCount.className = 'text-muted float-end';
+        charCount.textContent = '0/200 characters';
+        excerptTextarea.parentNode.appendChild(charCount);
+        
+        excerptTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = `${length}/200 characters`;
+            charCount.className = `text-muted float-end ${length > 200 ? 'text-danger' : ''}`;
+        });
+    }
+    
+    // Auto-resize textarea
+    contentTextarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+    
+    // Trigger initial resize
+    contentTextarea.dispatchEvent(new Event('input'));
+});
+</script>
+
+<style>
+.form-control:focus, .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #198754, #0f5132);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #0f5132, #198754);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 300px;
+}
+
+#previewBtn:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: white;
+}
+</style>
+{% endblock %}

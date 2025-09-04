@@ -1,0 +1,55 @@
+<div class="col-md-3 col-lg-2 bg-dark text-light vh-100 position-fixed">
+    <div class="sidebar-sticky pt-3">
+        <h4 class="text-center mb-4">Admin Dashboard</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" 
+                   href="{% url 'admin_dashboard' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}" 
+                   href="{% url 'admin_users' %}">
+                    <i class="bi bi-people"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_albums' %}active{% endif %}" 
+                   href="{% url 'admin_albums' %}">
+                    <i class="bi bi-collection-play"></i> Albums
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_tracks' %}active{% endif %}" 
+                   href="{% url 'admin_tracks' %}">
+                    <i class="bi bi-music-note-beamed"></i> Tracks
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_distribution_requests' %}active{% endif %}" 
+                   href="{% url 'admin_distribution_requests' %}">
+                    <i class="bi bi-cloud-upload"></i> Distribution
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_upload_content' %}active{% endif %}" 
+                   href="{% url 'admin_upload_content' %}">
+                    <i class="bi bi-upload"></i> Upload Content
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_blog_management' %}active{% endif %}" 
+                   href="{% url 'admin_blog_management' %}">
+                    <i class="bi bi-journal-text"></i> Blog Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light {% if request.resolver_match.url_name == 'admin_revenue' %}active{% endif %}" 
+                   href="{% url 'admin_revenue' %}">
+                    <i class="bi bi-currency-dollar"></i> Revenue
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

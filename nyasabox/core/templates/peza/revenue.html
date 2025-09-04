@@ -1,0 +1,72 @@
+{% extends 'peza/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+
+        
+        <div class="col-md-9 col-lg-10 ms-auto">
+            <div class="container-fluid mt-4">
+                <h2>Revenue Reports</h2>
+                
+                <!-- Revenue Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <h5 class="card-title">MWK {{ revenue_stats.total_revenue|default:0|floatformat:2 }}</h5>
+                                <p class="card-text">Total Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ revenue_stats.total_requests|default:0 }}</h5>
+                                <p class="card-text">Total Requests</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <h5 class="card-title">MWK {{ monthly_revenue|floatformat:2 }}</h5>
+                                <p class="card-text">Monthly Revenue</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue by Platform -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Revenue by Platform</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Platform</th>
+                                        <th>Revenue</th>
+                                        <th>Requests</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for platform in revenue_by_platform %}
+                                    <tr>
+                                        <td>{{ platform.name }}</td>
+                                        <td>MWK {{ platform.total_revenue|default:0|floatformat:2 }}</td>
+                                        <td>{{ platform.request_count|default:0 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
