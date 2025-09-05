@@ -126,3 +126,55 @@ class DistributionRequestForm(forms.ModelForm):
             instance.save()
             self.save_m2m()
         return instance
+    
+
+
+
+
+# authentication forms 
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter your email'
+    }))
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'})
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("This email address is already in use.")
+        return email
+
+class CustomAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(
+        label='Username or Email',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password'].widget.attrs.update({'class': 'form-control'})
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if '@' in username:
+            validate_email(username)
+            try:
+                username = User.objects.get(email=username).username
+            except User.DoesNotExist:
+                raise ValidationError("No account found with this email address.")
+        return username
