@@ -1359,36 +1359,7 @@
             alert('Notifications feature coming soon!');
         });
 
-        // Simulate track selection
-        function playTrack(title, artist) {
-            document.getElementById('currentTitle').textContent = title;
-            document.getElementById('currentArtist').textContent = artist;
-            document.getElementById('mobileTrackName').textContent = title;
-            document.getElementById('mobileTrackArtist').textContent = artist;
-            isPlaying = true;
-            
-            const playBtn = document.getElementById('playPauseBtn');
-            const mobilePlayBtn = document.getElementById('mobilePlayBtn');
-            playBtn.querySelector('.material-icons').textContent = 'pause';
-            mobilePlayBtn.querySelector('.material-icons').textContent = 'pause';
-            
-            document.getElementById('progress').style.width = '0%';
-            document.getElementById('mobileProgress').style.width = '0%';
-        }
-
-        // Sample tracks for demonstration
-        const sampleTracks = [
-            {title: "Beautiful Sounds", artist: "Nyasa Artist"},
-            {title: "African Rhythm", artist: "Malawi Beats"},
-            {title: "Lake of Stars", artist: "Lake Music"}
-        ];
-
-        // Auto-play sample track after 2 seconds (for demo)
-        setTimeout(() => {
-            const randomTrack = sampleTracks[Math.floor(Math.random() * sampleTracks.length)];
-            playTrack(randomTrack.title, randomTrack.artist);
-        }, 2000);
-
+        
         // Close sidebar on window resize if it becomes desktop view
         window.addEventListener('resize', function() {
             if (window.innerWidth > 60.5 * 16) { // 60.5rem in pixels

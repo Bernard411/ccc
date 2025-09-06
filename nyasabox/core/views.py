@@ -1,19 +1,86 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.db.models import Q
+from django.db.models import Q, Sum, Count
 from .models import Album, Track, Artist, Genre, Comment
 from .forms import AlbumForm, TrackForm, CommentForm
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import Q, Count, Sum  # Added Count and Sum imports
+from django.contrib import messages
+import json  # Added json import
+from .models import Album, Track, Comment
+from .forms import AlbumForm, TrackForm, CommentForm
+
 def index(request):
-    latest_albums = Album.objects.all().order_by('-created_at')[:8]
-    latest_tracks = Track.objects.filter(album__isnull=True).order_by('-created_at')[:10]
-    popular_tracks = Track.objects.all().order_by('-downloads')[:5]
+    # Get latest albums with their tracks count
+    latest_albums = Album.objects.all().order_by('-created_at')[:8].annotate(
+        track_count=Count('tracks')
+    )
+    
+    # Get latest single tracks (not part of albums)
+    latest_tracks = Track.objects.filter(album__isnull=True).order_by('-created_at')[:12]
+    
+    # Get popular tracks by downloads
+    popular_tracks = Track.objects.all().order_by('-downloads')[:10]
+    
+    # Get popular albums by total downloads of their tracks
+    popular_albums = Album.objects.annotate(
+        total_downloads=Sum('tracks__downloads')
+    ).order_by('-total_downloads')[:6]
+    
+    # Get top artists by track count and total downloads
+    top_artists_data = Track.objects.values('artist').annotate(
+        track_count=Count('id'),
+        total_downloads=Sum('downloads')
+    ).order_by('-track_count')[:8]
+    
+    # Format artist data
+    artists_with_data = []
+    for artist in top_artists_data:
+        # Get a sample track for the artist
+        sample_track = Track.objects.filter(artist=artist['artist']).first()
+        artists_with_data.append({
+            'name': artist['artist'],
+            'track_count': artist['track_count'],
+            'total_downloads': artist['total_downloads'] or 0,
+            'sample_track': sample_track
+        })
+    
+    
+    # Prepare tracks data for JavaScript player - ensure all fields are properly formatted
+    tracks_data = []
+    all_tracks = list(latest_tracks) + list(popular_tracks)
+    
+    for track in all_tracks:
+        # Get cover image URL if available
+        cover_url = ''
+        if track.album and track.album.cover_art:
+            cover_url = track.album.cover_art.url
+        elif hasattr(track, 'cover_art') and track.cover_art:
+            cover_url = track.cover_art.url
+            
+        # Get audio file URL
+        audio_url = track.audio_file.url if track.audio_file else ''
+        
+        tracks_data.append({
+            'id': track.id,
+            'title': track.title,
+            'artist': track.artist,
+            'url': audio_url,
+            'cover_image': cover_url,
+            'duration': track.get_formatted_duration() if hasattr(track, 'get_formatted_duration') and track.duration else '0:00'
+        })
     
     context = {
         'latest_albums': latest_albums,
         'latest_tracks': latest_tracks,
         'popular_tracks': popular_tracks,
+        'popular_albums': popular_albums,
+        'top_artists': artists_with_data,
+        'tracks_json': json.dumps(tracks_data),
     }
     return render(request, 'index.html', context)
 

@@ -55,18 +55,5 @@ urlpatterns = [
 
     # Generic slug should always come LAST
     path('<slug:slug>/', views.blog_detail, name='blog_detail'),
-    
-
-
-
-    
-
- 
-  
 
 ]
-    
-
-
-  
-
