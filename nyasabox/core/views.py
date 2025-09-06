@@ -207,6 +207,7 @@ def upload_music(request):
         'track_form': track_form,
     }
     return render(request, 'upload.html', context)
+
 def search(request):
     query = request.GET.get('q')
     track_results = []

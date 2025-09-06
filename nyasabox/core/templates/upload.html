@@ -1,247 +1,624 @@
 {% extends 'base.html' %}
 
+{% block title %}Upload Music - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .upload-container {
+        padding: 1.5rem;
+        max-width: 50rem;
+        margin: 0 auto;
+    }
+
+    .upload-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.2rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+    }
+
+    .upload-header h2 {
+        font-size: clamp(1.8rem, 3vw, 2.2rem);
+        font-weight: 800;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.8rem;
+    }
+
+    .upload-header p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        max-width: 30rem;
+        margin: 0 auto;
+    }
+
+    .upload-tabs {
+        display: flex;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 0.3rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+        gap: 0.5rem;
+    }
+
+    .upload-tab {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 0.8rem;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .upload-tab:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    .upload-tab.active {
+        background: var(--accent-gradient);
+        color: white;
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .upload-tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .upload-tab-content.active {
+        display: block;
+    }
+
+    .tab-content {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.2rem;
+        padding: 2rem;
+        box-shadow: var(--shadow-light);
+        backdrop-filter: blur(0.5rem);
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        font-size: 0.9rem;
+        display: block;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        border-radius: 0.8rem;
+        padding: 0.9rem 1.2rem;
+        font-size: 0.9rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        width: 100%;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.15);
+        outline: none;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    input[type="file"].form-control {
+        padding: 0.8rem;
+        cursor: pointer;
+    }
+
+    input[type="file"].form-control::file-selector-button {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    input[type="file"].form-control::file-selector-button:hover {
+        background: var(--accent-secondary);
+    }
+
+    input[type="date"].form-control {
+        padding: 0.9rem 1.2rem;
+    }
+
+    .track-field {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .track-field:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(0.2rem);
+    }
+
+    .track-number {
+        width: 4rem;
+    }
+
+    .remove-track {
+        background: rgba(255, 99, 99, 0.1);
+        border: 1px solid rgba(255, 99, 99, 0.2);
+        color: #ff6363;
+        border-radius: 0.8rem;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .remove-track:not(:disabled):hover {
+        background: #ff6363;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    #add-track {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border: 2px dashed var(--border-color);
+        padding: 1rem;
+        border-radius: 1rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        margin-top: 1rem;
+        cursor: pointer;
+    }
+
+    #add-track:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-primary);
+        transform: translateY(-0.2rem);
+    }
+
+    .text-danger {
+        color: #ff6363;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
+
+    .submit-btn {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 2rem auto 0;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-0.2rem);
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .upload-guidelines {
+        margin-top: 2.5rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .upload-guidelines h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .guidelines-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .guidelines-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .guidelines-list li i {
+        color: var(--accent-primary);
+        font-size: 1rem;
+    }
+
+    @keyframes fadeIn {
+        from { 
+            opacity: 0; 
+            transform: translateY(1rem); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+
+    @media (max-width: 768px) {
+        .upload-container {
+            padding: 1rem;
+        }
+
+        .upload-tabs {
+            flex-direction: column;
+        }
+
+        .upload-tab {
+            padding: 0.8rem;
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .track-field .row {
+            row-gap: 0.8rem;
+        }
+
+        .guidelines-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <h2 class="mb-4">Upload Music</h2>
-        
-        <ul class="nav nav-tabs" id="uploadTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="album-tab" data-bs-toggle="tab" data-bs-target="#album" type="button" role="tab">Album</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="single-tab" data-bs-toggle="tab" data-bs-target="#single" type="button" role="tab">Single Track</button>
-            </li>
-        </ul>
-        
-        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="uploadTabsContent">
-            <div class="tab-pane fade show active" id="album" role="tabpanel">
-                <h4 class="mb-3">Upload Album</h4>
-                <form method="post" enctype="multipart/form-data" id="albumForm">
-                    {% csrf_token %}
-                    <input type="hidden" name="form_type" value="album">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Album Title *</label>
-                        {{ album_form.title }}
-                        {% if album_form.title.errors %}
-                            <div class="text-danger">{{ album_form.title.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Artist Name *</label>
+<div class="upload-container">
+    <div class="upload-header">
+        <h2>Share Your Music</h2>
+        <p>Upload your tracks and reach listeners across Malawi and beyond. Choose between uploading a single track or an entire album.</p>
+    </div>
+
+    <div class="upload-tabs">
+        <div class="upload-tab active" data-tab="album">
+            <span class="material-icons">album</span>
+            Upload Album
+        </div>
+        <div class="upload-tab" data-tab="single">
+            <span class="material-icons">music_note</span>
+            Upload Single
+        </div>
+    </div>
+
+    <!-- Album Upload Form -->
+    <div class="upload-tab-content active" id="album-form">
+        <div class="tab-content">
+            <form method="post" enctype="multipart/form-data" id="albumForm">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="album">
+
+                <div class="form-group">
+                    <label class="form-label">Album Title</label>
+                    {{ album_form.title }}
+                    {% if album_form.title.errors %}
+                        <div class="text-danger">{{ album_form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Artist Name</label>
                             {{ album_form.artist }}
                             {% if album_form.artist.errors %}
                                 <div class="text-danger">{{ album_form.artist.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Genre *</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Genre</label>
                             {{ album_form.genre }}
                             {% if album_form.genre.errors %}
                                 <div class="text-danger">{{ album_form.genre.errors }}</div>
                             {% endif %}
                         </div>
                     </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Release Date *</label>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Release Date</label>
                             {{ album_form.release_date }}
                             {% if album_form.release_date.errors %}
                                 <div class="text-danger">{{ album_form.release_date.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Cover Art *</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Cover Art</label>
                             {{ album_form.cover_art }}
                             {% if album_form.cover_art.errors %}
                                 <div class="text-danger">{{ album_form.cover_art.errors }}</div>
                             {% endif %}
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        {{ album_form.description }}
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="form-label">Tracks *</label>
-                        <p class="text-muted small">Add at least one track to your album</p>
-                        
-                        <div id="track-fields">
-                            <div class="track-field mb-2">
-                                <div class="row g-2">
-                                    <div class="col-md-5">
-                                        <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" value="1" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" name="track_titles[]" class="form-control" placeholder="Track Title" required>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <button type="button" class="btn btn-danger remove-track w-100" disabled>
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    {{ album_form.description }}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Album Tracks</label>
+                    <p class="text-muted small mb-3">Add at least one track to your album</p>
+
+                    <div id="track-fields">
+                        <div class="track-field">
+                            <div class="row g-3">
+                                <div class="col-md-5">
+                                    <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="number" name="track_numbers[]" class="form-control track-number" placeholder="#" min="1" value="1" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" name="track_titles[]" class="form-control" placeholder="Track Title" required>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="remove-track" disabled>
+                                        <span class="material-icons">delete</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        
-                        <button type="button" class="btn btn-secondary mt-2" id="add-track">
-                            <i class="bi bi-plus"></i> Add Another Track
-                        </button>
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-upload"></i> Upload Album
+
+                    <button type="button" id="add-track">
+                        <span class="material-icons">add</span> Add Another Track
                     </button>
-                </form>
-            </div>
-            
-            <div class="tab-pane fade" id="single" role="tabpanel">
-                <h4 class="mb-3">Upload Single Track</h4>
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="hidden" name="form_type" value="track">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Track Title *</label>
-                        {{ track_form.title }}
-                        {% if track_form.title.errors %}
-                            <div class="text-danger">{{ track_form.title.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Artist Name *</label>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="material-icons">cloud_upload</span> Upload Album
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Single Track Upload Form -->
+    <div class="upload-tab-content" id="single-form">
+        <div class="tab-content">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="track">
+
+                <div class="form-group">
+                    <label class="form-label">Track Title</label>
+                    {{ track_form.title }}
+                    {% if track_form.title.errors %}
+                        <div class="text-danger">{{ track_form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Artist Name</label>
                             {{ track_form.artist }}
                             {% if track_form.artist.errors %}
                                 <div class="text-danger">{{ track_form.artist.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
                             <label class="form-label">Album (Optional)</label>
                             {{ track_form.album }}
                         </div>
                     </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Genre *</label>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Genre</label>
                             {{ track_form.genre }}
                             {% if track_form.genre.errors %}
                                 <div class="text-danger">{{ track_form.genre.errors }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Track Number (if album)</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Track Number</label>
                             {{ track_form.track_number }}
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Audio File *</label>
-                        {{ track_form.audio_file }}
-                        {% if track_form.audio_file.errors %}
-                            <div class="text-danger">{{ track_form.audio_file.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-upload"></i> Upload Track
-                    </button>
-                </form>
-            </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Audio File</label>
+                    {{ track_form.audio_file }}
+                    {% if track_form.audio_file.errors %}
+                        <div class="text-danger">{{ track_form.audio_file.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="material-icons">cloud_upload</span> Upload Track
+                </button>
+            </form>
         </div>
+    </div>
+
+    <div class="upload-guidelines">
+        <h4><span class="material-icons">info</span> Upload Guidelines</h4>
+        <ul class="guidelines-list">
+            <li><span class="material-icons">check_circle</span> Supported formats: MP3, WAV (max 20MB)</li>
+            <li><span class="material-icons">check_circle</span> Cover art: 500x500px minimum</li>
+            <li><span class="material-icons">check_circle</span> Verify rights to distribute music</li>
+            <li><span class="material-icons">check_circle</span> Complete all required fields (*)</li>
+            <li><span class="material-icons">check_circle</span> Double-check track order for albums</li>
+            <li><span class="material-icons">check_circle</span> High-quality audio recommended</li>
+        </ul>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const trackFields = document.getElementById('track-fields');
-    const addTrackButton = document.getElementById('add-track');
-    
-    // Add track field
-    addTrackButton.addEventListener('click', function() {
-        const trackCount = document.querySelectorAll('.track-field').length;
-        const newField = document.createElement('div');
-        newField.className = 'track-field mb-2';
-        newField.innerHTML = `
-            <div class="row g-2">
-                <div class="col-md-5">
-                    <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
-                </div>
-                <div class="col-md-3">
-                    <input type="number" name="track_numbers[]" class="form-control" placeholder="Track #" min="1" value="${trackCount + 1}" required>
-                </div>
-                <div class="col-md-3">
-                    <input type="text" name="track_titles[]" class="form-control" placeholder="Track Title" required>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger remove-track w-100">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-        trackFields.appendChild(newField);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.upload-tab');
+        const tabContents = document.querySelectorAll('.upload-tab-content');
         
-        // Add event listener to remove button
-        newField.querySelector('.remove-track').addEventListener('click', function() {
-            trackFields.removeChild(newField);
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show active content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabId}-form`).classList.add('active');
+            });
+        });
+        
+        // Track management
+        const trackFields = document.getElementById('track-fields');
+        const addTrackButton = document.getElementById('add-track');
+        
+        function createTrackField(trackNumber) {
+            const field = document.createElement('div');
+            field.className = 'track-field';
+            field.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="file" name="track_files[]" class="form-control" accept="audio/*" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="track_numbers[]" class="form-control track-number" placeholder="#" min="1" value="${trackNumber}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" name="track_titles[]" class="form-control" placeholder="Track Title" required>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="remove-track">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return field;
+        }
+
+        addTrackButton.addEventListener('click', function() {
+            const trackCount = document.querySelectorAll('.track-field').length;
+            const newField = createTrackField(trackCount + 1);
+            trackFields.appendChild(newField);
             updateRemoveButtons();
+
+            newField.querySelector('.remove-track').addEventListener('click', function() {
+                newField.remove();
+                updateRemoveButtons();
+                reorderTrackNumbers();
+            });
+            
+            // Add animation
+            newField.style.opacity = '0';
+            newField.style.transform = 'translateY(1rem)';
+            setTimeout(() => {
+                newField.style.opacity = '1';
+                newField.style.transform = 'translateY(0)';
+            }, 50);
         });
-        
+
+        function updateRemoveButtons() {
+            const removeButtons = document.querySelectorAll('.remove-track');
+            removeButtons.forEach((button, index) => {
+                button.disabled = index === 0;
+            });
+        }
+
+        function reorderTrackNumbers() {
+            const trackNumbers = document.querySelectorAll('input[name="track_numbers[]"]');
+            trackNumbers.forEach((input, index) => {
+                input.value = index + 1;
+            });
+        }
+
+        // Initial setup
         updateRemoveButtons();
-    });
-    
-    // Update remove buttons state
-    function updateRemoveButtons() {
-        const removeButtons = document.querySelectorAll('.remove-track');
-        removeButtons.forEach((button, index) => {
-            if (index === 0) {
-                button.disabled = true;
-            } else {
-                button.disabled = false;
-            }
+        
+        // File input styling
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    this.style.borderColor = 'var(--accent-primary)';
+                }
+            });
         });
-    }
-    
-    // Initial update
-    updateRemoveButtons();
-});
+    });
 </script>
-
-<style>
-.track-field {
-    padding: 10px;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    background-color: #f8f9fa;
-}
-
-.remove-track:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-input[type="text"], 
-input[type="number"], 
-select, 
-textarea {
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-}
-</style>
 {% endblock %}
