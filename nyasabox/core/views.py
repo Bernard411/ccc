@@ -409,6 +409,7 @@ def my_uploads_view(request):
     total_albums = user_albums.count()
     total_tracks = user_tracks.count()
     total_downloads = sum(track.downloads for track in Track.objects.filter(uploader=request.user))
+    total_likes = sum(track.likes.count() for track in Track.objects.filter(uploader=request.user))
     
     context = {
         'user_albums': user_albums,
@@ -416,6 +417,7 @@ def my_uploads_view(request):
         'total_albums': total_albums,
         'total_tracks': total_tracks,
         'total_downloads': total_downloads,
+        'total_likes': total_likes,
     }
     return render(request, 'my_uploads.html', context)
 
