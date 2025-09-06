@@ -619,7 +619,7 @@
         </div>
         <div class="music-grid">
             {% for album in latest_albums %}
-            <div class="music-card" data-type="album" data-id="{{ album.id }}">
+            <a href="{% url 'album_detail' album.slug %}" class="music-card" data-type="album" data-id="{{ album.id }}" style="text-decoration: none;">
                 <div class="music-cover">
                     {% if album.cover_art %}
                     <img src="{{ album.cover_art.url }}" alt="{{ album.title }}">
@@ -637,7 +637,7 @@
                 <button class="play-btn" data-type="album" data-id="{{ album.id }}">
                     <span class="material-icons">play_arrow</span>
                 </button>
-            </div>
+            </a>
             {% empty %}
             <p>No albums available yet.</p>
             {% endfor %}
@@ -657,7 +657,7 @@
         <div class="tracks-slider">
             <div class="tracks-slider-container" id="tracksSlider">
                 {% for track in latest_tracks %}
-                <div class="track-slide" data-type="track" data-id="{{ track.id }}">
+                <a href="{% url 'track_detail' track.slug %}" class="track-slide" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
                     <div class="track-slide-cover">
                         {% if track.album and track.album.cover_art %}
                         <img src="{{ track.album.cover_art.url }}" alt="{{ track.title }}">
@@ -676,7 +676,7 @@
                     <button class="play-btn" data-type="track" data-id="{{ track.id }}">
                         <span class="material-icons">play_arrow</span>
                     </button>
-                </div>
+                </a>
                 {% empty %}
                 <p>No tracks available yet.</p>
                 {% endfor %}
@@ -704,7 +704,7 @@
         </div>
         <div class="music-grid">
             {% for track in popular_tracks %}
-            <div class="music-card" data-type="track" data-id="{{ track.id }}">
+            <a href="{% url 'track_detail' track.slug %}" class="music-card" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
                 <div class="music-cover">
                     {% if track.album and track.album.cover_art %}
                     <img src="{{ track.album.cover_art.url }}" alt="{{ track.title }}">
@@ -722,7 +722,7 @@
                 <button class="play-btn" data-type="track" data-id="{{ track.id }}">
                     <span class="material-icons">play_arrow</span>
                 </button>
-            </div>
+            </a>
             {% empty %}
             <p>No popular tracks yet.</p>
             {% endfor %}
@@ -767,7 +767,7 @@
         </div>
         <div class="music-grid">
             {% for album in popular_albums %}
-            <div class="music-card" data-type="album" data-id="{{ album.id }}">
+            <a href="{% url 'album_detail' album.slug %}" style="text-decoration: none;" class="music-card" data-type="album" data-id="{{ album.id }}">
                 <div class="music-cover">
                     {% if album.cover_art %}
                     <img src="{{ album.cover_art.url }}" alt="{{ album.title }}">
@@ -785,7 +785,7 @@
                 <button class="play-btn" data-type="album" data-id="{{ album.id }}">
                     <span class="material-icons">play_arrow</span>
                 </button>
-            </div>
+            </a>
             {% empty %}
             <p>No popular albums yet.</p>
             {% endfor %}
