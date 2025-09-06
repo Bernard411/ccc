@@ -358,8 +358,6 @@ from django.contrib.auth.models import User
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 
-# ... existing register, login, logout views ...
-
 @login_required
 def profile_view(request):
     if request.method == 'POST':
@@ -379,9 +377,25 @@ def profile_view(request):
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.profile)
     
+    # Calculate statistics
+    total_albums = Album.objects.filter(uploader=request.user).count()
+    total_tracks = Track.objects.filter(uploader=request.user).count()
+    total_downloads = Track.objects.filter(uploader=request.user).aggregate(
+        total=Sum('downloads')
+    )['total'] or 0
+    total_likes = Track.objects.filter(uploader=request.user).aggregate(
+        total=Count('likes')
+    )['total'] or 0
+    total_uploads = total_albums + total_tracks
+    
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
+        'total_albums': total_albums,
+        'total_tracks': total_tracks,
+        'total_downloads': total_downloads,
+        'total_likes': total_likes,
+        'total_uploads': total_uploads,
     }
     return render(request, 'profile.html', context)
 
