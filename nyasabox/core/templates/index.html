@@ -7,7 +7,7 @@
 <style>
     body {
         background: #000000;
-        color: #ffffff;
+        color: #e0e0e0; /* Changed from white to light gray for better readability */
     }
 
     .hero-section {
@@ -67,6 +67,7 @@
         font-weight: 800;
         margin-bottom: 0.6rem;
         line-height: 1.1;
+        color: #ffffff; /* Explicitly set white color */
     }
 
     .hero-content p {
@@ -74,6 +75,7 @@
         opacity: 0.9;
         margin-bottom: 1.2rem;
         max-width: 28rem;
+        color: #ffffff; /* Explicitly set white color */
     }
 
     .hero-cta {
@@ -101,6 +103,7 @@
         animation: float 6s ease-in-out infinite;
         position: relative;
         z-index: 1;
+        color: #ffffff; /* Explicitly set white color */
     }
 
     @keyframes float {
@@ -150,7 +153,7 @@
     .section-title {
         font-size: clamp(1.2rem, 2.5vw, 1.6rem);
         font-weight: 800;
-        color: #ffffff;
+        color: #ffffff; /* Changed to white for better visibility */
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -243,14 +246,14 @@
         font-weight: 700;
         font-size: 0.9rem;
         margin-bottom: 0.3rem;
-        color: #ffffff;
+        color: #ffffff; /* Changed to white for better visibility */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .track-slide-artist {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8); /* Increased opacity for better visibility */
         font-size: 0.8rem;
         font-weight: 500;
         white-space: nowrap;
@@ -260,7 +263,7 @@
     }
 
     .track-slide-duration {
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.7); /* Increased opacity for better visibility */
         font-size: 0.75rem;
         display: flex;
         align-items: center;
@@ -355,14 +358,14 @@
         font-weight: 700;
         font-size: 0.85rem;
         margin-bottom: 0.2rem;
-        color: #ffffff;
+        color: #ffffff; /* Changed to white for better visibility */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .music-artist {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8); /* Increased opacity for better visibility */
         font-size: 0.8rem;
         font-weight: 500;
         white-space: nowrap;
@@ -376,7 +379,7 @@
         gap: 0.8rem;
         margin-top: 0.4rem;
         font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.7); /* Increased opacity for better visibility */
     }
 
     .stat {
@@ -453,12 +456,12 @@
         font-weight: 700;
         font-size: 0.9rem;
         margin-bottom: 0.4rem;
-        color: #ffffff;
+        color: #ffffff; /* Changed to white for better visibility */
     }
 
     .artist-stats {
         font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8); /* Increased opacity for better visibility */
     }
 
     /* Loading states */
@@ -476,6 +479,20 @@
     .now-playing .track-slide-title {
         color: #ff6b6b;
         font-weight: 700;
+    }
+
+    /* Error message styling */
+    .error-message {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ff4757;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        z-index: 10000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     /* Responsive Design */
@@ -547,6 +564,9 @@
 {% endblock %}
 
 {% block content %}
+<!-- Error message container -->
+<div class="error-message" id="errorMessage"></div>
+
 <div class="hero-section">
     <div class="hero-carousel" id="heroCarousel">
         <div class="hero-slide active" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');">
@@ -796,6 +816,16 @@
         const mobileProgress = document.getElementById('mobileProgress');
         const currentTime = document.getElementById('currentTime');
         const totalTime = document.getElementById('totalTime');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
         
         // Play a specific track
         function playTrack(index) {
@@ -803,6 +833,12 @@
             
             const track = tracks[index];
             currentTrackIndex = index;
+            
+            // Check if track has a valid URL
+            if (!track.url || track.url === '') {
+                showError('This track is not available for playback.');
+                return;
+            }
             
             // Set audio source
             audio.src = track.url;
@@ -833,7 +869,7 @@
                 highlightCurrentTrack();
             }).catch(error => {
                 console.error('Playback error:', error);
-                alert('Error playing track. Please try again.');
+                showError('Error playing track. Please try again.');
             });
         }
         
@@ -847,7 +883,10 @@
             if (isPlaying) {
                 audio.pause();
             } else {
-                audio.play();
+                audio.play().catch(error => {
+                    console.error('Playback error:', error);
+                    showError('Error playing track. Please try again.');
+                });
             }
             isPlaying = !isPlaying;
             updatePlayPauseButton();
@@ -977,31 +1016,6 @@
                 const trackIndex = tracks.findIndex(t => t.id == trackId);
                 if (trackIndex !== -1) {
                     playTrack(trackIndex);
-                }
-            });
-        });
-        
-        // Share functionality
-        document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const url = btn.dataset.url;
-                const title = btn.dataset.title || 'Check out this track!';
-                
-                try {
-                    if (navigator.share) {
-                        await navigator.share({
-                            title: title,
-                            text: 'Listen to this track on NyasaBox',
-                            url: window.location.origin + url
-                        });
-                    } else {
-                        // Fallback: copy to clipboard
-                        await navigator.clipboard.writeText(window.location.origin + url);
-                        alert('Link copied to clipboard!');
-                    }
-                } catch (error) {
-                    console.log('Share failed:', error);
                 }
             });
         });
