@@ -209,35 +209,67 @@ def upload_music(request):
     return render(request, 'upload.html', context)
 
 def search(request):
-    query = request.GET.get('q')
-    track_results = []
-    album_results = []
+    query = request.GET.get('q', '')
+    content_type = request.GET.get('type', 'all')
+    sort_by = request.GET.get('sort', 'relevance')
+    
+    # Initialize empty querysets (not lists)
+    track_results = Track.objects.none()
+    album_results = Album.objects.none()
+    blog_results = BlogPost.objects.none()
     
     if query:
-        # Search tracks
-        track_results = Track.objects.filter(
-            Q(title__icontains=query) |
-            Q(artist__icontains=query) |
-            Q(album__title__icontains=query)
-        ).distinct()
+        # Use querysets instead of lists for all results
+        if content_type in ['all', 'tracks']:
+            track_results = Track.objects.filter(
+                Q(title__icontains=query) |
+                Q(artist__icontains=query) |
+                Q(album__title__icontains=query) |
+                Q(genre__icontains=query)
+            ).distinct()
         
-        # Search albums
-        album_results = Album.objects.filter(
-            Q(title__icontains=query) |
-            Q(artist__icontains=query) |
-            Q(description__icontains=query)
-        ).distinct()
+        if content_type in ['all', 'albums']:
+            album_results = Album.objects.filter(
+                Q(title__icontains=query) |
+                Q(artist__icontains=query) |
+                Q(description__icontains=query) |
+                Q(genre__icontains=query)
+            ).distinct()
+        
+        if content_type in ['all', 'blogs']:
+            blog_results = BlogPost.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(author__username__icontains=query) |
+                Q(category__name__icontains=query)
+            ).distinct()
+        
+        # Sort results
+        if sort_by == 'newest':
+            track_results = track_results.order_by('-created_at')
+            album_results = album_results.order_by('-created_at')
+            blog_results = blog_results.order_by('-created_at')
+        elif sort_by == 'popular':
+            track_results = track_results.order_by('-downloads')
+            album_results = album_results.order_by('-downloads')
+            blog_results = blog_results.order_by('-views')
+        else:  # relevance
+            track_results = track_results.order_by('-downloads', '-created_at')
+            album_results = album_results.order_by('-downloads', '-created_at')
+            blog_results = blog_results.order_by('-views', '-created_at')
     
-    total_results = len(track_results) + len(album_results)
+    total_results = track_results.count() + album_results.count() + blog_results.count()
     
     context = {
         'track_results': track_results,
         'album_results': album_results,
+        'blog_results': blog_results,
         'query': query,
+        'content_type': content_type,
+        'sort_by': sort_by,
         'total_results': total_results,
     }
     return render(request, 'search.html', context)
-
 
 from django.shortcuts import render, get_object_or_404
 from .models import BlogPost, BlogCategory
