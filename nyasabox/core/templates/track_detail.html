@@ -146,6 +146,36 @@
         transform: translateY(-0.2rem);
     }
 
+    /* Add these styles to the existing styles in track_detail.html */
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .hover-link:hover {
+        color: var(--accent-primary);
+    }
+
+    .play-track-btn {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .play-track-btn:hover {
+        transform: translateY(-0.2rem);
+        box-shadow: var(--shadow-heavy);
+    }
+
     /* Content Grid Layout */
     .track-content {
         display: grid;
@@ -447,7 +477,11 @@
                 </div>
 
                 <div class="track-actions">
-                    <a href="{% url 'download_track' track.slug %}" class="action-btn primary-btn">
+                    <button class="action-btn primary-btn play-track-btn" onclick="playCurrentTrack()">
+                        <span class="material-icons">play_arrow</span>
+                        Play Track
+                    </button>
+                    <a href="{% url 'download_track' track.slug %}" class="action-btn secondary-btn">
                         <span class="material-icons">download</span>
                         Download
                     </a>
@@ -649,6 +683,81 @@ document.addEventListener('DOMContentLoaded', function() {
     if (audio) {
         audio.src = '{{ track.audio_file.url }}';
     }
+});
+
+
+// Add this to the existing extra_js block
+document.addEventListener('DOMContentLoaded', function() {
+    // Track data for the player
+    const currentTrack = {
+        id: {{ track.id }},
+        title: "{{ track.title }}",
+        artist: "{{ track.artist }}",
+        url: "{{ track.audio_file.url }}",
+        cover_image: "{% if track.album and track.album.cover_art %}{{ track.album.cover_art.url }}{% endif %}",
+        duration: "{{ track.get_formatted_duration }}"
+    };
+
+    // Function to play current track in base player
+    window.playCurrentTrack = function() {
+        // Get base player elements
+        const audio = document.getElementById('audioPlayer');
+        const currentTitle = document.getElementById('currentTitle');
+        const currentArtist = document.getElementById('currentArtist');
+        const currentCover = document.getElementById('currentCover');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const mobileTrackName = document.getElementById('mobileTrackName');
+        const mobileTrackArtist = document.getElementById('mobileTrackArtist');
+        const mobileTrackImage = document.querySelector('.mobile-track-image');
+
+        // Update player info
+        currentTitle.textContent = currentTrack.title;
+        currentArtist.textContent = currentTrack.artist;
+        mobileTrackName.textContent = currentTrack.title;
+        mobileTrackArtist.textContent = currentTrack.artist;
+
+        // Update cover images
+        if (currentTrack.cover_image) {
+            currentCover.innerHTML = `<img src="${currentTrack.cover_image}" alt="${currentTrack.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.6rem;">`;
+            mobileTrackImage.innerHTML = `<img src="${currentTrack.cover_image}" alt="${currentTrack.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.5rem;">`;
+        } else {
+            currentCover.innerHTML = '<span class="material-icons">music_note</span>';
+            mobileTrackImage.innerHTML = '<span class="material-icons">music_note</span>';
+        }
+
+        // Set audio source and play
+        audio.src = currentTrack.url;
+        audio.load();
+        audio.play().then(() => {
+            // Update play button icons
+            const icon = playPauseBtn.querySelector('.material-icons');
+            const mobileIcon = document.getElementById('mobilePlayBtn').querySelector('.material-icons');
+            icon.textContent = 'pause';
+            mobileIcon.textContent = 'pause';
+            
+            // Show player if hidden
+            document.getElementById('player').style.display = 'grid';
+            document.querySelector('.mobile-player').style.display = 'block';
+        }).catch(error => {
+            console.error('Playback failed:', error);
+            alert('Error playing track. Please try again.');
+        });
+    };
+
+    // Update play button text based on player state
+    function updatePlayButtonState() {
+        const audio = document.getElementById('audioPlayer');
+        const playButtons = document.querySelectorAll('.play-track-btn');
+        playButtons.forEach(btn => {
+            const icon = btn.querySelector('.material-icons');
+            icon.textContent = audio.paused ? 'play_arrow' : 'pause';
+        });
+    }
+
+    // Listen for player state changes
+    const audio = document.getElementById('audioPlayer');
+    audio.addEventListener('play', updatePlayButtonState);
+    audio.addEventListener('pause', updatePlayButtonState);
 });
 </script>
 {% endblock %}
