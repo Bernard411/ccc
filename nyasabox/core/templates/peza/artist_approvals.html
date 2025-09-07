@@ -1,0 +1,47 @@
+{% extends 'peza/base.html' %}
+
+{% block title %}Admin - Artist Approvals{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Pending Artist Applications</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Bio</th>
+                <th>Proof</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for profile in pending_artists %}
+            <tr>
+                <td>{{ profile.user.username }}</td>
+                <td>{{ profile.user.email }}</td>
+                <td>{{ profile.bio|truncatewords:20 }}</td>
+                <td>
+                    {% if profile.verification_proof %}
+                    <a href="{{ profile.verification_proof.url }}" target="_blank">View Proof</a>
+                    {% else %}
+                    No Proof
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="post" action="{% url 'admin_approve_artist' profile.id %}">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No pending applications.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -367,7 +367,7 @@ def admin_artist_approvals(request):
     context = {
         'pending_artists': pending_artists,
     }
-    return render(request, 'admin/artist_approvals.html', context)
+    return render(request, 'peza/artist_approvals.html', context)
 
 @login_required
 def admin_approve_artist(request, profile_id):

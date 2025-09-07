@@ -206,6 +206,12 @@
                         <i class="bi bi-currency-dollar"></i> Revenue
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'admin_artist_approvals' %}active{% endif %}" 
+                       href="{% url 'admin_artist_approvals' %}">
+                        <i class="bi bi-person-check"></i> Artist Approvals
+                    </a>
+                </li>
             </ul>
         </div>
         
