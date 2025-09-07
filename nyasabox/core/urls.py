@@ -40,6 +40,8 @@ urlpatterns = [
     # Distribution routes
     path('request/', views.distribution_request, name='distribution_request'),
     path('payment/<int:request_id>/', views.distribution_payment, name='distribution_payment'),
+    path('process-payment/<int:request_id>/', views.process_distribution_payment, name='process_distribution_payment'),
+    path('payment-status/<str:transaction_id>/', views.check_distribution_payment_status, name='check_distribution_payment_status'),
     path('status/<int:request_id>/', views.distribution_status, name='distribution_status'),
     path('history/', views.distribution_history, name='distribution_history'),
 

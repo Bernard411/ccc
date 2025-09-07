@@ -1,0 +1,54 @@
+Watching for file changes with StatReloader
+Not Found: /media/platform_logos/spo.jpg
+Internal Server Error: /adminxy/distribution-requests/
+Traceback (most recent call last):
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 903, in admin_distribution_requests
+    return render(request, 'distribution/admin_requests.html', context)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: distribution/admin_requests.html
+Not Found: /media/platform_logos/spo.jpg
+Not Found: /media/platform_logos/spo.jpg
+Internal Server Error: /payment/5/
+Traceback (most recent call last):
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 480, in __call__
+    result = fn(*args, **kwargs)
+  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 668, in get_mobile_money_operators
+    "Authorization": f"Bearer {settings.PAYCHANGU_API_KEY.strip()}"
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\conf\__init__.py", line 83, in __getattr__
+    val = getattr(_wrapped, name)
+AttributeError: 'Settings' object has no attribute 'PAYCHANGU_API_KEY'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 683, in distribution_payment
+    mobile_operators = get_mobile_money_operators()
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 338, in wrapped_f
+    return copy(f, *args, **kw)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 477, in __call__
+    do = self.iter(retry_state=retry_state)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 378, in iter
+    result = action(retry_state)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 421, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x236bfbb2350 state=finished raised AttributeError>]
+C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
+Watching for file changes with StatReloader

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            padding: 20px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 120px;
+        }
+        .content {
+            padding: 30px;
+            text-align: center;
+            color: #333333;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666666;
+        }
+        a {
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #4ecdc4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://nyasabox.com/static/log.png" alt="NyasaBox Logo">
+        </div>
+        <div class="content">
+            {% if success %}
+            <h1>Payment Successful!</h1>
+            <p>Your distribution request payment was successful. Your music is now being processed for distribution.</p>
+            {% else %}
+            <h1>Payment Failed</h1>
+            <p>Unfortunately, your distribution request payment failed. Please try again or contact support.</p>
+            {% endif %}
+            <p>Request ID: {{ request.id }}</p>
+            <p>Amount: MWK {{ transaction.amount }}</p>
+            <p>Status: {{ transaction.status|capfirst }}</p>
+            <a href="{{ site_url }}/status/{{ request.id }}/" class="button">View Status</a>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 NyasaBox. All rights reserved.</p>
+            <p><a href="{{ site_url }}">nyasabox.com</a> | <a href="mailto:support@nyasabox.com">Contact Support</a></p>
+        </div>
+    </div>
+</body>
+</html>

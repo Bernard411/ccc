@@ -190,6 +190,32 @@ class ArtistUpgradeForm(forms.ModelForm):
             'website': forms.URLInput(attrs={'class': 'form-control'}),
         }
 
+class PaymentForm(forms.Form):
+    first_name = forms.CharField(max_length=100, required=True)
+    last_name = forms.CharField(max_length=100, required=True)
+    email = forms.EmailField(required=True)
+    amount = forms.DecimalField(min_value=0.01, required=True)
+    operator_ref_id = forms.ChoiceField(choices=[], required=True)
+    mobile = forms.CharField(max_length=20, required=True)
+
+    def __init__(self, *args, **kwargs):
+        operators = kwargs.pop('operators', [])
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        self.fields['operator_ref_id'].choices = [(op['ref_id'], op['name']) for op in operators]
+        
+        if user:
+            self.fields['first_name'].initial = user.first_name
+            self.fields['last_name'].initial = user.last_name
+            self.fields['email'].initial = user.email
+
+    def clean_mobile(self):
+        mobile = self.cleaned_data['mobile']
+        if len(mobile) != 10 or not mobile.startswith('0'):
+            raise ValidationError("Invalid mobile number format")
+        return mobile
+
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email', 'required': True})

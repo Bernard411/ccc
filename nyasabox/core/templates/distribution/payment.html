@@ -128,7 +128,7 @@
         color: var(--text-secondary);
     }
 
-    .phone-input {
+    .form-control, .form-select {
         width: 100%;
         padding: 1rem 1.2rem;
         background: rgba(255, 255, 255, 0.08);
@@ -136,14 +136,44 @@
         border-radius: 1rem;
         color: var(--text-primary);
         font-size: 1rem;
-        margin: 1.5rem 0;
+        margin: 1rem 0;
         transition: all 0.3s ease;
     }
 
-    .phone-input:focus {
+    .form-control:focus, .form-select:focus {
         outline: none;
         border-color: #2ed573;
         background: rgba(255, 255, 255, 0.12);
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .input-group-text {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-right: none;
+        border-radius: 1rem 0 0 1rem;
+        padding: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .input-group .form-control {
+        border-radius: 0 1rem 1rem 0;
+        margin: 1rem 0;
+    }
+
+    .invalid-feedback {
+        color: #ef4444;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: none;
+    }
+
+    .is-invalid .invalid-feedback {
+        display: block;
     }
 
     .payment-btn {
@@ -213,10 +243,148 @@
         font-weight: 700;
         flex-shrink: 0;
     }
+
+    /* Modal Styles */
+    .modal-content {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+    }
+
+    .modal-body {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .loader {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(46, 213, 115, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid #2ed573;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .success-checkmark {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        position: relative;
+    }
+
+    .check-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        box-sizing: content-box;
+        border: 4px solid #2ed573;
+    }
+
+    .check-icon::before {
+        content: "";
+        position: absolute;
+        width: 5px;
+        height: 30px;
+        background-color: #2ed573;
+        transform: rotate(45deg);
+        top: 45%;
+        left: 52%;
+        animation: checkmark-long 0.7s ease-in-out;
+    }
+
+    .check-icon::after {
+        content: "";
+        position: absolute;
+        width: 5px;
+        height: 15px;
+        background-color: #2ed573;
+        transform: rotate(-45deg);
+        top: 50%;
+        left: 35%;
+        animation: checkmark-short 0.5s ease-in-out 0.2s both;
+    }
+
+    @keyframes checkmark-long {
+        0% {
+            height: 0;
+            opacity: 0;
+            transform: rotate(45deg) translate(-20px, -20px);
+        }
+        100% {
+            height: 30px;
+            opacity: 1;
+        }
+    }
+
+    @keyframes checkmark-short {
+        0% {
+            height: 0;
+            opacity: 0;
+            transform: rotate(-45deg) translate(-20px, 20px);
+        }
+        100% {
+            height: 15px;
+            opacity: 1;
+        }
+    }
+
+    .error-x {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        position: relative;
+    }
+
+    .x-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        box-sizing: content-box;
+        border: 4px solid #ef4444;
+    }
+
+    .x-line-1, .x-line-2 {
+        position: absolute;
+        width: 5px;
+        height: 40px;
+        background-color: #ef4444;
+        top: 20px;
+        left: 37px;
+    }
+
+    .x-line-1 {
+        transform: rotate(45deg);
+        animation: x-line 0.7s ease-in-out;
+    }
+
+    .x-line-2 {
+        transform: rotate(-45deg);
+        animation: x-line 0.7s ease-in-out 0.2s;
+    }
+
+    @keyframes x-line {
+        0% {
+            height: 0;
+            opacity: 0;
+        }
+        100% {
+            height: 40px;
+            opacity: 1;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 <div class="payment-container">
     <div class="payment-header">
         <h1 class="payment-title">Complete Payment</h1>
@@ -235,7 +403,7 @@
             </div>
             <div class="summary-item">
                 <span>Price per Track:</span>
-                <span>MWK 1,667.00</span>
+                <span>MWK 1,666.67</span>
             </div>
             <div class="summary-item summary-total">
                 <span>Total Amount:</span>
@@ -243,42 +411,53 @@
             </div>
         </div>
 
-        <form method="post" class="payment-methods">
-            {% csrf_token %}
-            
-            <div class="method-option selected">
-                <div class="method-icon">
-                    <span class="material-icons">phone_android</span>
-                </div>
-                <div class="method-details">
-                    <div class="method-name">Airtel Money</div>
-                    <div class="method-description">Fast and secure mobile money payment</div>
-                </div>
-                <input type="radio" name="payment_method" value="airtel_money" checked style="display: none;">
-            </div>
+        <div class="payment-methods">
+            <form id="paymentForm" method="POST" action="{% url 'process_distribution_payment' distribution_request.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="first_name" value="{{ user.first_name }}">
+                <input type="hidden" name="last_name" value="{{ user.last_name }}">
+                <input type="hidden" name="email" value="{{ user.email }}">
+                <input type="hidden" name="amount" value="{{ total_amount|floatformat:2 }}">
 
-            <div class="method-option">
-                <div class="method-icon">
-                    <span class="material-icons">phone_android</span>
+                <div class="mb-3">
+                    <label class="form-label">Select Mobile Money Provider</label>
+                    <div class="d-flex justify-content-start align-items-center gap-2 mb-2">
+                        {% for operator in mobile_operators %}
+                            <div class="gateway-logo" {% if 'tnm' in operator.name|lower %}style="background-color: black; padding: 4px; border-radius: 4px;"{% endif %}>
+                                <img src="{% if 'airtel' in operator.name|lower %}{% static 'icons/airtelmoney.png' %}{% else %}https://www.tnmmpamba.co.mw/img/Mpamba-Logo-2.22297a9f.svg{% endif %}" alt="{{ operator.name }}" class="img-fluid" style="height: 30px;">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-icons">account_balance_wallet</span></span>
+                        <select class="form-select" name="operator_ref_id" id="operatorSelect" required>
+                            <option value="">Select Provider</option>
+                            {% for operator in mobile_operators %}
+                                <option value="{{ operator.ref_id }}" data-name="{{ operator.name|lower }}">{{ operator.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div id="operatorValidation" class="invalid-feedback">
+                            Please select a mobile money provider.
+                        </div>
+                    </div>
                 </div>
-                <div class="method-details">
-                    <div class="method-name">TNM Mpamba</div>
-                    <div class="method-description">Quick mobile money transfer</div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mobile Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text">+265</span>
+                        <input type="tel" class="form-control" name="mobile" id="mobileNumber" placeholder="Enter 9 digits" required>
+                        <div id="mobileValidation" class="invalid-feedback">
+                            Invalid number format
+                        </div>
+                    </div>
                 </div>
-                <input type="radio" name="payment_method" value="tnm_mpamba" style="display: none;">
-            </div>
 
-            <input type="tel" 
-                   class="phone-input" 
-                   name="phone_number" 
-                   placeholder="Enter your mobile money number" 
-                   required 
-                   pattern="[0-9]{9,10}">
-
-            <button type="submit" class="payment-btn">
-                <span class="material-icons">payment</span>
-                Pay MWK {{ total_amount|floatformat:2 }}
-            </button>
+                <button type="submit" class="payment-btn" id="confirmPaymentBtn">
+                    <span class="material-icons">lock</span>
+                    Pay MWK {{ total_amount|floatformat:2 }}
+                </button>
+            </form>
 
             <div class="payment-info">
                 <h3 class="info-title">
@@ -288,23 +467,98 @@
                 <ul class="info-steps">
                     <li class="info-step">
                         <span class="step-number">1</span>
-                        <span>Enter your mobile money number and click "Pay"</span>
+                        <span>Select your mobile money provider</span>
                     </li>
                     <li class="info-step">
                         <span class="step-number">2</span>
-                        <span>You will receive a payment prompt on your phone</span>
+                        <span>Enter your mobile money number and click "Pay"</span>
                     </li>
                     <li class="info-step">
                         <span class="step-number">3</span>
-                        <span>Enter your PIN to complete the payment</span>
+                        <span>Check your phone for payment prompt</span>
                     </li>
                     <li class="info-step">
                         <span class="step-number">4</span>
+                        <span>Enter your PIN to complete payment</span>
+                    </li>
+                    <li class="info-step">
+                        <span class="step-number">5</span>
                         <span>Wait for confirmation - do not close this page</span>
                     </li>
                 </ul>
             </div>
-        </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="paymentStatusModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div id="paymentPending">
+                        <div class="loader"></div>
+                        <h5 class="mb-3">Processing Payment</h5>
+                        <p class="text-muted">Please check your phone for payment prompt and confirm the transaction...</p>
+                    </div>
+
+                    <div id="paymentSuccess" style="display: none;">
+                        <div class="success-checkmark">
+                            <div class="check-icon"></div>
+                        </div>
+                        <h5 class="text-success mb-3">Payment Successful!</h5>
+                        <p class="mb-4">Your distribution request is being processed.</p>
+                        <button type="button" class="btn btn-success" onclick="window.location.href='{% url 'distribution_status' distribution_request.id %}'">
+                            <span class="material-icons">check</span>
+                            Continue to Status
+                        </button>
+                    </div>
+
+                    <div id="paymentError" style="display: none;">
+                        <div class="error-x">
+                            <div class="x-icon">
+                                <span class="x-line-1"></span>
+                                <span class="x-line-2"></span>
+                            </div>
+                        </div>
+                        <h5 class="text-danger mb-3">Payment Failed</h5>
+                        <p id="errorMessage" class="text-muted mb-4">Something went wrong with your payment. Please try again.</p>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                            <span class="material-icons">redo</span>
+                            Try Again
+                        </button>
+                    </div>
+
+                    <div id="paymentCancelled" style="display: none;">
+                        <div class="error-x">
+                            <div class="x-icon">
+                                <span class="x-line-1"></span>
+                                <span class="x-line-2"></span>
+                            </div>
+                        </div>
+                        <h5 class="text-warning mb-3">Payment Cancelled</h5>
+                        <p id="cancelMessage" class="text-muted mb-4">You cancelled the payment. Please try again.</p>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                            <span class="material-icons">redo</span>
+                            Try Again
+                        </button>
+                    </div>
+
+                    <div id="serverError" style="display: none;">
+                        <div class="error-x">
+                            <div class="x-icon">
+                                <span class="x-line-1"></span>
+                                <span class="x-line-2"></span>
+                            </div>
+                        </div>
+                        <h5 class="text-warning mb-3">Server Error</h5>
+                        <p id="serverErrorMessage" class="text-muted mb-4">Unable to verify payment status. Please try again later.</p>
+                        <button type="button" class="btn btn-warning" onclick="retryPolling()">
+                            <span class="material-icons">sync</span>
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -312,32 +566,161 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Payment method selection
-    const methodOptions = document.querySelectorAll('.method-option');
-    
-    methodOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            // Remove selected class from all options
-            methodOptions.forEach(opt => opt.classList.remove('selected'));
-            
-            // Add selected class to clicked option
-            this.classList.add('selected');
-            
-            // Check the radio input
-            const radio = this.querySelector('input[type="radio"]');
-            radio.checked = true;
-        });
+    const operatorSelect = document.getElementById('operatorSelect');
+    const mobileNumber = document.getElementById('mobileNumber');
+    const mobileValidation = document.getElementById('mobileValidation');
+    const operatorValidation = document.getElementById('operatorValidation');
+    const paymentForm = document.getElementById('paymentForm');
+    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    const statusModal = new bootstrap.Modal(document.getElementById('paymentStatusModal'));
+    let currentTransactionId = null;
+    let pollAttempts = 0;
+    const maxPollAttempts = 40; // 2 minutes at 3-second intervals
+    const initialPollInterval = 3000; // 3 seconds
+
+    function normalizeMobileNumber(number) {
+        let normalized = number.trim().replace(/[\s-]/g, '');
+        if (normalized.startsWith('+265')) normalized = normalized.substring(4);
+        else if (normalized.startsWith('0')) normalized = normalized.substring(1);
+        return normalized;
+    }
+
+    function validateMobileNumber() {
+        const rawNumber = mobileNumber.value;
+        const number = normalizeMobileNumber(rawNumber);
+        const operatorRefId = operatorSelect.value;
+        let isValid = false;
+        let validationMessage = '';
+
+        if (!operatorRefId) {
+            operatorSelect.classList.add('is-invalid');
+            operatorValidation.style.display = 'block';
+            return false;
+        } else {
+            operatorSelect.classList.remove('is-invalid');
+            operatorValidation.style.display = 'none';
+        }
+
+        const operatorName = operatorSelect.options[operatorSelect.selectedIndex].dataset.name || '';
+        if (operatorName && number) {
+            const isNineDigits = /^\d{9}$/.test(number);
+            if (!isNineDigits) {
+                validationMessage = 'Mobile number must be exactly 9 digits';
+            } else if (operatorName.includes('tnm')) {
+                isValid = /^8\d{8}$/.test(number);
+                validationMessage = 'TNM number must start with 8 and be 9 digits';
+            } else if (operatorName.includes('airtel')) {
+                isValid = /^9\d{8}$/.test(number);
+                validationMessage = 'Airtel number must start with 9 and be 9 digits';
+            } else {
+                validationMessage = 'Unknown operator';
+            }
+        } else {
+            validationMessage = 'Mobile number is required';
+        }
+
+        mobileNumber.classList.toggle('is-invalid', !isValid && rawNumber.length > 0);
+        mobileValidation.textContent = validationMessage;
+        mobileValidation.style.display = rawNumber.length > 0 && !isValid ? 'block' : 'none';
+        return isValid;
+    }
+
+    operatorSelect.addEventListener('change', validateMobileNumber);
+    mobileNumber.addEventListener('input', validateMobileNumber);
+
+    confirmPaymentBtn.addEventListener('click', function() {
+        validateMobileNumber();
     });
 
-    // Phone number validation
-    const phoneInput = document.querySelector('input[name="phone_number"]');
-    
-    phoneInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 10) {
-            this.value = this.value.slice(0, 10);
+    paymentForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!validateMobileNumber()) {
+            return;
+        }
+
+        const formData = new FormData(this);
+        try {
+            statusModal.show();
+            showModalState('paymentPending');
+
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            });
+
+            const data = await response.json();
+            if (data.status === 'success' && data.transaction_id) {
+                currentTransactionId = data.transaction_id;
+                pollAttempts = 0;
+                pollPaymentStatus(data.transaction_id);
+            } else {
+                showModalState('paymentError', data.message || 'Payment initiation failed');
+            }
+        } catch (error) {
+            showModalState('paymentError', 'Failed to initiate payment. Please try again.');
         }
     });
+
+    function showModalState(state, message = '') {
+        ['paymentPending', 'paymentSuccess', 'paymentError', 'paymentCancelled', 'serverError'].forEach(id => {
+            document.getElementById(id).style.display = id === state ? 'block' : 'none';
+        });
+        if (message && state === 'paymentError') {
+            document.getElementById('errorMessage').textContent = message;
+        } else if (message && state === 'paymentCancelled') {
+            document.getElementById('cancelMessage').textContent = message;
+        } else if (message && state === 'serverError') {
+            document.getElementById('serverErrorMessage').textContent = message;
+        }
+    }
+
+    async function pollPaymentStatus(transactionId) {
+        if (pollAttempts >= maxPollAttempts) {
+            showModalState('paymentError', 'Payment timed out. Please try again.');
+            return;
+        }
+
+        pollAttempts++;
+        try {
+            const response = await fetch(`/payment-status/${transactionId}/`);
+            if (!response.ok) {
+                if (pollAttempts < maxPollAttempts) {
+                    setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
+                } else {
+                    showModalState('serverError', 'Unable to verify payment status. Please try again later.');
+                }
+                return;
+            }
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                showModalState('paymentSuccess');
+            } else if (data.status === 'failed') {
+                showModalState('paymentError', data.message || 'Transaction failed');
+            } else if (data.status === 'cancelled') {
+                showModalState('paymentCancelled', data.message || 'You cancelled the payment');
+            } else {
+                setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
+            }
+        } catch (error) {
+            if (pollAttempts < maxPollAttempts) {
+                setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
+            } else {
+                showModalState('serverError', 'Failed to check payment status. Please try again.');
+            }
+        }
+    }
+
+    window.retryPolling = function() {
+        if (currentTransactionId) {
+            pollAttempts = 0;
+            showModalState('paymentPending');
+            pollPaymentStatus(currentTransactionId);
+        }
+    };
 });
 </script>
 {% endblock %}

@@ -10,6 +10,8 @@ import random
 import string
 from datetime import timedelta
 from django.utils import timezone
+import uuid
+from jsonfield import JSONField
 
 # Genre choices
 GENRE_CHOICES = (
@@ -248,6 +250,7 @@ class DistributionPlatform(models.Model):
     name = models.CharField(max_length=100)
     logo = models.ImageField(upload_to='platform_logos/', blank=True, null=True)
     description = models.TextField(blank=True)
+    ref_id = models.CharField(max_length=50, blank=True)  # Add ref_id for PayChangu integration
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -288,5 +291,33 @@ class DistributionRequest(models.Model):
     def __str__(self):
         return f"Distribution Request #{self.id} - {self.artist.username}"
 
+    def calculate_total(self):
+        return Decimal(str(self.tracks.count() * 1666.67))
+
+    def get_track_count(self):
+        return self.tracks.count()
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+class PaymentTransaction(models.Model):
+    distribution_request = models.ForeignKey(DistributionRequest, on_delete=models.CASCADE, related_name='payment_transactions')
+    charge_id = models.CharField(max_length=50, unique=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default='MWK')
+    mobile = models.CharField(max_length=20)
+    operator_ref_id = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    response_data = JSONField(null=True, blank=True, help_text="Raw PayChangu API response")
+    user_email = models.EmailField(null=True, blank=True, help_text="User's email for notifications")
+
+    def __str__(self):
+        return f"{self.charge_id} - {self.status} for Distribution Request #{self.distribution_request.id}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['charge_id']),
+            models.Index(fields=['status']),
+        ]
