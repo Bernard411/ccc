@@ -6,6 +6,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from decimal import Decimal
+import random
+import string
+from datetime import timedelta
+from django.utils import timezone
 
 # Genre choices
 GENRE_CHOICES = (
@@ -37,10 +41,20 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.png')
     website = models.URLField(blank=True)
+    is_email_verified = models.BooleanField(default=False)
+    is_artist = models.BooleanField(default=False)
+    artist_status = models.CharField(
+        max_length=20,
+        choices=(('pending', 'Pending'), ('verified', 'Verified'), ('rejected', 'Rejected')),
+        default='pending',
+        blank=True
+    )
+    verification_proof = models.FileField(upload_to='verifications/', blank=True, null=True)
 
     class Meta:
         indexes = [
             models.Index(fields=['user'], name='idx_profile_user'),
+            models.Index(fields=['is_artist', 'artist_status'], name='idx_profile_artist'),
         ]
 
     def __str__(self):
@@ -52,6 +66,35 @@ def manage_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
     else:
         instance.profile.save()
+
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    purpose = models.CharField(max_length=20, choices=(('email_verification', 'Email Verification'), ('password_reset', 'Password Reset'), ('artist_verification', 'Artist Verification')))
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'code'], name='idx_otp_user_code'),
+            models.Index(fields=['created_at'], name='idx_otp_created_at'),
+        ]
+
+    def generate_code(self):
+        return ''.join(random.choices(string.digits, k=6))
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.generate_code()
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(minutes=10)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        return timezone.now() <= self.expires_at
+
+    def __str__(self):
+        return f"OTP {self.code} for {self.user.username} ({self.purpose})"
 
 class BlogCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -120,7 +163,13 @@ class Album(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            while Album.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -154,7 +203,13 @@ class Track(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            while Track.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         if not self.genre and self.album:
             self.genre = self.album.genre
         super().save(*args, **kwargs)

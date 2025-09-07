@@ -20,14 +20,12 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         html {
             font-size: 14px;
         }
-
         body {
             font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000000; /* Pure black background */
+            background: #000000;
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
@@ -38,29 +36,24 @@
             padding: 20px;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-
         body.light-mode {
             background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 30%, #cbd5e1 70%, #94a3b8 100%);
             color: #1e293b;
         }
-
         .auth-container {
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
         }
-
         .logo-container {
             text-align: center;
             margin-bottom: 2rem;
         }
-
         .logo {
             max-width: 120px;
             height: auto;
             margin-bottom: 1rem;
         }
-
         .auth-form {
             background: rgba(255, 255, 255, 0.05);
             padding: 2rem;
@@ -70,13 +63,11 @@
             box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
         }
-
         body.light-mode .auth-form {
             background: rgba(255, 255, 255, 0.8);
             border: 1px solid rgba(30, 41, 59, 0.1);
             box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
         }
-
         .auth-title {
             font-size: 1.8rem;
             font-weight: 800;
@@ -85,15 +76,12 @@
             text-align: center;
             transition: color 0.3s ease;
         }
-
         body.light-mode .auth-title {
             color: #1e293b;
         }
-
         .form-group {
             margin-bottom: 1.2rem;
         }
-
         .form-label {
             display: block;
             font-size: 0.85rem;
@@ -102,11 +90,9 @@
             margin-bottom: 0.5rem;
             transition: color 0.3s ease;
         }
-
         body.light-mode .form-label {
             color: rgba(30, 41, 59, 0.7);
         }
-
         .form-input {
             width: 100%;
             padding: 0.8rem 1rem;
@@ -118,18 +104,15 @@
             outline: none;
             transition: all 0.3s ease;
         }
-
         body.light-mode .form-input {
             border: 1px solid rgba(30, 41, 59, 0.1);
             background: rgba(248, 250, 252, 0.8);
             color: #1e293b;
         }
-
         .form-input:focus {
             border-color: #ff6b6b;
             box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
         }
-
         .form-btn {
             width: 100%;
             padding: 0.8rem;
@@ -144,12 +127,10 @@
             box-shadow: 0 0.2rem 1rem rgba(255, 107, 107, 0.15);
             margin-top: 0.5rem;
         }
-
         .form-btn:hover {
             transform: translateY(-0.1rem);
             box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
         }
-
         .auth-link {
             display: block;
             text-align: center;
@@ -159,15 +140,12 @@
             text-decoration: none;
             transition: color 0.3s ease;
         }
-
         .auth-link:hover {
             color: #4ecdc4;
         }
-
         body.light-mode .auth-link {
             color: #ff6b6b;
         }
-
         .error-message {
             color: #ff6b6b;
             font-size: 0.8rem;
@@ -176,7 +154,6 @@
             align-items: center;
             gap: 0.3rem;
         }
-
         .theme-toggle {
             padding: 0.5rem 1rem;
             border-radius: 1.2rem;
@@ -193,21 +170,17 @@
             margin: 1.5rem auto 0;
             backdrop-filter: blur(8px);
         }
-
         body.light-mode .theme-toggle {
             background: rgba(30, 41, 59, 0.1);
             color: #1e293b;
         }
-
         .theme-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-0.1rem);
         }
-
         body.light-mode .theme-toggle:hover {
             background: rgba(30, 41, 59, 0.2);
         }
-
         .notification {
             position: fixed;
             top: 1.5rem;
@@ -227,15 +200,12 @@
             font-weight: 500;
             opacity: 0.95;
         }
-
         .notification-error {
             background: #ff4757;
         }
-
         .notification-success {
             background: #2ed573;
         }
-
         @keyframes slideInRight {
             from {
                 transform: translateX(100%);
@@ -246,7 +216,6 @@
                 opacity: 0.95;
             }
         }
-
         @keyframes slideOutRight {
             from {
                 transform: translateX(0);
@@ -257,12 +226,10 @@
                 opacity: 0;
             }
         }
-
         @media (max-width: 768px) {
             .auth-form {
                 padding: 1.5rem;
             }
-            
             .auth-title {
                 font-size: 1.5rem;
             }
@@ -276,13 +243,13 @@
         </div>
         
         <div class="auth-form">
-            <h2 class="auth-title">Login to NyasaBox</h2>
+            <h2 class="auth-title">Welcome Back</h2>
             <form method="post">
                 {% csrf_token %}
                 
                 <div class="form-group">
                     <label for="username" class="form-label">Username or Email</label>
-                    <input type="text" name="username" class="form-input" id="username" required>
+                    {{ form.username }}
                     {% if form.username.errors %}
                         {% for error in form.username.errors %}
                             <p class="error-message">
@@ -295,7 +262,7 @@
                 
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" name="password" class="form-input" id="password" required>
+                    {{ form.password }}
                     {% if form.password.errors %}
                         {% for error in form.password.errors %}
                             <p class="error-message">
@@ -306,11 +273,10 @@
                     {% endif %}
                 </div>
                 
-                <input type="hidden" name="next" value="{{ request.GET.next }}">
-                
                 <button type="submit" class="form-btn">Login</button>
             </form>
             
+            <a href="{% url 'forgot_password' %}" class="auth-link">Forgot Password?</a>
             <a href="{% url 'register' %}" class="auth-link">Don't have an account? Register here</a>
             
             <button class="theme-toggle" id="themeToggle">
@@ -333,12 +299,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme toggle functionality
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = themeToggle.querySelector('.material-icons');
             const themeText = themeToggle.querySelector('span:last-child');
             
-            // Check for saved theme preference or respect OS preference
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
@@ -365,7 +329,6 @@
                 }
             });
 
-            // Auto-dismiss notifications
             document.querySelectorAll('.notification').forEach(notification => {
                 setTimeout(() => {
                     notification.style.animation = 'slideOutRight 0.3s ease-out';

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import validate_email, FileExtensionValidator
 from django.core.exceptions import ValidationError
-from .models import Album, Track, Comment, Profile, DistributionRequest, DistributionPlatform, GENRE_CHOICES
+from .models import Album, Track, Comment, Profile, DistributionRequest, DistributionPlatform, GENRE_CHOICES, OTP
 
 class AlbumForm(forms.ModelForm):
     class Meta:
@@ -122,10 +122,15 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'})
     )
+    is_artist = forms.BooleanField(
+        required=False,
+        label="Register as an Artist",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2', 'is_artist']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'password1': forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
@@ -156,3 +161,60 @@ class CustomAuthenticationForm(AuthenticationForm):
             except User.DoesNotExist:
                 raise ValidationError("No account found with this email address.")
         return username
+
+class OTPVerificationForm(forms.Form):
+    code = forms.CharField(
+        max_length=6,
+        min_length=6,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter 6-digit OTP', 'required': True})
+    )
+
+    def clean_code(self):
+        code = self.cleaned_data.get('code')
+        if not code.isdigit():
+            raise ValidationError("OTP must be a 6-digit number.")
+        return code
+
+class ArtistUpgradeForm(forms.ModelForm):
+    verification_proof = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png'])],
+        widget=forms.FileInput(attrs={'class': 'form-control', 'required': True}),
+        label="Verification Document (e.g., ID, Artist Profile)"
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['bio', 'website', 'verification_proof']
+        widgets = {
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'required': True}),
+            'website': forms.URLInput(attrs={'class': 'form-control'}),
+        }
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email', 'required': True})
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError("No account found with this email address.")
+        return email
+
+class PasswordResetConfirmForm(forms.Form):
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
+        label="New Password"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
+        label="Confirm New Password"
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("Passwords do not match.")
+        return cleaned_data

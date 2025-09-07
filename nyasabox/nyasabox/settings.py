@@ -134,11 +134,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+# Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'premium160.web-hosting.com:'
-EMAIL_PORT=465
-EMAIL_USE_SSL=True
-EMAIL_USE_TLS=False
+EMAIL_HOST = 'premium160.web-hosting.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'nyasabox@pezamw.com'
 EMAIL_HOST_PASSWORD = 'w{V}Jj!Go0r7'
 DEFAULT_FROM_EMAIL = 'NyasaBox <nyasabox@pezamw.com>'
+
+# OTP settings
+OTP_LENGTH = 6
+OTP_TIMEOUT = 300  # 5 minutes in seconds
+
+# Session settings for OTP and password reset
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True

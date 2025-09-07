@@ -1,36 +1,43 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseForbidden
 from django.db.models import Q, Count, Sum
 from django.contrib import messages
 from django.conf import settings
+from django.core.mail import send_mail
 import json
-from .models import Album, Track, Comment, BlogPost, BlogCategory, DistributionRequest, DistributionPlatform
-from .forms import AlbumForm, TrackForm, CommentForm, CustomUserCreationForm, CustomAuthenticationForm, UserUpdateForm, ProfileUpdateForm, DistributionRequestForm
+from .models import Album, Track, Comment, BlogPost, BlogCategory, DistributionRequest, DistributionPlatform, OTP, Profile
+from .forms import AlbumForm, TrackForm, CommentForm, CustomUserCreationForm, CustomAuthenticationForm, UserUpdateForm, ProfileUpdateForm, DistributionRequestForm, OTPVerificationForm, ArtistUpgradeForm, PasswordResetRequestForm, PasswordResetConfirmForm
+from functools import wraps
+from django.utils import timezone
+from django.template.loader import render_to_string
+
+
+def artist_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to access this page.")
+            return redirect('login')
+        if not request.user.profile.is_artist or request.user.profile.artist_status != 'verified':
+            messages.error(request, "You need a verified artist account to access this feature.")
+            return redirect('become_artist')
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
 def index(request):
-    # Get latest albums with track count
     latest_albums = Album.objects.all().order_by('-created_at')[:8].annotate(track_count=Count('tracks'))
-
-    # Get latest single tracks (not part of albums)
     latest_tracks = Track.objects.filter(album__isnull=True).order_by('-created_at')[:12]
-
-    # Get popular tracks by downloads
     popular_tracks = Track.objects.all().order_by('-downloads')[:10]
-
-    # Get popular albums by total downloads of their tracks
     popular_albums = Album.objects.annotate(total_downloads=Sum('tracks__downloads')).order_by('-total_downloads')[:6]
-
-    # Get top artists by track count and total downloads
     top_artists_data = Track.objects.values('artist').annotate(
         track_count=Count('id'),
         total_downloads=Sum('downloads')
     ).order_by('-track_count')[:8]
 
-    # Format artist data
     artists_with_data = [
         {
             'name': artist['artist'],
@@ -41,7 +48,6 @@ def index(request):
         for artist in top_artists_data
     ]
 
-    # Prepare tracks data for JavaScript player
     tracks_data = [
         {
             'id': track.id,
@@ -55,7 +61,7 @@ def index(request):
             ),
             'duration': track.get_formatted_duration() if hasattr(track, 'get_formatted_duration') and track.duration else '0:00'
         }
-        for track in set(latest_tracks) | set(popular_tracks)  # Use set to avoid duplicates
+        for track in set(latest_tracks) | set(popular_tracks)
     ]
 
     context = {
@@ -94,7 +100,6 @@ def track_detail(request, slug):
     track = get_object_or_404(Track, slug=slug)
     comment_form = CommentForm()
 
-    # Get similar tracks (same genre, artist, or album)
     similar_tracks = Track.objects.filter(
         Q(genre=track.genre) | Q(artist=track.artist) | Q(album=track.album)
     ).exclude(id=track.id).distinct()[:5]
@@ -137,7 +142,7 @@ def download_track(request, slug):
     track.save()
     return redirect(track.audio_file.url)
 
-@login_required
+@artist_required
 def upload_music(request):
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -218,7 +223,6 @@ def search(request):
                 Q(category__name__icontains=query)
             ).distinct()
 
-        # Sort results
         if sort_by == 'newest':
             if track_results: track_results = track_results.order_by('-created_at')
             if album_results: album_results = album_results.order_by('-created_at')
@@ -227,7 +231,7 @@ def search(request):
             if track_results: track_results = track_results.order_by('-downloads')
             if album_results: album_results = album_results.order_by('-downloads')
             if blog_results: blog_results = blog_results.order_by('-views')
-        else:  # relevance
+        else:
             if track_results: track_results = track_results.order_by('-downloads', '-created_at')
             if album_results: album_results = album_results.order_by('-downloads', '-created_at')
             if blog_results: blog_results = blog_results.order_by('-views', '-created_at')
@@ -262,14 +266,125 @@ def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful!')
-            return redirect('index')
+            user = form.save(commit=False)
+            user.is_active = False  # Deactivate until email verified
+            user.save()
+            profile = user.profile
+            profile.is_artist = form.cleaned_data['is_artist']
+            if profile.is_artist:
+                profile.artist_status = 'pending'
+            profile.save()
+
+            # Generate and send OTP
+            otp = OTP.objects.create(user=user, purpose='email_verification' if not profile.is_artist else 'artist_verification')
+            send_mail(
+                'Verify Your NyasaBox Account',
+                '',
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                html_message=render_to_string('emails/otp_verification.html', {'otp': otp.code, 'user': user}),
+            )
+            messages.success(request, 'Please check your email to verify your account.')
+            return redirect('verify_otp', user_id=user.id)
         messages.error(request, 'Please correct the errors below.')
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+def verify_otp(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = OTPVerificationForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            purpose = 'email_verification' if not user.profile.is_artist else 'artist_verification'
+            otp = OTP.objects.filter(user=user, code=code, purpose=purpose, expires_at__gte=timezone.now()).first()
+            if otp:
+                user.profile.is_email_verified = True
+                user.is_active = True
+                if user.profile.is_artist:
+                    user.profile.artist_status = 'pending'  # Await admin approval
+                else:
+                    user.profile.artist_status = ''
+                user.profile.save()
+                user.save()
+                otp.delete()
+                login(request, user)
+                messages.success(request, 'Account verified successfully!' if not user.profile.is_artist else 'Artist account created! Awaiting admin approval.')
+                return redirect('index')
+            messages.error(request, 'Invalid or expired OTP.')
+    else:
+        form = OTPVerificationForm()
+    return render(request, 'verify_otp.html', {'form': form, 'user_id': user_id})
+
+@login_required
+def become_artist(request):
+    if request.user.profile.is_artist:
+        messages.info(request, 'You are already registered as an artist.')
+        return redirect('profile')
+    
+    if request.method == 'POST':
+        form = ArtistUpgradeForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.is_artist = True
+            profile.artist_status = 'pending'
+            profile.save()
+
+            # Generate and send OTP
+            otp = OTP.objects.create(user=request.user, purpose='artist_verification')
+            send_mail(
+                'Verify Your NyasaBox Artist Account',
+                '',
+                settings.DEFAULT_FROM_EMAIL,
+                [request.user.email],
+                html_message=render_to_string('emails/artist_verification.html', {'otp': otp.code, 'user': request.user}),
+            )
+            messages.success(request, 'Please check your email to verify your artist account.')
+            return redirect('verify_otp', user_id=request.user.id)
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ArtistUpgradeForm(instance=request.user.profile)
+    return render(request, 'become_artist.html', {'form': form})
+
+def forgot_password(request):
+    if request.method == 'POST':
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            user = User.objects.get(email=email)
+            otp = OTP.objects.create(user=user, purpose='password_reset')
+            send_mail(
+                'Reset Your NyasaBox Password',
+                '',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                html_message=render_to_string('emails/password_reset.html', {'otp': otp.code, 'user': user}),
+            )
+            messages.success(request, 'A password reset OTP has been sent to your email.')
+            return redirect('reset_password', user_id=user.id)
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PasswordResetRequestForm()
+    return render(request, 'forgot_password.html', {'form': form})
+
+def reset_password(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = PasswordResetConfirmForm(request.POST)
+        if form.is_valid():
+            code = request.POST.get('code')
+            otp = OTP.objects.filter(user=user, code=code, purpose='password_reset', expires_at__gte=timezone.now()).first()
+            if otp:
+                user.set_password(form.cleaned_data['password1'])
+                user.save()
+                otp.delete()
+                messages.success(request, 'Your password has been reset successfully.')
+                return redirect('login')
+            messages.error(request, 'Invalid or expired OTP.')
+    else:
+        form = PasswordResetConfirmForm()
+    return render(request, 'reset_password.html', {'form': form, 'user_id': user_id})
 
 def login_view(request):
     if request.method == 'POST':
@@ -279,6 +394,9 @@ def login_view(request):
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user:
+                if not user.profile.is_email_verified:
+                    messages.error(request, 'Please verify your email before logging in.')
+                    return redirect('verify_otp', user_id=user.id)
                 login(request, user)
                 messages.success(request, f'Welcome back, {user.username}!')
                 return redirect('admin_dashboard' if user.is_superuser else request.GET.get('next', 'index'))
@@ -307,7 +425,6 @@ def profile_view(request):
     user_form = UserUpdateForm(instance=request.user)
     profile_form = ProfileUpdateForm(instance=request.user.profile)
 
-    # Consolidated stats query
     stats = Track.objects.filter(uploader=request.user).aggregate(
         total_downloads=Sum('downloads'),
         total_likes=Count('likes'),
@@ -435,7 +552,7 @@ def delete_comment(request, comment_id):
     messages.success(request, 'Comment deleted successfully.')
     return redirect_url
 
-@login_required
+@artist_required
 def distribution_request(request):
     user_tracks = Track.objects.filter(uploader=request.user)
     if not user_tracks.exists():
@@ -521,6 +638,14 @@ def admin_update_status(request, request_id):
             distribution_request.status = new_status
             distribution_request.save()
             messages.success(request, f'Status updated to {new_status}.')
+            if new_status == 'rejected':
+                send_mail(
+                    'NyasaBox Distribution Request Update',
+                    '',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [distribution_request.artist.email],
+                    html_message=render_to_string('emails/distribution_rejected.html', {'request': distribution_request}),
+                )
     return redirect('admin_distribution_requests')
 
 @login_required
