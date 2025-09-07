@@ -349,6 +349,52 @@
             gap: 0.8rem;
         }
 
+        .notification {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.95;
+        }
+        .notification-error {
+            background: #ff4757;
+        }
+        .notification-success {
+            background: #2ed573;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 0.95;
+            }
+        }
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 0.95;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
         /* Notification icon styles */
         .notification-container {
             position: relative;
@@ -1312,6 +1358,16 @@
             document.body.classList.add('light-mode');
             document.getElementById('themeToggle').querySelector('.material-icons').textContent = 'light_mode';
         }
+
+        // Notification auto-dismiss
+        document.querySelectorAll('.notification').forEach(notification => {
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-out';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            });
 
         // Mobile player functionality
         const mobilePlayBtn = document.getElementById('mobilePlayBtn');
