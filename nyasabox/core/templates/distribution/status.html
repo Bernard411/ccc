@@ -1,54 +1,426 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Distribution Status #{{ distribution_request.id }} - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .status-container {
+        max-width: 1000px;
+        margin: 3rem auto;
+        padding: 2rem;
+    }
+
+    .status-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .status-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gradient);
+    }
+
+    .status-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .status-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .status-banner {
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .status-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .status-banner.status-distributed::before {
+        background: #2ed573;
+    }
+
+    .status-banner.status-processing::before {
+        background: #1e90ff;
+    }
+
+    .status-banner.status-rejected::before {
+        background: #ff4757;
+    }
+
+    .status-banner.status-paid::before {
+        background: #ffa502;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .status-badge.status-distributed {
+        background: rgba(46, 213, 115, 0.15);
+        color: #2ed573;
+    }
+
+    .status-badge.status-processing {
+        background: rgba(30, 144, 255, 0.15);
+        color: #1e90ff;
+    }
+
+    .status-badge.status-rejected {
+        background: rgba(255, 71, 87, 0.15);
+        color: #ff4757;
+    }
+
+    .status-badge.status-paid {
+        background: rgba(255, 165, 2, 0.15);
+        color: #ffa502;
+    }
+
+    .status-details {
+        padding: 2rem;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .detail-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .detail-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .detail-title .material-icons {
+        color: var(--accent-primary);
+    }
+
+    .detail-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .detail-value {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .platform-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+    }
+
+    .platform-badge {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .platform-badge i {
+        color: var(--accent-primary);
+    }
+
+    .tracks-list {
+        margin-top: 2rem;
+    }
+
+    .track-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        margin-bottom: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .track-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(0.2rem);
+    }
+
+    .track-number {
+        width: 2rem;
+        height: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--accent-primary);
+    }
+
+    .track-info {
+        flex: 1;
+    }
+
+    .track-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.2rem;
+    }
+
+    .track-artist {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .status-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .action-btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .status-container {
+            padding: 1rem;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .status-actions {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h3>Distribution Status</h3>
+<div class="status-container">
+    <div class="status-header">
+        <h1 class="status-title">Distribution Request Status</h1>
+        <p class="status-subtitle">Track the status of your music distribution request</p>
+    </div>
+
+    <div class="status-card">
+        <div class="status-banner status-{{ distribution_request.status }}">
+            <div class="status-badge status-{{ distribution_request.status }}">
+                <span class="material-icons">
+                    {% if distribution_request.status == 'distributed' %}check_circle
+                    {% elif distribution_request.status == 'processing' %}hourglass_empty
+                    {% elif distribution_request.status == 'paid' %}payments
+                    {% else %}error{% endif %}
+                </span>
+                {{ distribution_request.get_status_display }}
             </div>
-            <div class="card-body">
-                <div class="alert alert-{% if distribution_request.status == 'distributed' %}success
-                                       {% elif distribution_request.status == 'rejected' %}danger
-                                       {% elif distribution_request.status == 'processing' %}info
-                                       {% elif distribution_request.status == 'paid' %}warning
-                                       {% else %}secondary{% endif %}">
-                    <h5>Status: {{ distribution_request.get_status_display }}</h5>
-                </div>
-                
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h5>Order Details</h5>
-                        <p><strong>Request ID:</strong> #{{ distribution_request.id }}</p>
-                        <p><strong>Request Date:</strong> {{ distribution_request.requested_at|date:"M d, Y H:i" }}</p>
-                        <p><strong>Number of Tracks:</strong> {{ distribution_request.tracks.count }}</p>
-                        <p><strong>Total Amount:</strong> MWK {{ distribution_request.total_amount|floatformat:2 }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Platforms</h5>
-                        <ul>
-                            {% for platform in distribution_request.platforms.all %}
-                            <li>{{ platform.name }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-                
-                <h5>Tracks</h5>
-                <div class="list-group mb-4">
-                    {% for track in distribution_request.tracks.all %}
-                    <div class="list-group-item">
-                        <strong>{{ track.title }}</strong> - {{ track.artist.name }}
-                        {% if track.album %}({{ track.album.title }}){% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-                
-                {% if distribution_request.payment_reference %}
-                <p><strong>Payment Reference:</strong> {{ distribution_request.payment_reference }}</p>
+            <p class="status-message">
+                {% if distribution_request.status == 'distributed' %}
+                    Your music is now live on all selected platforms!
+                {% elif distribution_request.status == 'processing' %}
+                    Your request is being processed. This usually takes 3-5 business days.
+                {% elif distribution_request.status == 'paid' %}
+                    Payment received. Your request will be processed soon.
+                {% elif distribution_request.status == 'rejected' %}
+                    Your request was rejected. Please check the requirements and try again.
+                {% else %}
+                    Awaiting payment to process your distribution request.
                 {% endif %}
-                
-                <a href="{% url 'distribution_history' %}" class="btn btn-primary">View All Requests</a>
+            </p>
+        </div>
+
+        <div class="status-details">
+            <div class="details-grid">
+                <div class="detail-section">
+                    <h3 class="detail-title">
+                        <span class="material-icons">receipt</span>
+                        Request Details
+                    </h3>
+                    <ul class="detail-list">
+                        <li class="detail-item">
+                            <span class="detail-label">Request ID</span>
+                            <span class="detail-value">#{{ distribution_request.id }}</span>
+                        </li>
+                        <li class="detail-item">
+                            <span class="detail-label">Submitted On</span>
+                            <span class="detail-value">{{ distribution_request.requested_at|date:"M d, Y H:i" }}</span>
+                        </li>
+                        <li class="detail-item">
+                            <span class="detail-label">Number of Tracks</span>
+                            <span class="detail-value">{{ distribution_request.tracks.count }}</span>
+                        </li>
+                        <li class="detail-item">
+                            <span class="detail-label">Total Amount</span>
+                            <span class="detail-value">MWK {{ distribution_request.total_amount|floatformat:2 }}</span>
+                        </li>
+                        {% if distribution_request.payment_reference %}
+                        <li class="detail-item">
+                            <span class="detail-label">Payment Reference</span>
+                            <span class="detail-value">{{ distribution_request.payment_reference }}</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h3 class="detail-title">
+                        <span class="material-icons">podcasts</span>
+                        Distribution Platforms
+                    </h3>
+                    <div class="platform-badges">
+                        {% for platform in distribution_request.platforms.all %}
+                        <span class="platform-badge">
+                            <i class="bi bi-music-note"></i>
+                            {{ platform.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="tracks-list">
+                <h3 class="detail-title">
+                    <span class="material-icons">queue_music</span>
+                    Tracks ({{ distribution_request.tracks.count }})
+                </h3>
+                {% for track in distribution_request.tracks.all %}
+                <div class="track-item">
+                    <div class="track-number">{{ forloop.counter }}</div>
+                    <div class="track-info">
+                        <div class="track-title">{{ track.title }}</div>
+                        <div class="track-artist">{{ track.artist }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="status-actions">
+                <a href="{% url 'distribution_history' %}" class="action-btn btn-primary">
+                    <span class="material-icons">history</span>
+                    View All Requests
+                </a>
+                {% if distribution_request.status == 'pending' %}
+                <a href="{% url 'distribution_payment' distribution_request.id %}" class="action-btn btn-secondary">
+                    <span class="material-icons">payment</span>
+                    Complete Payment
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>

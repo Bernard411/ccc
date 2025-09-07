@@ -1,63 +1,343 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Payment - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .payment-container {
+        max-width: 600px;
+        margin: 3rem auto;
+        padding: 2rem;
+    }
+
+    .payment-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .payment-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2ed573 0%, #4ecdc4 100%);
+    }
+
+    .payment-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(90deg, #2ed573 0%, #4ecdc4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .payment-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        overflow: hidden;
+    }
+
+    .order-summary {
+        background: rgba(46, 213, 115, 0.1);
+        padding: 2rem;
+        border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+    }
+
+    .summary-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2ed573;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+    }
+
+    .summary-total {
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(46, 213, 115, 0.2);
+        margin-top: 1rem;
+    }
+
+    .payment-methods {
+        padding: 2rem;
+    }
+
+    .method-option {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .method-option:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .method-option.selected {
+        background: rgba(46, 213, 115, 0.1);
+        border: 1px solid #2ed573;
+    }
+
+    .method-icon {
+        font-size: 2rem;
+        color: #2ed573;
+    }
+
+    .method-details {
+        flex: 1;
+    }
+
+    .method-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.3rem;
+    }
+
+    .method-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .phone-input {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        margin: 1.5rem 0;
+        transition: all 0.3s ease;
+    }
+
+    .phone-input:focus {
+        outline: none;
+        border-color: #2ed573;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .payment-btn {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(90deg, #2ed573 0%, #4ecdc4 100%);
+        border: none;
+        border-radius: 1rem;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+    }
+
+    .payment-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
+    }
+
+    .payment-info {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .info-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-steps {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .step-number {
+        background: rgba(46, 213, 115, 0.1);
+        color: #2ed573;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h3>Payment</h3>
+<div class="payment-container">
+    <div class="payment-header">
+        <h1 class="payment-title">Complete Payment</h1>
+        <p class="payment-subtitle">Choose your preferred payment method to complete your distribution request</p>
+    </div>
+
+    <div class="payment-card">
+        <div class="order-summary">
+            <h2 class="summary-title">
+                <span class="material-icons">receipt</span>
+                Order Summary
+            </h2>
+            <div class="summary-item">
+                <span>Tracks for Distribution:</span>
+                <span>{{ track_count }} track(s)</span>
             </div>
-            <div class="card-body">
-               <div class="alert alert-info">
-                    <h5>Order Summary</h5>
-                    <p><strong>{{ track_count }} track(s)</strong> for distribution</p>
-                    <p><strong>Total Amount:</strong> MWK {{ total_amount|floatformat:2 }}</p>
-                </div>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Select Payment Method</label>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="payment_method" 
-                                   value="airtel_money" id="airtel" checked>
-                            <label class="form-check-label" for="airtel">
-                                Airtel Money
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_method" 
-                                   value="tnm_mpamba" id="tnm">
-                            <label class="form-check-label" for="tnm">
-                                TNM Mpamba
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="phone_number" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone_number" name="phone_number" 
-                               placeholder="e.g., 0881234567" required pattern="[0-9]{9,10}">
-                        <div class="form-text">Enter your mobile money number</div>
-                    </div>
-                    
-                    <div class="alert alert-warning">
-                        <h6>Payment Instructions:</h6>
-                        <ol class="small">
-                            <li>Click "Proceed with Payment"</li>
-                            <li>You will receive a mobile money prompt</li>
-                            <li>Enter your PIN to complete payment</li>
-                            <li>Do not navigate away from this page during payment</li>
-                        </ol>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-success btn-lg w-100">
-                        Proceed with Payment - MWK {{ total_amount|floatformat:2 }}
-                    </button>
-                </form>
+            <div class="summary-item">
+                <span>Price per Track:</span>
+                <span>MWK 1,667.00</span>
+            </div>
+            <div class="summary-item summary-total">
+                <span>Total Amount:</span>
+                <span>MWK {{ total_amount|floatformat:2 }}</span>
             </div>
         </div>
+
+        <form method="post" class="payment-methods">
+            {% csrf_token %}
+            
+            <div class="method-option selected">
+                <div class="method-icon">
+                    <span class="material-icons">phone_android</span>
+                </div>
+                <div class="method-details">
+                    <div class="method-name">Airtel Money</div>
+                    <div class="method-description">Fast and secure mobile money payment</div>
+                </div>
+                <input type="radio" name="payment_method" value="airtel_money" checked style="display: none;">
+            </div>
+
+            <div class="method-option">
+                <div class="method-icon">
+                    <span class="material-icons">phone_android</span>
+                </div>
+                <div class="method-details">
+                    <div class="method-name">TNM Mpamba</div>
+                    <div class="method-description">Quick mobile money transfer</div>
+                </div>
+                <input type="radio" name="payment_method" value="tnm_mpamba" style="display: none;">
+            </div>
+
+            <input type="tel" 
+                   class="phone-input" 
+                   name="phone_number" 
+                   placeholder="Enter your mobile money number" 
+                   required 
+                   pattern="[0-9]{9,10}">
+
+            <button type="submit" class="payment-btn">
+                <span class="material-icons">payment</span>
+                Pay MWK {{ total_amount|floatformat:2 }}
+            </button>
+
+            <div class="payment-info">
+                <h3 class="info-title">
+                    <span class="material-icons">info</span>
+                    Payment Instructions
+                </h3>
+                <ul class="info-steps">
+                    <li class="info-step">
+                        <span class="step-number">1</span>
+                        <span>Enter your mobile money number and click "Pay"</span>
+                    </li>
+                    <li class="info-step">
+                        <span class="step-number">2</span>
+                        <span>You will receive a payment prompt on your phone</span>
+                    </li>
+                    <li class="info-step">
+                        <span class="step-number">3</span>
+                        <span>Enter your PIN to complete the payment</span>
+                    </li>
+                    <li class="info-step">
+                        <span class="step-number">4</span>
+                        <span>Wait for confirmation - do not close this page</span>
+                    </li>
+                </ul>
+            </div>
+        </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Payment method selection
+    const methodOptions = document.querySelectorAll('.method-option');
+    
+    methodOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            methodOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            
+            // Check the radio input
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+        });
+    });
+
+    // Phone number validation
+    const phoneInput = document.querySelector('input[name="phone_number"]');
+    
+    phoneInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10);
+        }
+    });
+});
+</script>
 {% endblock %}
