@@ -1,9 +1,14 @@
 from django.contrib import admin
-from .models import (
-    Profile, BlogCategory, BlogPost,
-    Album, Track, Comment,
-    DistributionPlatform, DistributionRequest
-)
+from .models import *
+
+
+@admin.register(OTP)
+class OTPAdmin(admin.ModelAdmin):
+    list_display = ('user', 'code', 'purpose', 'created_at', 'expires_at', 'is_valid')
+    list_filter = ('purpose', 'created_at', 'expires_at')
+    search_fields = ('user__username', 'code')
+    date_hierarchy = 'created_at'
+    readonly_fields = ('code', 'created_at', 'expires_at')
 
 
 @admin.register(Profile)
