@@ -932,7 +932,17 @@
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    
+    <!-- Notification Container -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="notification notification-{{ message.tags }}">
+                <span class="material-icons">
+                    {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
+                </span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
 
 
     <div class="app">
@@ -956,6 +966,7 @@
                     <a href="{% url 'search' %}">Search</a>
                 </div>
                 {% if user.is_authenticated %}
+                {% if user.profile.is_artist and user.profile.artist_status == 'verified' %}
                 <div class="nav-item">
                     <span class="material-icons">cloud_upload</span>
                     <a href="{% url 'upload' %}">Upload Music</a>
@@ -964,6 +975,16 @@
                     <span class="material-icons">album</span>
                     <a href="{% url 'upload' %}">Create Album</a>
                 </div>
+                <div class="nav-item">
+                    <span class="material-icons">public</span>
+                    <a href="{% url 'distribution_request' %}">Distribution</a>
+                </div>
+                {% else %}
+                <div class="nav-item">
+                    <span class="material-icons">star</span>
+                    <a href="{% url 'become_artist' %}">Become an Artist</a>
+                </div>
+                {% endif %}
                 <div class="nav-item">
                     <span class="material-icons">person</span>
                     <a href="{% url 'profile' %}">Profile</a>
@@ -997,14 +1018,16 @@
                         <span>Favorites</span>
                     </div>
                     {% if user.is_authenticated %}
+                    {% if user.profile.is_artist and user.profile.artist_status == 'verified' %}
                     <div class="playlist-item">
                         <span class="material-icons">cloud_download</span>
                         <a href="{% url 'my_uploads' %}">My Uploads</a>
                     </div>
                     <div class="playlist-item">
-                        <span class="material-icons">public</span>
-                        <a href="{% url 'distribution_request' %}">Distribution</a>
+                        <span class="material-icons">history</span>
+                        <a href="{% url 'distribution_history' %}">Distribution History</a>
                     </div>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -1043,10 +1066,12 @@
                         </button>
                     </div>
                     
+                    {% if user.profile.is_artist and user.profile.artist_status == 'verified' %}
                     <button class="upload-btn" onclick="window.location.href='{% url 'upload' %}'">
                         <span class="material-icons">cloud_upload</span>
                         <span>Upload</span>
                     </button>
+                    {% endif %}
                     
                     <!-- Enhanced user dropdown -->
                     <div class="user-dropdown">
@@ -1056,12 +1081,13 @@
                         <div class="dropdown-menu" id="userDropdown">
                             <div class="dropdown-item">
                                 <span class="material-icons">person</span>
-                                <span>Profile</span>
+                                <a href="{% url 'profile' %}">Profile</a>
                             </div>
                             <div class="dropdown-item">
                                 <span class="material-icons">settings</span>
-                                <span>Settings</span>
+                                <a href="{% url 'settings' %}">Settings</a>
                             </div>
+                            {% if user.profile.is_artist and user.profile.artist_status == 'verified' %}
                             <div class="dropdown-item">
                                 <span class="material-icons">cloud_download</span>
                                 <a href="{% url 'my_uploads' %}">My Uploads</a>
@@ -1075,6 +1101,7 @@
                                 <span class="material-icons">history</span>
                                 <a href="{% url 'distribution_history' %}">Distribution History</a>
                             </div>
+                            {% endif %}
                             <div class="dropdown-divider"></div>
                             <div class="dropdown-item">
                                 <span class="material-icons">logout</span>
