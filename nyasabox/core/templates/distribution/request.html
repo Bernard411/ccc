@@ -1,138 +1,539 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Distribution Request - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .request-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .request-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .request-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2ed573 0%, #4ecdc4 100%);
+    }
+
+    .request-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(90deg, #2ed573 0%, #4ecdc4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .request-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    .request-form {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        overflow: hidden;
+    }
+
+    .pricing-info {
+        background: rgba(46, 213, 115, 0.1);
+        padding: 2rem;
+        border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+    }
+
+    .pricing-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2ed573;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .pricing-details {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pricing-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .pricing-item i {
+        color: #2ed573;
+    }
+
+    .form-content {
+        padding: 2rem;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--accent-primary);
+    }
+
+    .platforms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .platform-option {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .platform-option:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .platform-option.selected {
+        background: rgba(46, 213, 115, 0.1);
+        border-color: #2ed573;
+    }
+
+    .platform-logo {
+        width: 2.5rem;
+        height: 2.5rem;
+        object-fit: contain;
+    }
+
+    .platform-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .tracks-list {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .track-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .track-item:last-child {
+        border-bottom: none;
+    }
+
+    .track-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .track-checkbox {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 0.3rem;
+        border: 2px solid var(--border-color);
+        appearance: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .track-checkbox:checked {
+        background: #2ed573;
+        border-color: #2ed573;
+    }
+
+    .track-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 0.8rem;
+    }
+
+    .track-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .track-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.2rem;
+    }
+
+    .track-artist {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .cost-calculator {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .calculator-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cost-display {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #2ed573;
+        margin: 1rem 0;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(90deg, #2ed573 0%, #4ecdc4 100%);
+        border: none;
+        border-radius: 1rem;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 2rem;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
+    }
+
+    .sidebar-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .sidebar-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .sidebar-content {
+        padding: 1.5rem;
+    }
+
+    .platform-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .platform-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .platform-list i {
+        color: var(--accent-primary);
+    }
+
+    .payment-methods {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .payment-method {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .payment-method:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .payment-method i {
+        font-size: 2rem;
+        color: var(--accent-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .payment-method p {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    @media (max-width: 968px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .platforms-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .request-container {
+            padding: 1rem;
+        }
+        
+        .request-header {
+            padding: 1.5rem;
+        }
+        
+        .request-title {
+            font-size: 1.8rem;
+        }
+        
+        .platform-option {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .payment-methods {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h3>Music Distribution Request</h3>
-            </div>
-            <div class="card-body">
-                {% if not user_has_tracks %}
-                <div class="alert alert-warning">
-                    <h5>No Tracks Available</h5>
-                    <p>You don't have any tracks uploaded yet. Please upload music first.</p>
-                    <a href="{% url 'upload' %}" class="btn btn-warning">Upload Music</a>
-                </div>
-                {% else %}
-                <div class="alert alert-info">
-                    <h5>Pricing Information</h5>
-                    <p>Distribution cost: MWK 1,667 per song</p>
-                    <p>Minimum 1 song, maximum 20 songs per request</p>
-                    <p>Example: 6 songs = MWK 10,000</p>
-                </div>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-4">
-                        <h5>Select Platforms</h5>
-                        <div class="row">
-                            {% for platform in platforms %}
-                            <div class="col-md-4 mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="platforms" 
-                                           value="{{ platform.id }}" id="platform-{{ platform.id }}">
-                                    <label class="form-check-label" for="platform-{{ platform.id }}">
-                                        {% if platform.logo %}
-                                        <img src="{{ platform.logo.url }}" alt="{{ platform.name }}" 
-                                             style="height: 30px; margin-right: 10px;">
-                                        {% endif %}
-                                        {{ platform.name }}
-                                    </label>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% if form.platforms.errors %}
-                        <div class="text-danger">{{ form.platforms.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-4">
-                        <h5>Select Tracks</h5>
-                        <p class="text-muted">Only your tracks that haven't been distributed yet are shown.</p>
-                        
-                        {% if form.tracks.field.queryset.exists %}
-                        <div class="list-group">
-                            {% for track in form.tracks.field.queryset %}
-                            <div class="list-group-item">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="tracks" 
-                                           value="{{ track.id }}" id="track-{{ track.id }}">
-                                    <label class="form-check-label" for="track-{{ track.id }}">
-                                        <strong>{{ track.title }}</strong> - {{ track.artist }}
-                                        {% if track.album %}
-                                        (Album: {{ track.album.title }})
-                                        {% endif %}
-                                    </label>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="alert alert-warning">
-                            <p>All your tracks have already been distributed or are in progress.</p>
-                            <a href="{% url 'upload' %}" class="btn btn-warning">Upload More Music</a>
-                        </div>
-                        {% endif %}
-                        {% if form.tracks.errors %}
-                        <div class="text-danger">{{ form.tracks.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    {% if form.tracks.field.queryset.exists %}
-                    <div class="mb-3">
-                        <h5>Cost Calculation</h5>
-                        <div class="card">
-                            <div class="card-body">
-                                <p id="cost-calculation">Select tracks to see cost</p>
-                                <p class="text-muted small">Price: MWK 1,667 per track</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-lg">Continue to Payment</button>
-                    {% endif %}
-                </form>
-                {% endif %}
-            </div>
-        </div>
+<div class="request-container">
+    <div class="request-header">
+        <h1 class="request-title">Music Distribution Request</h1>
+        <p class="request-subtitle">Distribute your music to all major streaming platforms worldwide</p>
     </div>
-    
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5>Supported Platforms</h5>
+
+    <div class="content-grid">
+        <!-- Main Content -->
+        <div class="request-form">
+            {% if not user_has_tracks %}
+            <div class="no-tracks">
+                <div class="empty-state">
+                    <span class="material-icons">queue_music</span>
+                    <h3>No Tracks Available</h3>
+                    <p>You don't have any tracks uploaded yet. Please upload your music first.</p>
+                    <a href="{% url 'upload' %}" class="submit-btn">Upload Music</a>
+                </div>
             </div>
-            <div class="card-body">
-                <p>We distribute your music to all major streaming platforms including:</p>
-                <ul>
-                    <li>Spotify</li>
-                    <li>Apple Music</li>
-                    <li>YouTube Music</li>
-                    <li>Amazon Music</li>
-                    <li>Deezer</li>
-                    <li>Tidal</li>
-                    <li>Boomplay</li>
-                    <li>And more...</li>
+            {% else %}
+            <div class="pricing-info">
+                <h3 class="pricing-title">
+                    <span class="material-icons">info</span>
+                    Pricing Information
+                </h3>
+                <ul class="pricing-details">
+                    <li class="pricing-item">
+                        <span class="material-icons">payments</span>
+                        Distribution cost: MWK 1,667 per song
+                    </li>
+                    <li class="pricing-item">
+                        <span class="material-icons">library_music</span>
+                        Minimum 1 song, maximum 20 songs per request
+                    </li>
+                    <li class="pricing-item">
+                        <span class="material-icons">calculate</span>
+                        Example: 6 songs = MWK 10,000
+                    </li>
                 </ul>
             </div>
-        </div>
-        
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5>Payment Methods</h5>
-            </div>
-            <div class="card-body">
-                <div class="text-center">
-                    <div class="mb-3">
-                        <i class="bi bi-phone" style="font-size: 2rem;"></i>
-                        <p>Airtel Money</p>
+
+            <form method="post" class="form-content">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">podcasts</span>
+                        Select Platforms
+                    </h3>
+                    <div class="platforms-grid">
+                        {% for platform in platforms %}
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" 
+                                   value="{{ platform.id }}" 
+                                   style="display: none;">
+                            {% if platform.logo %}
+                            <img src="{{ platform.logo.url }}" alt="{{ platform.name }}" 
+                                 class="platform-logo">
+                            {% endif %}
+                            <span class="platform-name">{{ platform.name }}</span>
+                        </label>
+                        {% endfor %}
                     </div>
-                    <div>
-                        <i class="bi bi-phone" style="font-size: 2rem;"></i>
-                        <p>TNM Mpamba</p>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">queue_music</span>
+                        Select Tracks
+                    </h3>
+                    
+                    {% if form.tracks.field.queryset.exists %}
+                    <div class="tracks-list">
+                        {% for track in form.tracks.field.queryset %}
+                        <label class="track-item">
+                            <input type="checkbox" name="tracks" 
+                                   value="{{ track.id }}"
+                                   class="track-checkbox">
+                            <div class="track-info">
+                                <div class="track-title">{{ track.title }}</div>
+                                <div class="track-artist">{{ track.artist }}
+                                    {% if track.album %}
+                                    - {{ track.album.title }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="cost-calculator">
+                        <h4 class="calculator-title">
+                            <span class="material-icons">calculate</span>
+                            Cost Calculation
+                        </h4>
+                        <div class="cost-display" id="cost-calculation">
+                            Select tracks to see cost
+                        </div>
+                        <p class="text-muted">Price: MWK 1,667 per track</p>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <span class="material-icons">navigate_next</span>
+                        Continue to Payment
+                    </button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Content -->
+        <div class="sidebar-content">
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">
+                        <span class="material-icons">podcasts</span>
+                        Supported Platforms
+                    </h3>
+                </div>
+                <div class="sidebar-content">
+                    <ul class="platform-list">
+                        <li><i class="bi bi-spotify"></i>Spotify</li>
+                        <li><i class="bi bi-apple"></i>Apple Music</li>
+                        <li><i class="bi bi-youtube"></i>YouTube Music</li>
+                        <li><i class="bi bi-music-note"></i>Amazon Music</li>
+                        <li><i class="bi bi-music-note"></i>Deezer</li>
+                        <li><i class="bi bi-music-note"></i>Tidal</li>
+                        <li><i class="bi bi-music-note"></i>Boomplay</li>
+                        <li><i class="bi bi-music-note"></i>And more...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <h3 class="sidebar-title">
+                        <span class="material-icons">payments</span>
+                        Payment Methods
+                    </h3>
+                </div>
+                <div class="sidebar-content">
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <i class="bi bi-phone"></i>
+                            <p>Airtel Money</p>
+                        </div>
+                        <div class="payment-method">
+                            <i class="bi bi-phone"></i>
+                            <p>TNM Mpamba</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,10 +545,21 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const platformOptions = document.querySelectorAll('.platform-option');
     const trackCheckboxes = document.querySelectorAll('input[name="tracks"]');
     const costElement = document.getElementById('cost-calculation');
-    const pricePerTrack = {{ base_price_per_track }}; // This is now a float
+    const pricePerTrack = {{ base_price_per_track }};
     
+    // Platform selection
+    platformOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+        });
+    });
+    
+    // Cost calculation
     function updateCostCalculation() {
         const selectedTracks = document.querySelectorAll('input[name="tracks"]:checked').length;
         const totalCost = selectedTracks * pricePerTrack;
@@ -157,8 +569,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <strong>${selectedTracks} track(s) selected</strong><br>
                 Total: MWK ${totalCost.toFixed(2)}
             `;
+            costElement.style.color = '#2ed573';
         } else {
             costElement.textContent = 'Select tracks to see cost';
+            costElement.style.color = 'var(--text-secondary)';
         }
     }
     
@@ -170,5 +584,4 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCostCalculation();
 });
 </script>
-
 {% endblock %}

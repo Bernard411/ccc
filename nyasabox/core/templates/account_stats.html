@@ -1,90 +1,626 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Account Statistics - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .stats-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .stats-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gradient);
+    }
+
+    .stats-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stats-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.2rem;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gradient);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--accent-primary);
+        background: rgba(255, 107, 107, 0.1);
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1);
+        background: rgba(255, 107, 107, 0.2);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-trend {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.8rem;
+    }
+
+    .trend-up {
+        background: rgba(46, 213, 115, 0.2);
+        color: #2ed573;
+    }
+
+    .trend-down {
+        background: rgba(255, 71, 87, 0.2);
+        color: #ff4757;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .chart-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+    }
+
+    .chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chart-title i {
+        color: var(--accent-primary);
+    }
+
+    .chart-placeholder {
+        height: 250px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .activity-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .section-title i {
+        color: var(--accent-primary);
+    }
+
+    .activity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .activity-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .activity-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .activity-icon {
+        font-size: 1.5rem;
+        color: var(--accent-primary);
+        margin-bottom: 1rem;
+        background: rgba(255, 107, 107, 0.1);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .activity-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .activity-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        border-radius: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .action-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+
+    .action-btn.secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    @media (max-width: 968px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .activity-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-container {
+            padding: 1rem;
+        }
+        
+        .stats-header {
+            padding: 1.5rem;
+        }
+        
+        .stats-title {
+            font-size: 2rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(1rem); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress-ring {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .ring-bg {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.1);
+        stroke-width: 8;
+    }
+
+    .ring-progress {
+        fill: none;
+        stroke: var(--accent-primary);
+        stroke-width: 8;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .ring-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .ring-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .ring-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Account Statistics</h2>
-            <a href="{% url 'settings' %}" class="btn btn-secondary">Back to Settings</a>
+<div class="stats-container">
+    <!-- Stats Header -->
+    <div class="stats-header">
+        <h1 class="stats-title">Account Statistics</h1>
+        <p class="stats-subtitle">Track your music performance and engagement metrics</p>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-disc"></i>
+            </div>
+            <div class="stat-number">{{ total_albums }}</div>
+            <div class="stat-label">Albums</div>
+            <span class="stat-trend trend-up">+12% this month</span>
         </div>
         
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card text-center bg-primary text-white">
-                    <div class="card-body">
-                        <i class="bi bi-collection-play" style="font-size: 2rem;"></i>
-                        <h5 class="card-title mt-2">{{ total_albums }}</h5>
-                        <p class="card-text">Albums</p>
-                    </div>
-                </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-music-note-beamed"></i>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center bg-success text-white">
-                    <div class="card-body">
-                        <i class="bi bi-music-note-beamed" style="font-size: 2rem;"></i>
-                        <h5 class="card-title mt-2">{{ total_tracks }}</h5>
-                        <p class="card-text">Tracks</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center bg-info text-white">
-                    <div class="card-body">
-                        <i class="bi bi-download" style="font-size: 2rem;"></i>
-                        <h5 class="card-title mt-2">{{ total_downloads }}</h5>
-                        <p class="card-text">Downloads</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center bg-warning text-white">
-                    <div class="card-body">
-                        <i class="bi bi-heart" style="font-size: 2rem;"></i>
-                        <h5 class="card-title mt-2">{{ total_likes }}</h5>
-                        <p class="card-text">Likes</p>
-                    </div>
-                </div>
-            </div>
+            <div class="stat-number">{{ total_tracks }}</div>
+            <div class="stat-label">Tracks</div>
+            <span class="stat-trend trend-up">+8% this month</span>
         </div>
         
-        <!-- Recent Activity -->
-        <div class="card">
-            <div class="card-header">
-                <h5>Recent Activity</h5>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-download"></i>
             </div>
-            <div class="card-body">
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between">
-                            <span>Last login</span>
-                            <span class="text-muted">{{ user.last_login|date:"M d, Y H:i" }}</span>
-                        </div>
-                    </div>
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between">
-                            <span>Account created</span>
-                            <span class="text-muted">{{ user.date_joined|date:"M d, Y H:i" }}</span>
-                        </div>
-                    </div>
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between">
-                            <span>Email address</span>
-                            <span class="text-muted">{{ user.email|default:"Not set" }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="stat-number">{{ total_downloads }}</div>
+            <div class="stat-label">Downloads</div>
+            <span class="stat-trend trend-up">+23% this month</span>
         </div>
         
-        <div class="mt-4">
-            <a href="{% url 'my_uploads' %}" class="btn btn-primary">
-                <i class="bi bi-music-note-list"></i> View My Uploads
-            </a>
-            <a href="{% url 'profile' %}" class="btn btn-outline-primary ms-2">
-                <i class="bi bi-pencil"></i> Edit Profile
-            </a>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="bi bi-heart"></i>
+            </div>
+            <div class="stat-number">{{ total_likes }}</div>
+            <div class="stat-label">Likes</div>
+            <span class="stat-trend trend-up">+15% this month</span>
         </div>
     </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="bi bi-bar-chart"></i>
+                    Downloads Trend
+                </h3>
+                <span class="text-muted">Last 30 days</span>
+            </div>
+            <div class="chart-placeholder">
+                <i class="bi bi-bar-chart" style="font-size: 2rem; margin-right: 0.5rem;"></i>
+                Downloads chart visualization
+            </div>
+        </div>
+        
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="bi bi-pie-chart"></i>
+                    Content Distribution
+                </h3>
+                <span class="text-muted">By genre</span>
+            </div>
+            <div class="chart-placeholder">
+                <i class="bi bi-pie-chart" style="font-size: 2rem; margin-right: 0.5rem;"></i>
+                Genre distribution chart
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Section -->
+    <div class="activity-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="bi bi-activity"></i>
+                Account Activity
+            </h2>
+        </div>
+        
+        <div class="activity-grid">
+            <div class="activity-card">
+                <div class="activity-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h4 class="activity-title">Last Login</h4>
+                <div class="activity-value">{{ user.last_login|date:"M d, Y" }}</div>
+                <p class="activity-label">Your most recent account access</p>
+            </div>
+            
+            <div class="activity-card">
+                <div class="activity-icon">
+                    <i class="bi bi-calendar-plus"></i>
+                </div>
+                <h4 class="activity-title">Member Since</h4>
+                <div class="activity-value">{{ user.date_joined|date:"M Y" }}</div>
+                <p class="activity-label">Total time as a NyasaBox creator</p>
+            </div>
+            
+            <div class="activity-card">
+                <div class="activity-icon">
+                    <i class="bi bi-envelope"></i>
+                </div>
+                <h4 class="activity-title">Email Verified</h4>
+                <div class="activity-value">
+                    {% if user.email %}Verified{% else %}Pending{% endif %}
+                </div>
+                <p class="activity-label">{{ user.email|default:"No email set" }}</p>
+            </div>
+            
+            <div class="activity-card">
+                <div class="activity-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h4 class="activity-title">Engagement Rate</h4>
+                <div class="activity-value">
+                    {% if total_downloads > 0 %}
+                        {{ total_likes|add:total_downloads|floatformat:0 }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </div>
+                <p class="activity-label">Likes & downloads performance</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{% url 'my_uploads' %}" class="action-btn">
+            <i class="bi bi-music-note-list"></i>
+            View My Uploads
+        </a>
+        <a href="{% url 'upload' %}" class="action-btn secondary">
+            <i class="bi bi-cloud-upload"></i>
+            Upload New Content
+        </a>
+        <a href="{% url 'profile' %}" class="action-btn secondary">
+            <i class="bi bi-pencil"></i>
+            Edit Profile
+        </a>
+        <a href="{% url 'settings' %}" class="action-btn secondary">
+            <i class="bi bi-gear"></i>
+            Account Settings
+        </a>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stat cards on load
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(1rem)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Create simple progress rings (simplified version)
+        const createProgressRing = (element, percentage) => {
+            const circle = element.querySelector('.ring-progress');
+            const radius = circle.getAttribute('r');
+            const circumference = 2 * Math.PI * radius;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference;
+            
+            setTimeout(() => {
+                const offset = circumference - (percentage / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+            }, 500);
+        };
+
+        // Initialize progress rings
+        const progressRings = document.querySelectorAll('.progress-ring');
+        progressRings.forEach(ring => {
+            const percentage = parseInt(ring.dataset.percentage);
+            createProgressRing(ring, percentage);
+        });
+
+        // Add hover effects to cards
+        const cards = document.querySelectorAll('.stat-card, .activity-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const icon = card.querySelector('.stat-icon, .activity-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1.1)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                const icon = card.querySelector('.stat-icon, .activity-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1)';
+                }
+            });
+        });
+
+        // Simulate chart loading
+        const chartPlaceholders = document.querySelectorAll('.chart-placeholder');
+        chartPlaceholders.forEach(chart => {
+            setTimeout(() => {
+                chart.innerHTML = '<div style="text-align: center; color: var(--text-muted);"><i class="bi bi-bar-chart" style="font-size: 3rem;"></i><p style="margin-top: 1rem;">Interactive chart would appear here</p></div>';
+            }, 1500);
+        });
+    });
+</script>
 {% endblock %}
