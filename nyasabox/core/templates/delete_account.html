@@ -1,45 +1,250 @@
 {% extends 'base.html' %}
 
+{% block title %}Delete Account - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .delete-account-container {
+        max-width: 600px;
+        margin: 3rem auto 0 auto;
+        padding: 2.5rem 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        box-shadow: var(--shadow-heavy);
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .delete-account-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff4757 0%, #ff6b6b 100%);
+    }
+
+    .delete-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .delete-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #ff4757 0%, #ff6b6b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .delete-warning {
+        background: rgba(255, 71, 87, 0.12);
+        border: 1px solid #ff4757;
+        color: #ff4757;
+        border-radius: 1rem;
+        padding: 1.5rem 1rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-size: 1.05rem;
+        font-weight: 600;
+        box-shadow: 0 0.5rem 2rem rgba(255, 71, 87, 0.08);
+    }
+
+    .delete-list {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 1rem;
+        padding: 1.2rem 1rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .delete-list h5 {
+        color: var(--accent-primary);
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .delete-list ul {
+        margin: 0;
+        padding-left: 1.2rem;
+        color: var(--text-secondary);
+        font-size: 0.97rem;
+    }
+
+    .delete-list li {
+        margin-bottom: 0.4rem;
+        list-style: disc;
+    }
+
+    .delete-form {
+        margin-top: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        margin-bottom: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #ff4757;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .delete-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.2rem;
+        justify-content: center;
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #ff4757 0%, #ff6b6b 100%);
+        color: white;
+        border: none;
+        border-radius: 1rem;
+        padding: 1rem 2rem;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 0.2rem 1rem rgba(255, 71, 87, 0.15);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #ff6b6b 0%, #ff4757 100%);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 0.5rem 2rem rgba(255, 71, 87, 0.18);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1rem 2rem;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px) scale(1.03);
+    }
+
+    .delete-icon {
+        font-size: 2.5rem;
+        color: #ff4757;
+        margin-bottom: 1rem;
+        display: block;
+        text-align: center;
+        animation: shake 1.2s infinite alternate;
+    }
+
+    @keyframes shake {
+        0% { transform: rotate(-2deg);}
+        100% { transform: rotate(2deg);}
+    }
+
+    @media (max-width: 600px) {
+        .delete-account-container {
+            padding: 1.2rem 0.5rem;
+        }
+        .delete-actions {
+            flex-direction: column;
+        }
+        .btn-danger, .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(2rem);}
+        to { opacity: 1; transform: translateY(0);}
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h3>Delete Account</h3>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-danger">
-                    <h4 class="alert-heading">Warning!</h4>
-                    <p>You are about to permanently delete your Nyasa Box account. This action cannot be undone.</p>
-                    <hr>
-                    <p class="mb-0">All your uploaded music, albums, and profile information will be permanently deleted.</p>
-                </div>
-                
-                <div class="mb-4">
-                    <h5>What will be deleted:</h5>
-                    <ul>
-                        <li>Your profile information</li>
-                        <li>All albums you've uploaded</li>
-                        <li>All tracks you've uploaded</li>
-                        <li>Your comments and activity</li>
-                        <li>Your distribution requests</li>
-                    </ul>
-                </div>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Enter your password to confirm:</label>
-                        <input type="password" name="password" class="form-control" id="password" required>
-                    </div>
-                    
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger">Permanently Delete My Account</button>
-                        <a href="{% url 'settings' %}" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
-            </div>
+<div class="delete-account-container">
+    <div class="delete-header">
+        <span class="material-icons delete-icon">warning</span>
+        <h1 class="delete-title">Delete Account</h1>
+        <div class="delete-warning">
+            <strong>Warning:</strong> This action is <u>permanent</u> and cannot be undone.
         </div>
     </div>
+
+    <div class="delete-list">
+        <h5><span class="material-icons" style="font-size:1.2rem;">delete_forever</span> What will be deleted:</h5>
+        <ul>
+            <li>Your profile information</li>
+            <li>All albums you've uploaded</li>
+            <li>All tracks you've uploaded</li>
+            <li>Your comments and activity</li>
+            <li>Your distribution requests</li>
+        </ul>
+    </div>
+
+    <form method="post" class="delete-form" onsubmit="return confirmDeleteAccount();">
+        {% csrf_token %}
+        <label for="password" class="form-label">Enter your password to confirm:</label>
+        <input type="password" name="password" class="form-control" id="password" required placeholder="Your password">
+
+        <div class="delete-actions">
+            <button type="submit" class="btn-danger">
+                <span class="material-icons">delete_forever</span>
+                Permanently Delete My Account
+            </button>
+            <a href="{% url 'settings' %}" class="btn-secondary">
+                <span class="material-icons">close</span>
+                Cancel
+            </a>
+        </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDeleteAccount() {
+    return confirm(
+        "Are you absolutely sure you want to delete your account?\n\nThis action is permanent and all your data will be lost."
+    );
+}
+</script>
 {% endblock %}
