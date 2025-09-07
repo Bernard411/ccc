@@ -29,40 +29,52 @@ def artist_required(view_func):
     return wrapper
 
 def index(request):
+    # Existing code remains the same
     latest_albums = Album.objects.all().order_by('-created_at')[:8].annotate(track_count=Count('tracks'))
+
     latest_tracks = Track.objects.filter(album__isnull=True).order_by('-created_at')[:12]
+
     popular_tracks = Track.objects.all().order_by('-downloads')[:10]
-    popular_albums = Album.objects.annotate(total_downloads=Sum('tracks__downloads')).order_by('-total_downloads')[:6]
+
+    popular_albums = Album.objects.annotate(
+        total_downloads=Sum('tracks__downloads')
+    ).order_by('-total_downloads')[:6]
+
     top_artists_data = Track.objects.values('artist').annotate(
         track_count=Count('id'),
         total_downloads=Sum('downloads')
     ).order_by('-track_count')[:8]
 
-    artists_with_data = [
-        {
+    artists_with_data = []
+    for artist in top_artists_data:
+        sample_track = Track.objects.filter(artist=artist['artist']).first()
+        artists_with_data.append({
             'name': artist['artist'],
             'track_count': artist['track_count'],
             'total_downloads': artist['total_downloads'] or 0,
-            'sample_track': Track.objects.filter(artist=artist['artist']).first()
-        }
-        for artist in top_artists_data
-    ]
+            'sample_track': sample_track
+        })
 
-    tracks_data = [
-        {
+    tracks_data = []
+    all_tracks = list(latest_tracks) + list(popular_tracks)
+
+    for track in all_tracks:
+        cover_url = ''
+        if track.album and track.album.cover_art:
+            cover_url = track.album.cover_art.url
+        elif hasattr(track, 'cover_art') and track.cover_art:
+            cover_url = track.cover_art.url
+
+        audio_url = track.audio_file.url if track.audio_file else ''
+
+        tracks_data.append({
             'id': track.id,
             'title': track.title,
             'artist': track.artist,
-            'url': track.audio_file.url if track.audio_file else '',
-            'cover_image': (
-                track.album.cover_art.url if track.album and track.album.cover_art
-                else getattr(track, 'cover_art', None).url if hasattr(track, 'cover_art') and track.cover_art
-                else ''
-            ),
+            'url': audio_url,
+            'cover_image': cover_url,
             'duration': track.get_formatted_duration() if hasattr(track, 'get_formatted_duration') and track.duration else '0:00'
-        }
-        for track in set(latest_tracks) | set(popular_tracks)
-    ]
+        })
 
     context = {
         'latest_albums': latest_albums,
@@ -347,6 +359,47 @@ def become_artist(request):
         form = ArtistUpgradeForm(instance=request.user.profile)
     return render(request, 'become_artist.html', {'form': form})
 
+@login_required
+def admin_artist_approvals(request):
+    if not request.user.is_staff:
+        return redirect('index')
+    pending_artists = Profile.objects.filter(is_artist=True, artist_status='pending')
+    context = {
+        'pending_artists': pending_artists,
+    }
+    return render(request, 'admin/artist_approvals.html', context)
+
+@login_required
+def admin_approve_artist(request, profile_id):
+    if not request.user.is_staff:
+        return redirect('index')
+    profile = get_object_or_404(Profile, id=profile_id)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            profile.artist_status = 'verified'
+            profile.save()
+            send_mail(
+                'NyasaBox Artist Application Approved',
+                '',
+                settings.DEFAULT_FROM_EMAIL,
+                [profile.user.email],
+                html_message=render_to_string('emails/artist_approved.html', {'user': profile.user}),
+            )
+            messages.success(request, f'Artist {profile.user.username} approved.')
+        elif action == 'reject':
+            profile.artist_status = 'rejected'
+            profile.save()
+            send_mail(
+                'NyasaBox Artist Application Rejected',
+                '',
+                settings.DEFAULT_FROM_EMAIL,
+                [profile.user.email],
+                html_message=render_to_string('emails/artist_rejected.html', {'user': profile.user}),
+            )
+            messages.success(request, f'Artist {profile.user.username} rejected.')
+    return redirect('admin_artist_approvals')
+
 def forgot_password(request):
     if request.method == 'POST':
         form = PasswordResetRequestForm(request.POST)
@@ -440,6 +493,8 @@ def profile_view(request):
         'total_downloads': stats['total_downloads'] or 0,
         'total_likes': stats['total_likes'] or 0,
         'total_uploads': total_albums + (stats['total_tracks'] or 0),
+        'is_artist': request.user.profile.is_artist,
+        'artist_status': request.user.profile.artist_status,
     }
     return render(request, 'profile.html', context)
 
