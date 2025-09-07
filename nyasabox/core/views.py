@@ -620,7 +620,7 @@ def distribution_request(request):
             distribution_request = form.save(commit=False)
             distribution_request.artist = request.user
             distribution_request.status = 'pending'
-            distribution_request.total_amount = len(form.cleaned_data['tracks']) * 1666.67
+            # distribution_request.total_amount = len(form.cleaned_data['tracks']) * 1666.67
             distribution_request.save()
             form.save_m2m()
             messages.success(request, 'Distribution request created successfully! Please proceed to payment.')
@@ -645,13 +645,14 @@ def distribution_payment(request, request_id):
     if request.method == 'POST':
         distribution_request.status = 'paid'
         distribution_request.payment_reference = f"PMT{distribution_request.id}{request.user.id}"
+        distribution_request.payment_date = timezone.now()  # Set payment date
         distribution_request.save()
         messages.success(request, 'Payment successful! Your distribution request is being processed.')
         return redirect('distribution_status', request_id=request_id)
 
     context = {
         'distribution_request': distribution_request,
-        'track_count': distribution_request.get_track_count(),
+        'track_count': distribution_request.tracks.count(),  # Use tracks.count() instead of get_track_count()
         'total_amount': distribution_request.total_amount,
     }
     return render(request, 'distribution/payment.html', context)

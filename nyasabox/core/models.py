@@ -288,13 +288,5 @@ class DistributionRequest(models.Model):
     def __str__(self):
         return f"Distribution Request #{self.id} - {self.artist.username}"
 
-    def calculate_total(self):
-        return Decimal(str(self.tracks.count() * 1666.67))
-
-    def get_track_count(self):
-        return self.tracks.count()
-
     def save(self, *args, **kwargs):
-        if not self.total_amount or self.tracks.exists():
-            self.total_amount = self.calculate_total()
         super().save(*args, **kwargs)

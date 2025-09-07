@@ -704,7 +704,7 @@
         </div>
         <div class="music-grid">
             {% for track in popular_tracks %}
-            <a href="{% url 'track_detail' track.slug %}" class="music-card" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
+            <div class="music-card" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
                 <div class="music-cover">
                     {% if track.album and track.album.cover_art %}
                     <img src="{{ track.album.cover_art.url }}" alt="{{ track.title }}">
@@ -722,7 +722,7 @@
                 <button class="play-btn" data-type="track" data-id="{{ track.id }}">
                     <span class="material-icons">play_arrow</span>
                 </button>
-            </a>
+            </div>
             {% empty %}
             <p>No popular tracks yet.</p>
             {% endfor %}
