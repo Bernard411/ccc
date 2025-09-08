@@ -1,54 +1,206 @@
+Not Found: /media/platform_logos/spo.jpg
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Received form data: {'csrfmiddlewaretoken': ['VcYd3eUJTVY3Pxuklonxed0FrStokS6wbnEPxhjb2PFEOUUR7gOElAReAHTEhqk7'], 'first_name': ['Ben'], 'last_name': ['Malunga'], 'email': ['benmalunga041@gmail.com'], 'amount': ['1666.67'], 'operator_ref_id': ['27494cb5-ba9e-437f-a114-4e7a7686bcca'], 'mobile': ['886979157']}
+Sending payload to PayChangu: {'mobile_money_operator_ref_id': '27494cb5-ba9e-437f-a114-4e7a7686bcca', 'mobile': '+265886979157', 'amount': '1666', 'charge_id': '6f9df49d-0de5-47ed-8841-31bf4cd83d66', 'email': 'wavet3ch041@gmail.com', 'first_name': 'Ben', 'last_name': 'Malunga'}
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "POST /mobile-money/payments/initialize HTTP/1.1" 400 None
+PayChangu response: {'status': 'failed', 'data': None, 'message': {'mobile': ['Enter a valid mobile number of nine (9) digits.']}}
+PayChangu API error: {'mobile': ['Enter a valid mobile number of nine (9) digits.']}
+Bad Request: /process-payment/7/
+C:\Users\dell\Desktop\personal\ccc\nyasabox\core\forms.py changed, reloading.
 Watching for file changes with StatReloader
+C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Received form data: {'csrfmiddlewaretoken': ['JoHklBYj8LqYw9BgO0JBXvJ0ryn4wTjIZznWPEnLhF7zvw1NASaI4SAzAnNktrxj'], 'first_name': ['Ben'], 'last_name': ['Malunga'], 'email': ['benmalunga041@gmail.com'], 'amount': ['1666.67'], 'operator_ref_id': ['20be6c20-adeb-4b5b-a7ba-0769820df4fb'], 'mobile': ['993443559']}
+Sending payload to PayChangu: {'mobile_money_operator_ref_id': '20be6c20-adeb-4b5b-a7ba-0769820df4fb', 'mobile': '993443559', 'amount': '1666', 'charge_id': '5e529486-3a1a-4809-96d1-6c752c438060', 'email': 'wavet3ch041@gmail.com', 'first_name': 'Ben', 'last_name': 'Malunga'}
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "POST /mobile-money/payments/initialize HTTP/1.1" 200 None
+PayChangu response: {'status': 'success', 'message': 'Payment initiated successfully.', 'data': {'charge_id': '5e529486-3a1a-4809-96d1-6c752c438060', 'ref_id': '73576891383', 'trans_id': '4e85f0be-3481-4811-b702-29c2809f00f8', 'currency': 'MK', 'amount': 1666, 'first_name': 'Ben', 'last_name': 'Malunga', 'email': 'wavet3ch041@gmail.com', 'type': 'Direct API Payment', 'trace_id': 'SM1qgYQeKoofvQqvsPTvMODDF4XHAnUi', 'status': 'pending', 'mobile': '+265993xxxx59', 'attempts': 1, 'mode': 'live', 'created_at': '2025-09-07T14:45:20.000000Z', 'completed_at': None, 'event_type': 'api.charge.payment', 'mobile_money': {'name': 'Airtel Money', 'ref_id': '20be6c20-adeb-4b5b-a7ba-0769820df4fb', 'country': 'Malawi'}, 'transaction_charges': {'currency': 'MK', 'amount': '49.98'}, 'customer': {'customer_ref': 'cs_4aeb41556891c51', 'email': 'wavet3ch041@gmail.com', 'first_name': 'stephe', 'last_name': 'mandala', 'phone': '996073298', 'created_at': 1750250770}, 'authorization': {'channel': 'Mobile Money', 'card_number': None, 'expiry': None, 'brand': None, 'provider': 'Airtel Money', 'mobile_number': None, 'mobile_money_trans_id': None, 'payer_bank_uuid': None, 'payer_bank': None, 'payer_account_number': None, 'payer_account_name': None, 'payer_bank_receipt_number': None, 'virtual_bank_account_credited': None, 'completed_at': None}, 'logs': [{'type': 'log', 'message': 'Payment transaction initialized and PIN authorization requested.', 'created_at': '2025-09-07T14:45:23.000000Z'}]}, 'gateway_response': {'data': {'transaction': {'id': '4e85f0be-3481-4811-b702-29c2809f00f8', 'status': 'Success.'}}, 'status': {'response_code': 'DP00800001006', 'code': '200', 'success': True, 'result_code': 'ESB000010', 'message': 'Success.'}}}
+Payment initiated for distribution request 7, transaction 5e529486-3a1a-4809-96d1-6c752c438060
+C:\Users\dell\Desktop\personal\ccc\nyasabox\core\models.py changed, reloading.
+Watching for file changes with StatReloader
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Not Found: /payment/7/
 Not Found: /media/platform_logos/spo.jpg
-Internal Server Error: /adminxy/distribution-requests/
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Received form data: {'csrfmiddlewaretoken': ['YEjb02d43ia5Q7ukmSmHtLmFPf4DEJcQePZNu5CwccRGPuUR8KNOA8deY4uTBhqr'], 'first_name': ['Ben'], 'last_name': ['Malunga'], 'email': ['benmalunga041@gmail.com'], 'amount': ['50.00'], 'operator_ref_id': ['20be6c20-adeb-4b5b-a7ba-0769820df4fb'], 'mobile': ['993443559']}
+Sending payload to PayChangu: {'mobile_money_operator_ref_id': '20be6c20-adeb-4b5b-a7ba-0769820df4fb', 'mobile': '993443559', 'amount': '50', 'charge_id': '19089bd2-4e37-44e1-8eb0-e869d5c5b672', 'email': 'wavet3ch041@gmail.com', 'first_name': 'Ben', 'last_name': 'Malunga'}
+Starting new HTTPS connection (1): api.paychangu.com:443
+Unexpected error in process_distribution_payment: HTTPSConnectionPool(host='api.paychangu.com', port=443): Read timed out. (read timeout=10)
 Traceback (most recent call last):
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
-    response = get_response(request)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
-    response = wrapped_callback(request, *callback_args, **callback_kwargs)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
-    return view_func(request, *args, **kwargs)
-  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 903, in admin_distribution_requests
-    return render(request, 'distribution/admin_requests.html', context)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\shortcuts.py", line 25, in render
-    content = loader.render_to_string(template_name, context, request, using=using)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
-    template = get_template(template_name, using=using)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\template\loader.py", line 19, in get_template
-    raise TemplateDoesNotExist(template_name, chain=chain)
-django.template.exceptions.TemplateDoesNotExist: distribution/admin_requests.html
-Not Found: /media/platform_logos/spo.jpg
-Not Found: /media/platform_logos/spo.jpg
-Internal Server Error: /payment/5/
-Traceback (most recent call last):
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 480, in __call__
-    result = fn(*args, **kwargs)
-  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 668, in get_mobile_money_operators
-    "Authorization": f"Bearer {settings.PAYCHANGU_API_KEY.strip()}"
-                               ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\conf\__init__.py", line 83, in __getattr__
-    val = getattr(_wrapped, name)
-AttributeError: 'Settings' object has no attribute 'PAYCHANGU_API_KEY'
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connection.py", line 565, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1304, in recv_into
+    return self.read(nbytes, buffer)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1138, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+TimeoutError: The read operation timed out
 
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
-    response = get_response(request)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
-    response = wrapped_callback(request, *callback_args, **callback_kwargs)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
-    return view_func(request, *args, **kwargs)
-  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 683, in distribution_payment
-    mobile_operators = get_mobile_money_operators()
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 338, in wrapped_f
-    return copy(f, *args, **kw)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 477, in __call__
-    do = self.iter(retry_state=retry_state)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 378, in iter
-    result = action(retry_state)
-  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\tenacity\__init__.py", line 421, in exc_check
-    raise retry_exc from fut.exception()
-tenacity.RetryError: RetryError[<Future at 0x236bfbb2350 state=finished raised AttributeError>]
-C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
-Watching for file changes with StatReloader
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+        self, url, f"Read timed out. (read timeout={timeout_value})"
+    ) from err
+urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='api.paychangu.com', port=443): Read timed out. (read timeout=10)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 757, in process_distribution_payment
+    response = requests.post(url, json=payload, headers=headers, timeout=10)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\adapters.py", line 713, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='api.paychangu.com', port=443): Read timed out. (read timeout=10)
+Internal Server Error: /process-payment/8/
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
+Received form data: {'csrfmiddlewaretoken': ['I0U62oDt2Wv6rFTEXX40qAJymGJVu764YbAIwr2VbQcHq2jbJPv7xXA7vv9brFkF'], 'first_name': ['Ben'], 'last_name': ['Malunga'], 'email': ['benmalunga041@gmail.com'], 'amount': ['50.00'], 'operator_ref_id': ['20be6c20-adeb-4b5b-a7ba-0769820df4fb'], 'mobile': ['993443559']}
+Sending payload to PayChangu: {'mobile_money_operator_ref_id': '20be6c20-adeb-4b5b-a7ba-0769820df4fb', 'mobile': '993443559', 'amount': '50', 'charge_id': '7ba4eb0f-1791-46f4-b743-b8a9829495ac', 'email': 'wavet3ch041@gmail.com', 'first_name': 'Ben', 'last_name': 'Malunga'}
+Starting new HTTPS connection (1): api.paychangu.com:443
+Unexpected error in process_distribution_payment: HTTPSConnectionPool(host='api.paychangu.com', port=443): Read timed out. (read timeout=10)
+Traceback (most recent call last):
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connection.py", line 565, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1304, in recv_into
+    return self.read(nbytes, buffer)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1138, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+        self, url, f"Read timed out. (read timeout={timeout_value})"
+    ) from err
+urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='api.paychangu.com', port=443): Read timed out. (read timeout=10)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py", line 757, in process_distribution_payment
+    response = requests.post(url, json=payload, headers=headers, timeout=10)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\adapters.py", line 713, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='api.paychangu.com', port=443): Read timed out. (read timeout=10)
+Internal Server Error: /process-payment/8/
+Starting new HTTPS connection (1): api.paychangu.com:443
+https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None

@@ -292,7 +292,7 @@ class DistributionRequest(models.Model):
         return f"Distribution Request #{self.id} - {self.artist.username}"
 
     def calculate_total(self):
-        return Decimal(str(self.tracks.count() * 1666.67))
+        return Decimal(str(self.tracks.count() * 50.00))
 
     def get_track_count(self):
         return self.tracks.count()

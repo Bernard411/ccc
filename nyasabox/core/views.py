@@ -619,8 +619,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 import json
-from .models import Album, Track, Comment, BlogPost, BlogCategory, DistributionRequest, DistributionPlatform, OTP, Profile, PaymentTransaction
-from .forms import AlbumForm, TrackForm, CommentForm, CustomUserCreationForm, CustomAuthenticationForm, UserUpdateForm, ProfileUpdateForm, DistributionRequestForm, OTPVerificationForm, ArtistUpgradeForm, PasswordResetRequestForm, PasswordResetConfirmForm
+from .models import *
+from .forms import *
 from functools import wraps
 from django.utils import timezone
 import uuid
@@ -645,7 +645,7 @@ def distribution_request(request):
             distribution_request = form.save(commit=False)
             distribution_request.artist = request.user
             distribution_request.status = 'pending'
-            distribution_request.total_amount = len(form.cleaned_data['tracks']) * 1666.67
+            distribution_request.total_amount = len(form.cleaned_data['tracks']) * 50.00
             distribution_request.save()
             form.save_m2m()
             messages.success(request, 'Distribution request created successfully! Please proceed to payment.')
@@ -655,7 +655,7 @@ def distribution_request(request):
     context = {
         'form': form,
         'platforms': DistributionPlatform.objects.filter(is_active=True),
-        'base_price_per_track': 1666.67,
+        'base_price_per_track': 50.00,
         'user_has_tracks': user_tracks.exists(),
     }
     return render(request, 'distribution/request.html', context)
@@ -680,13 +680,13 @@ def distribution_payment(request, request_id):
         messages.warning(request, 'This request has already been processed.')
         return redirect('distribution_status', request_id=request_id)
 
+    if not (request.user.first_name and request.user.last_name and request.user.email):
+        messages.warning(request, 'Please complete your profile with first name, last name, and email.')
+        return redirect('profile')
+
     mobile_operators = get_mobile_money_operators()
     if not mobile_operators:
         messages.warning(request, "Payment service is temporarily unavailable. Please try again later.")
-
-    if request.method == 'POST':
-        # Process payment here - we'll implement in the next view
-        pass
 
     context = {
         'distribution_request': distribution_request,
@@ -711,43 +711,33 @@ def process_distribution_payment(request, request_id):
         return JsonResponse({'status': 'error', 'message': 'Payment service unavailable'}, status=503)
 
     try:
-        if request.content_type == 'application/json':
-            data = json.loads(request.body)
-        else:
-            data = request.POST
-
-        logger.debug(f"Payment data received: {data}")
-
-        form = PaymentForm(data, operators=operators, user=request.user)
+        logger.debug(f"Received form data: {dict(request.POST)}")
+        form = PaymentForm(request.POST, operators=operators, user=request.user)
         if form.is_valid():
             operator_ref_id = form.cleaned_data['operator_ref_id']
-            mobile = form.cleaned_data['mobile']
+            mobile = form.cleaned_data['mobile']  # 9-digit number
             amount = form.cleaned_data['amount']
             user_email = form.cleaned_data['email']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             charge_id = str(uuid.uuid4())
 
-            try:
-                transaction = PaymentTransaction.objects.create(
-                    distribution_request=distribution_request,
-                    charge_id=charge_id,
-                    amount=amount,
-                    currency='MWK',
-                    mobile=mobile,
-                    operator_ref_id=operator_ref_id,
-                    status='pending',
-                    user_email=user_email
-                )
-            except Exception as e:
-                logger.error(f"Failed to create PaymentTransaction: {str(e)}")
-                return JsonResponse({'status': 'error', 'message': 'Failed to initialize transaction. Please try again.'}, status=500)
+            transaction = PaymentTransaction.objects.create(
+                distribution_request=distribution_request,
+                charge_id=charge_id,
+                amount=amount,
+                currency='MWK',
+                mobile=mobile,
+                operator_ref_id=operator_ref_id,
+                status='pending',
+                user_email=user_email
+            )
 
             admin_email = settings.ADMIN_PAYMENT_EMAIL
 
             payload = {
                 "mobile_money_operator_ref_id": operator_ref_id,
-                "mobile": mobile,
+                "mobile": mobile,  # Use 9-digit number
                 "amount": str(int(amount)),
                 "charge_id": charge_id,
                 "email": admin_email,
@@ -764,33 +754,24 @@ def process_distribution_payment(request, request_id):
                 "Authorization": f"Bearer {settings.PAYCHANGU_API_KEY.strip()}"
             }
 
-            try:
-                response = requests.post(url, json=payload, headers=headers, timeout=10)
-                response_data = response.json()
-                logger.debug(f"PayChangu response: {response_data}")
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            response_data = response.json()
+            logger.debug(f"PayChangu response: {response_data}")
 
-                if response.status_code == 200 and response_data.get('status') == 'success':
-                    transaction.response_data = response_data
-                    transaction.save()
-                    logger.info(f"Payment initiated for distribution request {request_id}, transaction {charge_id}")
-                    return JsonResponse({
-                        'status': 'success',
-                        'message': 'Payment initiated',
-                        'transaction_id': charge_id
-                    })
-                else:
-                    transaction.delete()
-                    error_message = response_data.get('message', 'Unknown error')
-                    logger.error(f"PayChangu API error: {error_message}")
-                    return JsonResponse({'status': 'error', 'message': f"Payment initialization failed: {error_message}"}, status=400)
-            except RequestException as e:
+            if response.status_code == 200 and response_data.get('status') == 'success':
+                transaction.response_data = response_data
+                transaction.save()
+                logger.info(f"Payment initiated for distribution request {request_id}, transaction {charge_id}")
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Payment initiated',
+                    'transaction_id': charge_id
+                })
+            else:
                 transaction.delete()
-                logger.error(f"PayChangu API request failed: {str(e)}")
-                return JsonResponse({'status': 'error', 'message': 'Payment service unavailable'}, status=503)
-            except ValueError as e:
-                transaction.delete()
-                logger.error(f"Invalid PayChangu response: {str(e)}")
-                return JsonResponse({'status': 'error', 'message': 'Invalid response from payment service'}, status=500)
+                error_message = response_data.get('message', 'Unknown error')
+                logger.error(f"PayChangu API error: {error_message}")
+                return JsonResponse({'status': 'error', 'message': error_message}, status=400)
         else:
             logger.warning(f"Form validation failed: {form.errors.as_json()}")
             return JsonResponse({'status': 'error', 'message': form.errors.as_json()}, status=400)

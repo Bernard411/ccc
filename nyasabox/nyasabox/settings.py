@@ -174,3 +174,5 @@ LOGGING = {
         },
     },
 }
+
+ADMIN_PAYMENT_EMAIL = os.getenv('ADMIN_PAYMENT_EMAIL', 'wavet3ch041@gmail.com')

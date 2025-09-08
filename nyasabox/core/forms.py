@@ -190,6 +190,10 @@ class ArtistUpgradeForm(forms.ModelForm):
             'website': forms.URLInput(attrs={'class': 'form-control'}),
         }
 
+
+from django import forms
+from django.core.exceptions import ValidationError
+
 class PaymentForm(forms.Form):
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
@@ -199,22 +203,35 @@ class PaymentForm(forms.Form):
     mobile = forms.CharField(max_length=20, required=True)
 
     def __init__(self, *args, **kwargs):
-        operators = kwargs.pop('operators', [])
+        self.operators = kwargs.pop('operators', [])  # Store operators as instance attribute
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
-        self.fields['operator_ref_id'].choices = [(op['ref_id'], op['name']) for op in operators]
-        
+        self.fields['operator_ref_id'].choices = [(op['ref_id'], op['name']) for op in self.operators]
         if user:
-            self.fields['first_name'].initial = user.first_name
-            self.fields['last_name'].initial = user.last_name
-            self.fields['email'].initial = user.email
+            self.fields['first_name'].initial = user.first_name or ''
+            self.fields['last_name'].initial = user.last_name or ''
+            self.fields['email'].initial = user.email or ''
 
     def clean_mobile(self):
         mobile = self.cleaned_data['mobile']
-        if len(mobile) != 10 or not mobile.startswith('0'):
-            raise ValidationError("Invalid mobile number format")
-        return mobile
+        mobile = mobile.strip().replace(' ', '').replace('-', '')
+        if mobile.startswith('+265'):
+            mobile = mobile[4:]
+        elif mobile.startswith('0'):
+            mobile = mobile[1:]
+        if len(mobile) != 9 or not mobile.isdigit():
+            raise ValidationError("Enter a valid mobile number of nine (9) digits.")
+        operator_ref_id = self.cleaned_data.get('operator_ref_id')
+        if operator_ref_id:
+            operator = next((op for op in self.operators if op['ref_id'] == operator_ref_id), None)
+            if operator:
+                operator_name = operator.get('name', '').lower()
+                if 'tnm' in operator_name and not mobile.startswith('8'):
+                    raise ValidationError("TNM number must start with 8.")
+                if 'airtel' in operator_name and not mobile.startswith('9'):
+                    raise ValidationError("Airtel number must start with 9.")
+        return mobile  # Return 9-digit number without +265
+
 
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField(

@@ -86,48 +86,6 @@
         padding: 2rem;
     }
 
-    .method-option {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1.2rem;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 1rem;
-        margin-bottom: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .method-option:hover {
-        background: rgba(255, 255, 255, 0.12);
-        transform: translateY(-2px);
-    }
-
-    .method-option.selected {
-        background: rgba(46, 213, 115, 0.1);
-        border: 1px solid #2ed573;
-    }
-
-    .method-icon {
-        font-size: 2rem;
-        color: #2ed573;
-    }
-
-    .method-details {
-        flex: 1;
-    }
-
-    .method-name {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.3rem;
-    }
-
-    .method-description {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-    }
-
     .form-control, .form-select {
         width: 100%;
         padding: 1rem 1.2rem;
@@ -388,7 +346,7 @@
 <div class="payment-container">
     <div class="payment-header">
         <h1 class="payment-title">Complete Payment</h1>
-        <p class="payment-subtitle">Choose your preferred payment method to complete your distribution request</p>
+        <p class="payment-subtitle">Enter your details to complete your distribution request</p>
     </div>
 
     <div class="payment-card">
@@ -414,9 +372,39 @@
         <div class="payment-methods">
             <form id="paymentForm" method="POST" action="{% url 'process_distribution_payment' distribution_request.id %}">
                 {% csrf_token %}
-                <input type="hidden" name="first_name" value="{{ user.first_name }}">
-                <input type="hidden" name="last_name" value="{{ user.last_name }}">
-                <input type="hidden" name="email" value="{{ user.email }}">
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-icons">person</span></span>
+                        <input type="text" class="form-control" name="first_name" id="firstName" value="{{ user.first_name|default_if_none:'' }}" placeholder="Enter first name" required>
+                        <div id="firstNameValidation" class="invalid-feedback">
+                            Please enter your first name.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-icons">person</span></span>
+                        <input type="text" class="form-control" name="last_name" id="lastName" value="{{ user.last_name|default_if_none:'' }}" placeholder="Enter last name" required>
+                        <div id="lastNameValidation" class="invalid-feedback">
+                            Please enter your last name.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="material-icons">email</span></span>
+                        <input type="email" class="form-control" name="email" id="email" value="{{ user.email|default_if_none:'' }}" placeholder="Enter email" required>
+                        <div id="emailValidation" class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                </div>
+
                 <input type="hidden" name="amount" value="{{ total_amount|floatformat:2 }}">
 
                 <div class="mb-3">
@@ -424,7 +412,7 @@
                     <div class="d-flex justify-content-start align-items-center gap-2 mb-2">
                         {% for operator in mobile_operators %}
                             <div class="gateway-logo" {% if 'tnm' in operator.name|lower %}style="background-color: black; padding: 4px; border-radius: 4px;"{% endif %}>
-                                <img src="{% if 'airtel' in operator.name|lower %}{% static 'icons/airtelmoney.png' %}{% else %}https://www.tnmmpamba.co.mw/img/Mpamba-Logo-2.22297a9f.svg{% endif %}" alt="{{ operator.name }}" class="img-fluid" style="height: 30px;">
+                                <img src="{% if 'airtel' in operator.name|lower %}{% static 'icons/airtel_money.png' %}{% else %}{% static 'icons/tnm_mpamba.svg' %}{% endif %}" alt="{{ operator.name }}" class="img-fluid" style="height: 30px;">
                             </div>
                         {% endfor %}
                     </div>
@@ -467,7 +455,7 @@
                 <ul class="info-steps">
                     <li class="info-step">
                         <span class="step-number">1</span>
-                        <span>Select your mobile money provider</span>
+                        <span>Enter your details and select your mobile money provider</span>
                     </li>
                     <li class="info-step">
                         <span class="step-number">2</span>
@@ -568,7 +556,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     const operatorSelect = document.getElementById('operatorSelect');
     const mobileNumber = document.getElementById('mobileNumber');
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const email = document.getElementById('email');
     const mobileValidation = document.getElementById('mobileValidation');
+    const firstNameValidation = document.getElementById('firstNameValidation');
+    const lastNameValidation = document.getElementById('lastNameValidation');
+    const emailValidation = document.getElementById('emailValidation');
     const operatorValidation = document.getElementById('operatorValidation');
     const paymentForm = document.getElementById('paymentForm');
     const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
@@ -585,60 +579,113 @@ document.addEventListener('DOMContentLoaded', function() {
         return normalized;
     }
 
-    function validateMobileNumber() {
-        const rawNumber = mobileNumber.value;
-        const number = normalizeMobileNumber(rawNumber);
-        const operatorRefId = operatorSelect.value;
-        let isValid = false;
-        let validationMessage = '';
+    function validateForm() {
+        let isValid = true;
 
-        if (!operatorRefId) {
+        // Validate first name
+        if (!firstName.value.trim()) {
+            firstName.classList.add('is-invalid');
+            firstNameValidation.style.display = 'block';
+            isValid = false;
+        } else {
+            firstName.classList.remove('is-invalid');
+            firstNameValidation.style.display = 'none';
+        }
+
+        // Validate last name
+        if (!lastName.value.trim()) {
+            lastName.classList.add('is-invalid');
+            lastNameValidation.style.display = 'block';
+            isValid = false;
+        } else {
+            lastName.classList.remove('is-invalid');
+            lastNameValidation.style.display = 'none';
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+            email.classList.add('is-invalid');
+            emailValidation.style.display = 'block';
+            isValid = false;
+        } else {
+            email.classList.remove('is-invalid');
+            emailValidation.style.display = 'none';
+        }
+
+        // Validate operator
+        if (!operatorSelect.value) {
             operatorSelect.classList.add('is-invalid');
             operatorValidation.style.display = 'block';
-            return false;
+            isValid = false;
         } else {
             operatorSelect.classList.remove('is-invalid');
             operatorValidation.style.display = 'none';
         }
 
-        const operatorName = operatorSelect.options[operatorSelect.selectedIndex].dataset.name || '';
-        if (operatorName && number) {
+        // Validate mobile number
+        const rawNumber = mobileNumber.value;
+        const number = normalizeMobileNumber(rawNumber);
+        let validationMessage = '';
+
+        if (number) {
             const isNineDigits = /^\d{9}$/.test(number);
             if (!isNineDigits) {
-                validationMessage = 'Mobile number must be exactly 9 digits';
-            } else if (operatorName.includes('tnm')) {
-                isValid = /^8\d{8}$/.test(number);
-                validationMessage = 'TNM number must start with 8 and be 9 digits';
-            } else if (operatorName.includes('airtel')) {
-                isValid = /^9\d{8}$/.test(number);
-                validationMessage = 'Airtel number must start with 9 and be 9 digits';
+                validationMessage = 'Enter a valid mobile number of nine (9) digits';
             } else {
-                validationMessage = 'Unknown operator';
+                const operatorName = operatorSelect.options[operatorSelect.selectedIndex]?.dataset.name || '';
+                if (operatorName.includes('tnm') && !number.startsWith('8')) {
+                    validationMessage = 'TNM number must start with 8';
+                } else if (operatorName.includes('airtel') && !number.startsWith('9')) {
+                    validationMessage = 'Airtel number must start with 9';
+                } else {
+                    mobileNumber.classList.remove('is-invalid');
+                    mobileValidation.style.display = 'none';
+                    return isValid; // Early return if mobile is valid
+                }
             }
         } else {
             validationMessage = 'Mobile number is required';
         }
 
-        mobileNumber.classList.toggle('is-invalid', !isValid && rawNumber.length > 0);
+        mobileNumber.classList.add('is-invalid');
         mobileValidation.textContent = validationMessage;
-        mobileValidation.style.display = rawNumber.length > 0 && !isValid ? 'block' : 'none';
+        mobileValidation.style.display = 'block';
+        isValid = false;
         return isValid;
     }
 
-    operatorSelect.addEventListener('change', validateMobileNumber);
-    mobileNumber.addEventListener('input', validateMobileNumber);
+    operatorSelect.addEventListener('change', validateForm);
+    mobileNumber.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 9) {
+            this.value = this.value.slice(0, 9);
+        }
+        validateForm();
+    });
+    firstName.addEventListener('input', validateForm);
+    lastName.addEventListener('input', validateForm);
+    email.addEventListener('input', validateForm);
 
     confirmPaymentBtn.addEventListener('click', function() {
-        validateMobileNumber();
+        validateForm();
     });
 
     paymentForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        if (!validateMobileNumber()) {
+        if (!validateForm()) {
             return;
         }
 
         const formData = new FormData(this);
+        const mobile = normalizeMobileNumber(formData.get('mobile'));
+        formData.set('mobile', mobile); // Use 9-digit number
+
+        // Log form data for debugging
+        const formDataObj = {};
+        formData.forEach((value, key) => { formDataObj[key] = value });
+        console.log('Submitting form data:', formDataObj);
+
         try {
             statusModal.show();
             showModalState('paymentPending');
@@ -657,7 +704,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 pollAttempts = 0;
                 pollPaymentStatus(data.transaction_id);
             } else {
-                showModalState('paymentError', data.message || 'Payment initiation failed');
+                const errorMsg = data.message ? (typeof data.message === 'string' ? JSON.parse(data.message) : data.message) : { error: 'Payment initiation failed' };
+                const message = typeof errorMsg === 'object' ? Object.values(errorMsg).map(field => Array.isArray(field) ? field[0].message : field).join(', ') : errorMsg;
+                showModalState('paymentError', message);
             }
         } catch (error) {
             showModalState('paymentError', 'Failed to initiate payment. Please try again.');
