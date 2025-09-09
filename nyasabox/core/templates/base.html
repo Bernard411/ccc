@@ -1009,7 +1009,11 @@
             <div class="nav-section">
                 <div class="nav-item {% if request.path == '/' %}active{% endif %}">
                     <span class="material-icons">home</span>
-                    <a href="{% url 'index' %}">Home</a>
+                    <a href="{% url 'website' %}">Home</a>
+                </div>
+                  <div class="nav-item {% if request.path == '/' %}active{% endif %}">
+                    <span class="material-icons">local_fire_department</span>
+                    <a href="{% url 'index' %}">Start Listening</a>
                 </div>
                 <div class="nav-item">
                     <span class="material-icons">search</span>
