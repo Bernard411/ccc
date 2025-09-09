@@ -83,19 +83,19 @@ WSGI_APPLICATION = 'nyasabox.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'pezaqbcv_nyasabox',        # Database name
-#         'USER': 'pezaqbcv_pezamw',        # Database user
-#         'PASSWORD': 'afriresearch2025',         # User password
-#         'HOST': 'localhost',                 # Use '127.0.0.1' or 'localhost'
-#         'PORT': '3306',                      # Default MySQL port
-#         'OPTIONS': {
-#             'sql_mode': 'STRICT_TRANS_TABLES',  # Recommended for consistency
-#         },
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'pezaqbcv_nyasabox',        # Database name
+        'USER': 'pezaqbcv_pezamw',        # Database user
+        'PASSWORD': 'afriresearch2025',         # User password
+        'HOST': 'localhost',                 # Use '127.0.0.1' or 'localhost'
+        'PORT': '3306',                      # Default MySQL port
+        'OPTIONS': {
+            'sql_mode': 'STRICT_TRANS_TABLES',  # Recommended for consistency
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
