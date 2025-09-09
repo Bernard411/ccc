@@ -660,14 +660,16 @@ def distribution_request(request):
     }
     return render(request, 'distribution/request.html', context)
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+logger = logging.getLogger(__name__)
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def get_mobile_money_operators():
     url = "https://api.paychangu.com/mobile-money"
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {settings.PAYCHANGU_API_KEY.strip()}"
     }
-    response = requests.get(url, headers=headers, timeout=10)
+    response = requests.get(url, headers=headers, timeout=15)
     if response.status_code == 200:
         return response.json().get('data', [])
     logger.error(f"Failed to fetch operators: {response.status_code} - {response.text}")
@@ -708,7 +710,7 @@ def process_distribution_payment(request, request_id):
 
     operators = get_mobile_money_operators()
     if not operators:
-        return JsonResponse({'status': 'error', 'message': 'Payment service unavailable'}, status=503)
+        return JsonResponse({'status': 'error', 'message': 'Payment service unavailable. Please try again later.'}, status=503)
 
     try:
         logger.debug(f"Received form data: {dict(request.POST)}")
@@ -720,7 +722,7 @@ def process_distribution_payment(request, request_id):
             user_email = form.cleaned_data['email']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
-            charge_id = str(uuid.uuid4())
+            charge_id = f"nyasa-{uuid.uuid4()}"  # Prefix to ensure uniqueness
 
             transaction = PaymentTransaction.objects.create(
                 distribution_request=distribution_request,
@@ -737,7 +739,7 @@ def process_distribution_payment(request, request_id):
 
             payload = {
                 "mobile_money_operator_ref_id": operator_ref_id,
-                "mobile": mobile,  # Use 9-digit number
+                "mobile": mobile,  # 9-digit number
                 "amount": str(int(amount)),
                 "charge_id": charge_id,
                 "email": admin_email,
@@ -754,30 +756,39 @@ def process_distribution_payment(request, request_id):
                 "Authorization": f"Bearer {settings.PAYCHANGU_API_KEY.strip()}"
             }
 
-            response = requests.post(url, json=payload, headers=headers, timeout=10)
-            response_data = response.json()
-            logger.debug(f"PayChangu response: {response_data}")
+            @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(requests.exceptions.RequestException))
+            def make_payment_request():
+                return requests.post(url, json=payload, headers=headers, timeout=15)
 
-            if response.status_code == 200 and response_data.get('status') == 'success':
-                transaction.response_data = response_data
-                transaction.save()
-                logger.info(f"Payment initiated for distribution request {request_id}, transaction {charge_id}")
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Payment initiated',
-                    'transaction_id': charge_id
-                })
-            else:
+            try:
+                response = make_payment_request()
+                response_data = response.json()
+                logger.debug(f"PayChangu response: {response_data}")
+
+                if response.status_code == 200 and response_data.get('status') == 'success':
+                    transaction.response_data = response_data
+                    transaction.save()
+                    logger.info(f"Payment initiated for distribution request {request_id}, transaction {charge_id}")
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': 'Payment initiated',
+                        'transaction_id': charge_id
+                    })
+                else:
+                    transaction.delete()
+                    error_message = response_data.get('message', 'Unknown error')
+                    logger.error(f"PayChangu API error: {error_message}")
+                    return JsonResponse({'status': 'error', 'message': error_message}, status=400)
+            except requests.exceptions.RequestException as e:
                 transaction.delete()
-                error_message = response_data.get('message', 'Unknown error')
-                logger.error(f"PayChangu API error: {error_message}")
-                return JsonResponse({'status': 'error', 'message': error_message}, status=400)
+                logger.error(f"PayChangu API request failed after retries: {str(e)}")
+                return JsonResponse({'status': 'error', 'message': 'Payment service is temporarily unavailable. Please try again later.'}, status=503)
         else:
             logger.warning(f"Form validation failed: {form.errors.as_json()}")
             return JsonResponse({'status': 'error', 'message': form.errors.as_json()}, status=400)
     except Exception as e:
         logger.error(f"Unexpected error in process_distribution_payment: {str(e)}", exc_info=True)
-        return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred'}, status=500)
+        return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred. Please try again later.'}, status=500)
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def check_distribution_payment_status(request, transaction_id):

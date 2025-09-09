@@ -79,3 +79,12 @@ class DistributionRequestAdmin(admin.ModelAdmin):
     date_hierarchy = 'requested_at'
     ordering = ('-requested_at',)
     filter_horizontal = ('tracks', 'platforms')
+
+@admin.register(PaymentTransaction)
+class PaymentTransactionAdmin(admin.ModelAdmin):
+    list_display = ('charge_id', 'distribution_request', 'amount', 'status', 'created_at', 'completed_at')
+    list_filter = ('status', 'created_at', 'completed_at')
+    search_fields = ('charge_id', 'distribution_request__artist__username', 'mobile', 'user_email')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+    readonly_fields = ('charge_id', 'created_at', 'completed_at', 'response_data')

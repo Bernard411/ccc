@@ -1,19 +1,9 @@
-Not Found: /media/platform_logos/spo.jpg
-Starting new HTTPS connection (1): api.paychangu.com:443
-https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
-Starting new HTTPS connection (1): api.paychangu.com:443
-https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
-Received form data: {'csrfmiddlewaretoken': ['VcYd3eUJTVY3Pxuklonxed0FrStokS6wbnEPxhjb2PFEOUUR7gOElAReAHTEhqk7'], 'first_name': ['Ben'], 'last_name': ['Malunga'], 'email': ['benmalunga041@gmail.com'], 'amount': ['1666.67'], 'operator_ref_id': ['27494cb5-ba9e-437f-a114-4e7a7686bcca'], 'mobile': ['886979157']}
-Sending payload to PayChangu: {'mobile_money_operator_ref_id': '27494cb5-ba9e-437f-a114-4e7a7686bcca', 'mobile': '+265886979157', 'amount': '1666', 'charge_id': '6f9df49d-0de5-47ed-8841-31bf4cd83d66', 'email': 'wavet3ch041@gmail.com', 'first_name': 'Ben', 'last_name': 'Malunga'}
-Starting new HTTPS connection (1): api.paychangu.com:443
-https://api.paychangu.com:443 "POST /mobile-money/payments/initialize HTTP/1.1" 400 None
-PayChangu response: {'status': 'failed', 'data': None, 'message': {'mobile': ['Enter a valid mobile number of nine (9) digits.']}}
-PayChangu API error: {'mobile': ['Enter a valid mobile number of nine (9) digits.']}
-Bad Request: /process-payment/7/
-C:\Users\dell\Desktop\personal\ccc\nyasabox\core\forms.py changed, reloading.
+C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
 Watching for file changes with StatReloader
-C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py changed, reloading.
+C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
 Watching for file changes with StatReloader
+<<<<<<< HEAD
+=======
 Starting new HTTPS connection (1): api.paychangu.com:443
 https://api.paychangu.com:443 "GET /mobile-money HTTP/1.1" 200 None
 Starting new HTTPS connection (1): api.paychangu.com:443
@@ -221,6 +211,7 @@ Not Found: /favicon.ico
 Watching for file changes with StatReloader
 Not Found: /media/profile_pics/default.png
 Not Found: /media/profile_pics/default.png
+<<<<<<< HEAD
 /home/cyberghost4112001/ccc/ccc/nyasabox/nyasabox/settings.py changed, reloading.
 Watching for file changes with StatReloader
 /home/cyberghost4112001/ccc/ccc/nyasabox/nyasabox/settings.py changed, reloading.
@@ -231,3 +222,6 @@ Watching for file changes with StatReloader
 Watching for file changes with StatReloader
 /home/cyberghost4112001/ccc/ccc/nyasabox/nyasabox/settings.py changed, reloading.
 Watching for file changes with StatReloader
+=======
+>>>>>>> 0ac3d6f7e4d73bc07316a147f0316a842d882792
+>>>>>>> 9f5b29c8e9dbb5584779bf5496d6c1bdfda38813

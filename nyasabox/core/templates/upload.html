@@ -502,6 +502,14 @@
                     {% endif %}
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Cover Art</label>
+                    {{ track_form.cover_art }}
+                    {% if track_form.cover_art.errors %}
+                        <div class="text-danger">{{ track_form.cover_art.errors }}</div>
+                    {% endif %}
+                </div>
+
                 <button type="submit" class="submit-btn">
                     <span class="material-icons">cloud_upload</span> Upload Track
                 </button>
