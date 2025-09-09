@@ -865,11 +865,12 @@ def send_distribution_payment_notification(transaction, success=True):
     emails = [request.artist.email]
     status = 'Successful' if success else 'Failed'
     subject = f"Distribution Payment {status}: Request #{request.id}"
+    site_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')  # Default to localhost if not set
     message = render_to_string('emails/distribution_payment_notification.html', {
         'request': request,
         'transaction': transaction,
         'success': success,
-        'site_url': settings.SITE_URL,
+        'site_url': site_url,
     })
     send_mail(
         subject=subject,
