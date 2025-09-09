@@ -706,7 +706,7 @@
                 <a href="{% url 'track_detail' track.slug %}" class="track-slide" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
                     <div class="track-slide-cover">
                         {% if track.album and track.album.cover_art %}
-                        <img src="{{ track.album.cover_art.url }}" alt="{{ track.title }}">
+                        <img src="{{ track.cover_art.url }}" alt="{{ track.title }}">
                         {% else %}
                         <span class="material-icons">music_note</span>
                         {% endif %}
