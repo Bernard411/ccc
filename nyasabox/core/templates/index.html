@@ -4,563 +4,609 @@
 {% block title %}NyasaBox - Discover Music{% endblock %}
 
 {% block extra_styles %}
-<style>
-    body {
-        background: #000000;
-        color: #e0e0e0; /* Changed from white to light gray for better readability */
-    }
-
-    .hero-section {
-        padding: 1.2rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero-carousel {
-        position: relative;
-        height: 16rem;
-        border-radius: 1.2rem;
-        overflow: hidden;
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.6);
-    }
-
-    .hero-slide {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.8s ease-in-out;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem;
-        color: white;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .hero-slide::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 0;
-    }
-
-    .hero-slide.active {
-        opacity: 1;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 1;
-        max-width: 60%;
-    }
-
-    .hero-content h1 {
-        font-size: clamp(1.5rem, 3.5vw, 2rem);
-        font-weight: 800;
-        margin-bottom: 0.6rem;
-        line-height: 1.1;
-        color: #ffffff; /* Explicitly set white color */
-    }
-
-    .hero-content p {
-        font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-        opacity: 0.9;
-        margin-bottom: 1.2rem;
-        max-width: 28rem;
-        color: #ffffff; /* Explicitly set white color */
-    }
-
-    .hero-cta {
-        padding: 0.6rem 1.2rem;
-        background: #ff6b6b;
-        border: none;
-        border-radius: 1.2rem;
-        color: white;
-        font-weight: 600;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .hero-cta:hover {
-        background: #4ecdc4;
-        transform: translateY(-0.1rem);
-    }
-
-    .hero-visual {
-        font-size: clamp(4rem, 8vw, 6rem);
-        opacity: 0.3;
-        animation: float 6s ease-in-out infinite;
-        position: relative;
-        z-index: 1;
-        color: #ffffff; /* Explicitly set white color */
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-1rem); }
-    }
-
-    .carousel-dots {
-        position: absolute;
-        bottom: 1rem;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 0.6rem;
-    }
-
-    .dot {
-        width: 0.6rem;
-        height: 0.6rem;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .dot.active {
-        background: white;
-        transform: scale(1.2);
-    }
-
-    .content {
-        padding: 0 1.2rem 1.5rem;
-        flex: 1;
-    }
-
-    .section {
-        margin-bottom: 2.5rem;
-    }
-
-    .section-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.2rem;
-    }
-
-    .section-title {
-        font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-        font-weight: 800;
-        color: #ffffff; /* Changed to white for better visibility */
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section-title .material-icons {
-        font-size: 1.4rem;
-        color: #ff6b6b;
-    }
-
-    .see-all {
-        color: #ff6b6b;
-        font-weight: 600;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-    }
-
-    .see-all:hover {
-        color: #4ecdc4;
-        transform: translateX(0.2rem);
-    }
-
-    /* New Slider Styles for Latest Tracks */
-    .tracks-slider {
-        position: relative;
-        margin: 0 -0.6rem 1.5rem;
-        overflow: hidden;
-    }
-
-    .tracks-slider-container {
-        display: flex;
-        overflow-x: auto;
-        scroll-behavior: smooth;
-        padding: 0.5rem 0.6rem;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
-    }
-
-    .tracks-slider-container::-webkit-scrollbar {
-        display: none; /* Chrome, Safari */
-    }
-
-    .track-slide {
-        flex: 0 0 auto;
-        width: 16rem;
-        margin-right: 1rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 1rem;
-        padding: 1rem;
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        cursor: pointer;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(0.5rem);
-    }
-
-    .track-slide:hover {
-        transform: translateY(-0.4rem) scale(1.02);
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .track-slide-cover {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 0.8rem;
-        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        color: white;
-        margin-bottom: 0.8rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .track-slide-cover img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .track-slide-info {
-        text-align: center;
-    }
-
-    .track-slide-title {
-        font-weight: 700;
-        font-size: 0.9rem;
-        margin-bottom: 0.3rem;
-        color: #ffffff; /* Changed to white for better visibility */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .track-slide-artist {
-        color: rgba(255, 255, 255, 0.8); /* Increased opacity for better visibility */
-        font-size: 0.8rem;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: 0.5rem;
-    }
-
-    .track-slide-duration {
-        color: rgba(255, 255, 255, 0.7); /* Increased opacity for better visibility */
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-    }
-
-    .slider-controls {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.8rem;
-        margin-top: 0.8rem;
-    }
-
-    .slider-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        border-radius: 50%;
-        width: 2rem;
-        height: 2rem;
-        color: white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-    }
-
-    .slider-btn:hover {
-        background: #ff6b6b;
-        transform: scale(1.1);
-    }
-
-    .slider-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: scale(1);
-    }
-
-    /* Music grid styles */
-    .music-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .music-card {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 1rem;
-        padding: 0.8rem;
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(0.5rem);
-    }
-
-    .music-card:hover {
-        transform: translateY(-0.4rem) scale(1.02);
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .music-cover {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 0.8rem;
-        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: white;
-        margin-bottom: 0.6rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .music-cover img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .music-info {
-        text-align: center;
-    }
-
-    .music-title {
-        font-weight: 700;
-        font-size: 0.85rem;
-        margin-bottom: 0.2rem;
-        color: #ffffff; /* Changed to white for better visibility */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .music-artist {
-        color: rgba(255, 255, 255, 0.8); /* Increased opacity for better visibility */
-        font-size: 0.8rem;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .music-stats {
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        margin-top: 0.4rem;
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.7); /* Increased opacity for better visibility */
-    }
-
-    .stat {
-        display: flex;
-        align-items: center;
-        gap: 0.2rem;
-    }
-
-    .play-btn {
-        position: absolute;
-        top: 50%;
-        right: 0.8rem;
-        transform: translateY(-50%) scale(0);
-        background: #ff6b6b;
-        border: none;
-        border-radius: 50%;
-        width: 2rem;
-        height: 2rem;
-        color: white;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        box-shadow: 0 0.2rem 1rem rgba(255, 107, 107, 0.15);
-        z-index: 2;
-    }
-
-    .music-card:hover .play-btn {
-        transform: translateY(-50%) scale(1);
-    }
-
-    .play-btn:hover {
-        background: #4ecdc4;
-        transform: translateY(-50%) scale(1.1);
-    }
-
-    /* Artist grid layout */
-    .artist-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .artist-card {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 1rem;
-        padding: 1rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .artist-card:hover {
-        transform: translateY(-0.2rem);
-        box-shadow: 0 0.2rem 1rem rgba(255, 107, 107, 0.15);
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .artist-avatar {
-        width: 5rem;
-        height: 5rem;
-        border-radius: 50%;
-        margin: 0 auto 0.8rem;
-        background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        color: white;
-        font-weight: bold;
-    }
-
-    .artist-name {
-        font-weight: 700;
-        font-size: 0.9rem;
-        margin-bottom: 0.4rem;
-        color: #ffffff; /* Changed to white for better visibility */
-    }
-
-    .artist-stats {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.8); /* Increased opacity for better visibility */
-    }
-
-    /* Loading states */
-    .loading {
-        opacity: 0.6;
-        pointer-events: none;
-    }
-
-    .now-playing {
-        background: linear-gradient(90deg, #ff6b6b 0%, transparent 100%);
-        border-left: 3px solid #ff6b6b;
-    }
-
-    .now-playing .music-title,
-    .now-playing .track-slide-title {
-        color: #ff6b6b;
-        font-weight: 700;
-    }
-
-    /* Error message styling */
-    .error-message {
-        display: none;
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #ff4757;
-        color: white;
-        padding: 10px 15px;
-        border-radius: 5px;
-        z-index: 10000;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 75rem) {
-        .music-grid {
-            grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NyasaBox - Discover Music</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(145deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            --bg-primary: rgba(10, 10, 10, 0.95);
+            --bg-secondary: rgba(26, 26, 46, 0.8);
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --accent-primary: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --accent-gradient: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-light: 0 0.2rem 1rem rgba(255, 107, 107, 0.15);
+            --shadow-heavy: 0 1rem 2rem rgba(0, 0, 0, 0.3);
         }
-    }
 
-    @media (max-width: 60.5rem) {
-        .hero-content {
-            max-width: 100%;
-            text-align: center;
+        body {
+            font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-x: hidden;
+            font-size: 0.875rem;
+            margin: 0;
+            padding: 0;
         }
-        
-        .hero-visual {
-            display: none;
-        }
-        
-        .music-grid {
-            grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-            gap: 0.8rem;
-        }
-        
-        .track-slide {
-            width: 14rem;
-        }
-    }
 
-    @media (max-width: 40rem) {
-        .content {
-            padding: 0 0.6rem 1.5rem;
+        body.light-mode {
+            --bg-gradient: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 30%, #cbd5e1 70%, #94a3b8 100%);
+            --bg-primary: rgba(248, 250, 252, 0.95);
+            --bg-secondary: rgba(226, 232, 240, 0.8);
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card-hover: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: rgba(30, 41, 59, 0.8);
+            --text-muted: rgba(30, 41, 59, 0.6);
+            --border-color: rgba(30, 41, 59, 0.1);
+            --shadow-light: 0 0.2rem 1rem rgba(255, 107, 107, 0.2);
+            --shadow-heavy: 0 1rem 2rem rgba(0, 0, 0, 0.1);
         }
-        
+
         .hero-section {
-            padding: 0.6rem;
-        }
-        
-        .hero-carousel {
-            height: 14rem;
-        }
-        
-        .hero-slide {
             padding: 1.2rem;
-            flex-direction: column;
-            text-align: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .music-grid {
-            grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+
+        .hero-carousel {
+            position: relative;
+            height: 16rem;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-heavy);
+            background: var(--bg-secondary);
+        }
+
+        .hero-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            color: var(--text-primary);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 0;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 60%;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+            opacity: 0.9;
+            margin-bottom: 1.2rem;
+            max-width: 28rem;
+            color: var(--text-primary);
+        }
+
+        .hero-cta {
+            padding: 0.6rem 1.2rem;
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 1.2rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .hero-cta:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-0.1rem);
+        }
+
+        .hero-visual {
+            font-size: clamp(4rem, 8vw, 6rem);
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+            color: var(--text-primary);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1rem); }
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
             gap: 0.6rem;
         }
-        
-        .artist-grid {
-            grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+
+        .dot {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        
-        .artist-avatar {
-            width: 4rem;
-            height: 4rem;
-            font-size: 1.5rem;
+
+        .dot.active {
+            background: var(--text-primary);
+            transform: scale(1.2);
         }
-        
+
+        .content {
+            padding: 0 1.2rem 1.5rem;
+            flex: 1;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title .material-icons {
+            font-size: 1.4rem;
+            color: var(--accent-primary);
+        }
+
+        .see-all {
+            color: var(--accent-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .see-all:hover {
+            color: var(--accent-secondary);
+            transform: translateX(0.2rem);
+        }
+
+        /* New Slider Styles for Latest Tracks */
+        .tracks-slider {
+            position: relative;
+            margin: 0 -0.6rem 1.5rem;
+            overflow: hidden;
+        }
+
+        .tracks-slider-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 0.5rem 0.6rem;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+
+        .tracks-slider-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+
         .track-slide {
-            width: 12rem;
+            flex: 0 0 auto;
+            width: 16rem;
+            margin-right: 1rem;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(0.5rem);
         }
-    }
-</style>
+
+        .track-slide:hover {
+            transform: translateY(-0.4rem) scale(1.02);
+            box-shadow: var(--shadow-heavy);
+            background: var(--bg-card-hover);
+        }
+
+        .track-slide-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 0.8rem;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .track-slide-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .track-slide-info {
+            text-align: center;
+        }
+
+        .track-slide-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-slide-artist {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.5rem;
+        }
+
+        .track-slide-duration {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .slider-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .slider-btn {
+            background: var(--bg-card);
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .slider-btn:hover {
+            background: var(--accent-primary);
+            transform: scale(1.1);
+        }
+
+        .slider-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Music grid styles */
+        .music-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .music-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 0.8rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(0.5rem);
+        }
+
+        .music-card:hover {
+            transform: translateY(-0.4rem) scale(1.02);
+            box-shadow: var(--shadow-heavy);
+            background: var(--bg-card-hover);
+        }
+
+        .music-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 0.8rem;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .music-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .music-info {
+            text-align: center;
+        }
+
+        .music-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-artist {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-stats {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 0.4rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            right: 0.8rem;
+            transform: translateY(-50%) scale(0);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: var(--shadow-light);
+            z-index: 2;
+        }
+
+        .music-card:hover .play-btn {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .play-btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Artist grid layout */
+        .artist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .artist-card {
+            text-align: center;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .artist-card:hover {
+            transform: translateY(-0.2rem);
+            box-shadow: var(--shadow-light);
+            background: var(--bg-card-hover);
+        }
+
+        .artist-avatar {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            margin: 0 auto 0.8rem;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .artist-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-primary);
+        }
+
+        .artist-stats {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .now-playing {
+            background: linear-gradient(90deg, var(--accent-primary) 0%, transparent 100%);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .now-playing .music-title,
+        .now-playing .track-slide-title {
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        /* Error message styling */
+        .error-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            z-index: 10000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 75rem) {
+            .music-grid {
+                grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+            }
+        }
+
+        @media (max-width: 60.5rem) {
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+            
+            .hero-visual {
+                display: none;
+            }
+            
+            .music-grid {
+                grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+                gap: 0.8rem;
+            }
+            
+            .track-slide {
+                width: 14rem;
+            }
+        }
+
+        @media (max-width: 40rem) {
+            .content {
+                padding: 0 0.6rem 1.5rem;
+            }
+            
+            .hero-section {
+                padding: 0.6rem;
+            }
+            
+            .hero-carousel {
+                height: 14rem;
+            }
+            
+            .hero-slide {
+                padding: 1.2rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .music-grid {
+                grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+                gap: 0.6rem;
+            }
+            
+            .artist-grid {
+                grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+            }
+            
+            .artist-avatar {
+                width: 4rem;
+                height: 4rem;
+                font-size: 1.5rem;
+            }
+            
+            .track-slide {
+                width: 12rem;
+            }
+        }
+    </style>
+
 {% endblock %}
 
 {% block content %}
