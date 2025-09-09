@@ -1,0 +1,747 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NyasaBox - Music Distribution</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    
+          @font-face {
+            font-family: 'Troy';
+            src: url('{% static 'troy.woff2' %}') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            font-size: 14px;
+        }
+        body {
+            font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            font-size: 0.875rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles */
+        header {
+            padding: 1rem 0;
+            background: rgba(0, 0, 0, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ff6b6b;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #ff6b6b;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-outline {
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+        .btn-outline:hover {
+            background: #ff6b6b;
+            color: #000;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 80vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .hero-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        .hero-slide.active {
+            opacity: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .hero-cta {
+            margin-top: 2rem;
+        }
+        .hero-ad {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Distribution Partners */
+        .distribution-section {
+            padding: 4rem 0;
+            text-align: center;
+        }
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        .partners-scroll {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            padding: 2rem 0;
+        }
+        .partners-track {
+            display: flex;
+            animation: scroll 30s linear infinite;
+        }
+        .partner-item {
+            flex: 0 0 auto;
+            margin: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .partner-item:hover {
+            opacity: 1;
+        }
+        .partner-item img {
+            height: 40px;
+            filter: grayscale(100%) brightness(200%);
+            transition: filter 0.3s;
+        }
+        .partner-item:hover img {
+            filter: grayscale(0%) brightness(100%);
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        /* Albums Section */
+        .albums-section {
+            padding: 4rem 0;
+        }
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .album-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .album-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .album-cover {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+        .album-info {
+            padding: 1.2rem;
+        }
+        .album-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .album-artist {
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+        .album-meta {
+            display: flex;
+            justify-content: space-between;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Tracks Section */
+        .tracks-section {
+            padding: 4rem 0;
+        }
+        .tracks-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s;
+        }
+        .track-item:last-child {
+            border-bottom: none;
+        }
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .track-number {
+            width: 30px;
+            opacity: 0.7;
+        }
+        .track-info {
+            flex: 1;
+            margin: 0 1.5rem;
+        }
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+        .track-artist {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .track-duration {
+            opacity: 0.7;
+        }
+        .track-play {
+            color: #ff6b6b;
+            margin-left: 1rem;
+            cursor: pointer;
+        }
+        
+        /* Ad Sections */
+        .ad-section {
+            padding: 3rem 0;
+            text-align: center;
+        }
+        .ad-container {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ad-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+        .ad-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .ad-text {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+        }
+        .ad-image {
+            flex: 1;
+            min-width: 300px;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .ad-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #ff6b6b;
+        }
+        .footer-links {
+            list-style: none;
+        }
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #ff6b6b;
+        }
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: background 0.3s;
+        }
+        .social-links a:hover {
+            background: #ff6b6b;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            nav ul {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .album-card, .track-item {
+                max-width: 100%;
+            }
+            .ad-content {
+                flex-direction: column;
+            }
+            .ad-text, .ad-image {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <img src="{% static 'log.png' %}" alt="NyasaBox"> NyasaBox
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Discover</a></li>
+                    <li><a href="#">Charts</a></li>
+                    <li><a href="#">Artists</a></li>
+                    <li><a href="#">Distribution</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline">Login</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-slideshow">
+            <div class="hero-slide active" style="background-image: url('https://source.unsplash.com/random/1600x900/?music,festival');"></div>
+            <div class="hero-slide" style="background-image: url('https://source.unsplash.com/random/1600x900/?concert,band');"></div>
+            <div class="hero-slide" style="background-image: url('https://source.unsplash.com/random/1600x900/?music,studio');"></div>
+        </div>
+        <div class="container hero-content">
+            <h1 class="hero-title">Distribute Your Music Worldwide</h1>
+            <p class="hero-subtitle">Get your music on all major streaming platforms while keeping 100% of your royalties.</p>
+            <div class="hero-cta">
+                <a href="#" class="btn btn-primary">Get Started Today</a>
+            </div>
+            <div class="hero-ad">
+                <h3>Special Limited Offer!</h3>
+                <p>Get 20% off your first distribution. Use code: NYASA20</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Distribution Partners -->
+      <section class="distribution-section">
+        <div class="container">
+            <h2 class="section-title">We Distribute To</h2>
+            <div class="partners-scroll">
+                <div class="partners-track">
+                    <!-- First set of logos -->
+                    <div class="partner-item" data-name="Spotify">
+                        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" 
+                             alt="Spotify" 
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMxREI5NTQiLz4KPHRleHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5TcG90aWZ5PC90ZXh0Pgo8L3N2Zz4='">
+                    </div>
+                    
+                    <div class="partner-item" data-name="Apple Music">
+                        <img src="https://logoeps.com/wp-content/uploads/2013/03/apple-vector-logo.png" 
+                             alt="Apple Music"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkFwcGxlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCI+TXVzaWM8L3RleHQ+Cjwvc3ZnPg=='">
+                    </div>
+                    
+                    <div class="partner-item" data-name="YouTube Music">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Youtube_Music_icon.svg" 
+                             alt="YouTube Music"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiNGRjAwMDAiLz4KPHR leHQgeD0iNTAiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIj5Zb3VUdWJlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPk11c2ljPC90ZXh0Pgo8L3N2Zz4='">
+                    </div>
+                    
+                    <div class="partner-item" data-name="Amazon Music">
+                        <img src="https://logoeps.com/wp-content/uploads/2012/10/amazon-vector-logo.png" 
+                             alt="Amazon Music"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkY5OTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkFtYXpvbjwvdGV4dD4KPHR leHQgeD0iNTAiIHk9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkY5OTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPk11c2ljPC90ZXh0Pgo8L3N2Zz4='">
+                    </div>
+                    
+                    <div class="partner-item" data-name="Deezer">
+                        <img src="https://e-cdns-images.dzcdn.net/images/misc/db73c688bb8aa1c75bd64ad11a8aaa75/500x500-000000-80-0-0.jpg" 
+                             alt="Deezer"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkY2NjAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPkRlZXplcjwvdGV4dD4KPC9zdmc+'">
+                    </div>
+                    
+                    <div class="partner-item" data-name="Tidal">
+                        <img src="https://seeklogo.com/images/T/tidal-logo-0633C8A9B7-seeklogo.com.png" 
+                             alt="Tidal"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiMwMDAwMDAiLz4KPHRleHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0Ij5UaWRhbDwvdGV4dD4KPC9zdmc+'">
+                    </div>
+                    
+                    <!-- Duplicate set for seamless scrolling -->
+                    <div class="partner-item" data-name="Spotify">
+                        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" 
+                             alt="Spotify" 
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMxREI5NTQiLz4KPHR leHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5TcG90aWZ5PC90ZXh0Pgo8L3N2Zz4='">
+                    </div>
+                    
+                    <div class="partner-item" data-name="Apple Music">
+                        <img src="https://logoeps.com/wp-content/uploads/2013/03/apple-vector-logo.png" 
+                             alt="Apple Music"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkFwcGxlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCI+TXVzaWM8L3RleHQ+Cjwvc3ZnPg=='">
+                    </div>
+                    
+                    <div class="partner-item" data-name="YouTube Music">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Youtube_Music_icon.svg" 
+                             alt="YouTube Music"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiNGRjAwMDAiLz4KPHRleHQgeD0iNTAiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIj5Zb3VUdWJlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPk11c2ljPC90ZXh0Pgo8L3N2Zz4='">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Albums Section -->
+    <section class="albums-section">
+        <div class="container">
+            <h2 class="section-title">Featured Albums</h2>
+            <div class="albums-grid">
+                <div class="album-card">
+                    <img src="https://source.unsplash.com/random/500x500/?album,hiphop" alt="Album Cover" class="album-cover">
+                    <div class="album-info">
+                        <h3 class="album-title">Midnight Vibes</h3>
+                        <p class="album-artist">DJ Nyasa</p>
+                        <div class="album-meta">
+                            <span>12 Tracks</span>
+                            <span>2023</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="album-card">
+                    <img src="https://source.unsplash.com/random/500x500/?album,rnb" alt="Album Cover" class="album-cover">
+                    <div class="album-info">
+                        <h3 class="album-title">Soulful Nights</h3>
+                        <p class="album-artist">Amina Soul</p>
+                        <div class="album-meta">
+                            <span>10 Tracks</span>
+                            <span>2023</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="album-card">
+                    <img src="https://source.unsplash.com/random/500x500/?album,reggae" alt="Album Cover" class="album-cover">
+                    <div class="album-info">
+                        <h3 class="album-title">Island Rhythm</h3>
+                        <p class="album-artist">Kingston Vibes</p>
+                        <div class="album-meta">
+                            <span>8 Tracks</span>
+                            <span>2023</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="album-card">
+                    <img src="https://source.unsplash.com/random/500x500/?album,electronic" alt="Album Cover" class="album-cover">
+                    <div class="album-info">
+                        <h3 class="album-title">Digital Dreams</h3>
+                        <p class="album-artist">Electro Pulse</p>
+                        <div class="album-meta">
+                            <span>15 Tracks</span>
+                            <span>2023</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ad Section -->
+    <section class="ad-section">
+        <div class="container">
+            <div class="ad-container">
+                <h2 class="ad-title">Premium Distribution Services</h2>
+                <div class="ad-content">
+                    <div class="ad-text">
+                        <p>Upgrade to our premium plan and get your music distributed to 150+ platforms with detailed analytics, promotional tools, and dedicated support.</p>
+                        <p>Special offer: 3 months free when you sign up for our annual plan!</p>
+                        <a href="#" class="btn btn-primary">Learn More</a>
+                    </div>
+                    <div class="ad-image">
+                        <img src="https://source.unsplash.com/random/600x400/?music,production" alt="Premium Distribution">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tracks Section -->
+    <section class="tracks-section">
+        <div class="container">
+            <h2 class="section-title">Popular Tracks</h2>
+            <div class="tracks-list">
+                <div class="track-item">
+                    <div class="track-number">1</div>
+                    <div class="track-info">
+                        <h3 class="track-title">Sunset Dreams</h3>
+                        <p class="track-artist">DJ Nyasa</p>
+                    </div>
+                    <div class="track-duration">3:45</div>
+                    <div class="track-play"><span class="material-icons">play_circle</span></div>
+                </div>
+                <div class="track-item">
+                    <div class="track-number">2</div>
+                    <div class="track-info">
+                        <h3 class="track-title">Ocean Breeze</h3>
+                        <p class="track-artist">Amina Soul</p>
+                    </div>
+                    <div class="track-duration">4:12</div>
+                    <div class="track-play"><span class="material-icons">play_circle</span></div>
+                </div>
+                <div class="track-item">
+                    <div class="track-number">3</div>
+                    <div class="track-info">
+                        <h3 class="track-title">Mountain High</h3>
+                        <p class="track-artist">Kingston Vibes</p>
+                    </div>
+                    <div class="track-duration">3:28</div>
+                    <div class="track-play"><span class="material-icons">play_circle</span></div>
+                </div>
+                <div class="track-item">
+                    <div class="track-number">4</div>
+                    <div class="track-info">
+                        <h3 class="track-title">City Lights</h3>
+                        <p class="track-artist">Electro Pulse</p>
+                    </div>
+                    <div class="track-duration">5:06</div>
+                    <div class="track-play"><span class="material-icons">play_circle</span></div>
+                </div>
+                <div class="track-item">
+                    <div class="track-number">5</div>
+                    <div class="track-info">
+                        <h3 class="track-title">Desert Wind</h3>
+                        <p class="track-artist">DJ Nyasa ft. Amina Soul</p>
+                    </div>
+                    <div class="track-duration">4:33</div>
+                    <div class="track-play"><span class="material-icons">play_circle</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>NyasaBox</h3>
+                    <p>The leading music distribution platform for African artists, helping you reach global audiences.</p>
+                    <div class="social-links">
+                        <a href="#"><span class="material-icons">facebook</span></a>
+                        <a href="#"><span class="material-icons">instagram</span></a>
+                        <a href="#"><span class="material-icons">twitter</span></a>
+                        <a href="#"><span class="material-icons">youtube</span></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Discover</a></li>
+                        <li><a href="#">Charts</a></li>
+                        <li><a href="#">Artists</a></li>
+                        <li><a href="#">Distribution</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Copyright Info</a></li>
+                        <li><a href="#">Cookies</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 NyasaBox. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hero slideshow functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hero slideshow
+            const slides = document.querySelectorAll('.hero-slide');
+            let currentSlide = 0;
+            
+            function showSlide(n) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                currentSlide = (n + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+            
+            // Change slide every 5 seconds
+            setInterval(nextSlide, 5000);
+            
+            // Play button functionality
+            document.querySelectorAll('.track-play').forEach(button => {
+                button.addEventListener('click', function() {
+                    const trackItem = this.closest('.track-item');
+                    const trackTitle = trackItem.querySelector('.track-title').textContent;
+                    alert(`Now playing: ${trackTitle}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

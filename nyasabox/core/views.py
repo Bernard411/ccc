@@ -958,3 +958,8 @@ def account_stats_view(request):
         'total_likes': stats['total_likes'] or 0,
     }
     return render(request, 'account_stats.html', context)
+
+
+
+def website(request):
+    return render(request, 'website.html')

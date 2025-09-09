@@ -3,7 +3,8 @@ from . import views, admin_views
 
 urlpatterns = [
     # Public routes
-    path('', views.index, name='index'),
+    path('home/', views.index, name='index'),
+    path('', views.website, name='website'),
     path('search/', views.search, name='search'),
     
 
@@ -64,4 +65,5 @@ urlpatterns = [
     # blog routes
     path('blogs/', views.blog_list, name='blog_list'),
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+
 ]
