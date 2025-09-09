@@ -234,6 +234,30 @@
                 font-size: 1.5rem;
             }
         }
+
+        .form-control {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 10, 10, 0.8);
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+body.light-mode .form-control {
+    border: 1px solid rgba(30, 41, 59, 0.1);
+    background: rgba(248, 250, 252, 0.8);
+    color: #1e293b;
+}
+
+.form-control:focus {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
+}
     </style>
 </head>
 <body>

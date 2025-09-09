@@ -120,6 +120,8 @@
             display: block;
         }
 
+        
+
         /* Close button for mobile sidebar */
         .sidebar-close {
             display: none;
@@ -1052,8 +1054,8 @@
                 </div>
                 {% endif %}
                 <div class="playlists">
-                    <h3>Browse</h3>
-                    <div class="playlist-item">
+                    <!-- <h3>Browse</h3> -->
+                    <!-- <div class="playlist-item">
                         <span class="material-icons">library_music</span>
                         <a href="{% url 'blog_list' %}">Blog</a>
                     </div>
@@ -1064,7 +1066,7 @@
                     <div class="playlist-item">
                         <span class="material-icons">favorite</span>
                         <span>Favorites</span>
-                    </div>
+                    </div> -->
                     {% if user.is_authenticated %}
                     {% if user.profile.is_artist and user.profile.artist_status == 'verified' %}
                     <div class="playlist-item">
@@ -1080,6 +1082,85 @@
                 </div>
             </div>
         </div>
+        <style>
+    /* Add these styles to your existing CSS */
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 10, 10, 0.8);
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+body.light-mode .form-control {
+    border: 1px solid rgba(30, 41, 59, 0.1);
+    background: rgba(248, 250, 252, 0.8);
+    color: #1e293b;
+}
+
+.form-control:focus {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
+}
+
+/* For checkbox inputs */
+.form-check-input {
+    margin-right: 0.5rem;
+    width: 1.1em;
+    height: 1.1em;
+    margin-top: 0.15em;
+    vertical-align: top;
+    background-color: rgba(10, 10, 10, 0.8);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    appearance: none;
+    print-color-adjust: exact;
+    border-radius: 0.25em;
+}
+
+.form-check-input[type=checkbox] {
+    border-radius: 0.25em;
+}
+
+.form-check-input:checked[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+    background-color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+body.light-mode .form-check-input {
+    background-color: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(30, 41, 59, 0.2);
+}
+
+body.light-mode .form-check-input:checked[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%231e293b' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+/* For password input fields specifically */
+input[type="password"].form-control {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* For the checkbox container alignment */
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.form-checkbox input {
+    margin-right: 0.5rem;
+}
+</style>
         <div class="main-content">
             <div class="header">
                 <div class="header-left">
