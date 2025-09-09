@@ -961,5 +961,31 @@ def account_stats_view(request):
 
 
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import Q
+from .models import Album, Track, DistributionPlatform, DistributionRequest
+from django.core.paginator import Paginator
+from django.contrib import messages
+import uuid
+from datetime import datetime
+
 def website(request):
-    return render(request, 'website.html')
+    """
+    Renders the homepage with featured albums, popular tracks, and distribution platforms
+    """
+    featured_albums = Album.objects.order_by('-created_at')[:4]
+    popular_tracks = Track.objects.order_by('-downloads')[:5]
+    distribution_platforms = DistributionPlatform.objects.filter(is_active=True)
+    
+    context = {
+        'featured_albums': featured_albums,
+        'popular_tracks': popular_tracks,
+        'distribution_platforms': distribution_platforms,
+    }
+    return render(request, 'website.html', context)
+
+
+
+

@@ -6,36 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NyasaBox - Music Distribution</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-    
-          @font-face {
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent-primary: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+        }
+
+        .light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: rgba(255, 255, 255, 0.8);
+            --text-primary: #1e293b;
+            --text-secondary: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(30, 41, 59, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
             font-family: 'Troy';
             src: url('{% static 'troy.woff2' %}') format('woff2');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+
         html {
-            font-size: 14px;
+            font-size: 16px;
         }
+
         body {
             font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000000;
-            color: #ffffff;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             overflow-x: hidden;
             font-size: 0.875rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
+
         /* Header Styles */
         header {
             padding: 1rem 0;
@@ -44,76 +72,147 @@
             top: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
+
+        .light-mode header {
+            background: rgba(248, 250, 252, 0.8);
+        }
+
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
         }
+
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: #ff6b6b;
+            color: var(--accent-primary);
             text-decoration: none;
             display: flex;
             align-items: center;
         }
+
         .logo img {
-            height: 40px;
-            margin-right: 10px;
+            height: 32px;
+            margin-right: 8px;
         }
+
         nav ul {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 1.5rem;
+            margin: 0.5rem 0;
         }
+
         nav a {
-            color: #ffffff;
+            color: var(--text-primary);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.9rem;
             transition: color 0.3s;
         }
+
         nav a:hover {
-            color: #ff6b6b;
+            color: var(--accent-primary);
         }
-        .auth-buttons {
+
+        .header-actions {
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            gap: 0.75rem;
         }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem 0.5rem 2.2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.7rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle {
+            padding: 0.4rem;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-primary);
+            color: #000;
+        }
+
         .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
             font-weight: 600;
+            font-size: 0.85rem;
             text-decoration: none;
             transition: all 0.3s;
         }
+
         .btn-outline {
-            border: 1px solid #ff6b6b;
-            color: #ff6b6b;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
         }
+
         .btn-outline:hover {
-            background: #ff6b6b;
+            background: var(--accent-primary);
             color: #000;
         }
+
         .btn-primary {
-            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
             color: white;
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
         }
-        
+
         /* Hero Section */
         .hero {
-            height: 80vh;
+            height: 60vh;
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
+
         .hero-slideshow {
             position: absolute;
             top: 0;
@@ -122,6 +221,7 @@
             height: 100%;
             z-index: 1;
         }
+
         .hero-slide {
             position: absolute;
             width: 100%;
@@ -131,298 +231,587 @@
             background-size: cover;
             background-position: center;
         }
+
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            z-index: 2;
+        }
+
         .hero-slide.active {
             opacity: 1;
         }
+
         .hero-content {
             position: relative;
-            z-index: 2;
+            z-index: 3;
             text-align: center;
-            max-width: 800px;
-            padding: 0 20px;
+            max-width: 90%;
+            padding: 0 15px;
         }
+
         .hero-title {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .hero-subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
             opacity: 0.9;
         }
+
         .hero-cta {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
         }
+
         .hero-ad {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 1rem;
-            margin-top: 2rem;
+            background: var(--bg-secondary);
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            margin-top: 1.5rem;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
         }
-        
+
+        .hero-ad h3 {
+            font-size: 1.2rem;
+        }
+
+        .hero-ad p {
+            font-size: 0.9rem;
+        }
+
         /* Distribution Partners */
         .distribution-section {
-            padding: 4rem 0;
+            padding: 2rem 0;
             text-align: center;
         }
+
         .section-title {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             text-align: center;
         }
+
         .partners-scroll {
             display: flex;
             overflow: hidden;
             position: relative;
-            padding: 2rem 0;
+            padding: 1rem 0;
         }
+
         .partners-track {
             display: flex;
             animation: scroll 30s linear infinite;
         }
+
         .partner-item {
             flex: 0 0 auto;
-            margin: 0 2rem;
+            margin: 0 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0.7;
             transition: opacity 0.3s;
         }
+
         .partner-item:hover {
             opacity: 1;
         }
+
         .partner-item img {
-            height: 40px;
+            height: 32px;
             filter: grayscale(100%) brightness(200%);
             transition: filter 0.3s;
         }
+
+        .light-mode .partner-item img {
+            filter: grayscale(100%) brightness(20%);
+        }
+
         .partner-item:hover img {
             filter: grayscale(0%) brightness(100%);
         }
+
         @keyframes scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-        
+
         /* Albums Section */
         .albums-section {
-            padding: 4rem 0;
+            padding: 2rem 0;
         }
+
         .albums-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
         }
+
         .album-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
+            background: var(--card-bg);
+            border-radius: 0.8rem;
             overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
         }
+
         .album-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--shadow);
         }
+
         .album-cover {
             width: 100%;
             aspect-ratio: 1/1;
             object-fit: cover;
         }
+
         .album-info {
-            padding: 1.2rem;
+            padding: 1rem;
         }
+
         .album-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
+
         .album-artist {
-            color: #ff6b6b;
-            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
         }
+
         .album-meta {
             display: flex;
             justify-content: space-between;
             opacity: 0.7;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
-        
+
         /* Tracks Section */
         .tracks-section {
-            padding: 4rem 0;
+            padding: 2rem 0;
         }
+
         .tracks-list {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
+            background: var(--card-bg);
+            border-radius: 0.8rem;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
         }
+
         .track-item {
             display: flex;
             align-items: center;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-color);
             transition: background 0.3s;
         }
+
         .track-item:last-child {
             border-bottom: none;
         }
+
         .track-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-secondary);
         }
+
         .track-number {
-            width: 30px;
+            width: 25px;
             opacity: 0.7;
+            font-size: 0.85rem;
         }
+
         .track-info {
             flex: 1;
-            margin: 0 1.5rem;
+            margin: 0 1rem;
         }
+
         .track-title {
             font-weight: 500;
             margin-bottom: 0.2rem;
-        }
-        .track-artist {
             font-size: 0.9rem;
+        }
+
+        .track-artist {
+            font-size: 0.8rem;
             opacity: 0.7;
         }
+
         .track-duration {
             opacity: 0.7;
+            font-size: 0.8rem;
         }
+
         .track-play {
-            color: #ff6b6b;
-            margin-left: 1rem;
+            color: var(--accent-primary);
+            margin-left: 0.75rem;
             cursor: pointer;
+            font-size: 1.2rem;
         }
-        
+
         /* Ad Sections */
         .ad-section {
-            padding: 3rem 0;
+            padding: 2rem 0;
             text-align: center;
         }
+
         .ad-container {
             background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
-            border-radius: 1rem;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.8rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
         }
+
         .ad-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #ff6b6b;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent-primary);
         }
+
         .ad-content {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 2rem;
+            gap: 1.5rem;
             flex-wrap: wrap;
         }
+
         .ad-text {
             flex: 1;
-            min-width: 300px;
+            min-width: 250px;
             text-align: left;
         }
+
         .ad-image {
             flex: 1;
-            min-width: 300px;
-            border-radius: 1rem;
+            min-width: 250px;
+            border-radius: 0.8rem;
             overflow: hidden;
         }
+
         .ad-image img {
             width: 100%;
             height: auto;
             display: block;
         }
-        
+
+        /* Search Results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 0 0 0.8rem 0.8rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 0.6rem 0.8rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .search-result-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.4rem;
+            margin-right: 0.8rem;
+            object-fit: cover;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+            font-size: 0.85rem;
+        }
+
+        .search-result-artist {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
         /* Footer */
         footer {
             background: rgba(0, 0, 0, 0.9);
-            padding: 4rem 0 2rem;
-            margin-top: 4rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0 1rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
         }
+
+        .light-mode footer {
+            background: rgba(248, 250, 252, 0.9);
+        }
+
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
         }
+
         .footer-column h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            color: #ff6b6b;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
         }
+
         .footer-links {
             list-style: none;
         }
+
         .footer-links li {
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
         }
+
         .footer-links a {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 0.85rem;
             transition: color 0.3s;
         }
+
         .footer-links a:hover {
-            color: #ff6b6b;
+            color: var(--accent-primary);
         }
+
         .social-links {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             margin-top: 1rem;
         }
+
         .social-links a {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             transition: background 0.3s;
         }
+
         .social-links a:hover {
-            background: #ff6b6b;
+            background: var(--accent-primary);
         }
+
         .copyright {
             text-align: center;
-            margin-top: 3rem;
+            margin-top: 2rem;
             opacity: 0.7;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
-        
-        /* Responsive Design */
+
+        /* Mobile Responsive Design */
         @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+
             .header-content {
                 flex-direction: column;
-                gap: 1rem;
+                gap: 0.75rem;
+                align-items: flex-start;
             }
+
             nav ul {
                 gap: 1rem;
                 flex-wrap: wrap;
-                justify-content: center;
+                justify-content: flex-start;
+                width: 100%;
             }
-            .hero-title {
-                font-size: 2.5rem;
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
             }
-            .album-card, .track-item {
+
+            .search-input {
                 max-width: 100%;
             }
+
+            .auth-buttons {
+                display: flex;
+                gap: 0.5rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .hero {
+                height: 50vh;
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .hero-ad h3 {
+                font-size: 1rem;
+            }
+
+            .hero-ad p {
+                font-size: 0.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .albums-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .album-card {
+                border-radius: 0.6rem;
+            }
+
+            .album-info {
+                padding: 0.8rem;
+            }
+
+            .album-title {
+                font-size: 0.9rem;
+            }
+
+            .album-artist {
+                font-size: 0.8rem;
+            }
+
+            .album-meta {
+                font-size: 0.75rem;
+            }
+
+            .track-item {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .track-title {
+                font-size: 0.85rem;
+            }
+
+            .track-artist {
+                font-size: 0.75rem;
+            }
+
+            .track-duration {
+                font-size: 0.75rem;
+            }
+
             .ad-content {
                 flex-direction: column;
+                gap: 1rem;
             }
+
             .ad-text, .ad-image {
                 text-align: center;
+                min-width: 100%;
+            }
+
+            .ad-title {
+                font-size: 1.1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .footer-column h3 {
+                font-size: 1rem;
+            }
+
+            .footer-links a {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .logo img {
+                height: 28px;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+            }
+
+            nav a {
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+
+            .hero {
+                height: 40vh;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.8rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .partner-item img {
+                height: 24px;
             }
         }
     </style>
@@ -431,22 +820,37 @@
     <!-- Header -->
     <header>
         <div class="container header-content">
-            <a href="#" class="logo">
+            <a href="{% url 'website' %}" class="logo">
                 <img src="{% static 'log.png' %}" alt="NyasaBox"> NyasaBox
             </a>
             <nav>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Discover</a></li>
+                    <!-- <li><a href="{% url 'website' %}">Home</a></li> -->
+                    <!-- <li><a href="#">Discover</a></li>
                     <li><a href="#">Charts</a></li>
                     <li><a href="#">Artists</a></li>
                     <li><a href="#">Distribution</a></li>
-                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Pricing</a></li> -->
                 </ul>
             </nav>
-            <div class="auth-buttons">
-                <a href="#" class="btn btn-outline">Login</a>
-                <a href="#" class="btn btn-primary">Sign Up</a>
+            <div class="header-actions">
+                <div class="search-container">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text" class="search-input" placeholder="Search music, artists..." id="searchInput">
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="material-icons">dark_mode</span>
+                </button>
+                <div class="auth-buttons">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'profile' %}" class="btn btn-outline">Profile</a>
+                        <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Upload Your Music</a>
+                        <!-- <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a> -->
+                    {% endif %}
+                </div>
             </div>
         </div>
     </header>
@@ -454,9 +858,9 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-slideshow">
-            <div class="hero-slide active" style="background-image: url('https://source.unsplash.com/random/1600x900/?music,festival');"></div>
-            <div class="hero-slide" style="background-image: url('https://source.unsplash.com/random/1600x900/?concert,band');"></div>
-            <div class="hero-slide" style="background-image: url('https://source.unsplash.com/random/1600x900/?music,studio');"></div>
+            <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
+            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/632/841/8bc/thumb_883376_900_0_0_0_auto.png');"></div>
+            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/667/4a0/708/thumb_1022849_900_0_0_0_auto.png');"></div>
         </div>
         <div class="container hero-content">
             <h1 class="hero-title">Distribute Your Music Worldwide</h1>
@@ -471,120 +875,46 @@
         </div>
     </section>
 
-    <!-- Distribution Partners -->
-      <section class="distribution-section">
+       <!-- Distribution Partners -->
+    <section class="distribution-section">
         <div class="container">
             <h2 class="section-title">We Distribute To</h2>
             <div class="partners-scroll">
                 <div class="partners-track">
-                    <!-- First set of logos -->
-                    <div class="partner-item" data-name="Spotify">
-                        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" 
-                             alt="Spotify" 
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMxREI5NTQiLz4KPHRleHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5TcG90aWZ5PC90ZXh0Pgo8L3N2Zz4='">
-                    </div>
-                    
-                    <div class="partner-item" data-name="Apple Music">
-                        <img src="https://logoeps.com/wp-content/uploads/2013/03/apple-vector-logo.png" 
-                             alt="Apple Music"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkFwcGxlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCI+TXVzaWM8L3RleHQ+Cjwvc3ZnPg=='">
-                    </div>
-                    
-                    <div class="partner-item" data-name="YouTube Music">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Youtube_Music_icon.svg" 
-                             alt="YouTube Music"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiNGRjAwMDAiLz4KPHR leHQgeD0iNTAiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIj5Zb3VUdWJlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPk11c2ljPC90ZXh0Pgo8L3N2Zz4='">
-                    </div>
-                    
-                    <div class="partner-item" data-name="Amazon Music">
-                        <img src="https://logoeps.com/wp-content/uploads/2012/10/amazon-vector-logo.png" 
-                             alt="Amazon Music"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkY5OTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkFtYXpvbjwvdGV4dD4KPHR leHQgeD0iNTAiIHk9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkY5OTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPk11c2ljPC90ZXh0Pgo8L3N2Zz4='">
-                    </div>
-                    
-                    <div class="partner-item" data-name="Deezer">
-                        <img src="https://e-cdns-images.dzcdn.net/images/misc/db73c688bb8aa1c75bd64ad11a8aaa75/500x500-000000-80-0-0.jpg" 
-                             alt="Deezer"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkY2NjAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPkRlZXplcjwvdGV4dD4KPC9zdmc+'">
-                    </div>
-                    
-                    <div class="partner-item" data-name="Tidal">
-                        <img src="https://seeklogo.com/images/T/tidal-logo-0633C8A9B7-seeklogo.com.png" 
-                             alt="Tidal"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiMwMDAwMDAiLz4KPHRleHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0Ij5UaWRhbDwvdGV4dD4KPC9zdmc+'">
-                    </div>
-                    
-                    <!-- Duplicate set for seamless scrolling -->
-                    <div class="partner-item" data-name="Spotify">
-                        <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" 
-                             alt="Spotify" 
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMxREI5NTQiLz4KPHR leHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5TcG90aWZ5PC90ZXh0Pgo8L3N2Zz4='">
-                    </div>
-                    
-                    <div class="partner-item" data-name="Apple Music">
-                        <img src="https://logoeps.com/wp-content/uploads/2013/03/apple-vector-logo.png" 
-                             alt="Apple Music"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjAiIGZpbGw9IiNGRkZGRkYiLz4KPHR leHQgeD0iNTAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPkFwcGxlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCI+TXVzaWM8L3RleHQ+Cjwvc3ZnPg=='">
-                    </div>
-                    
-                    <div class="partner-item" data-name="YouTube Music">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Youtube_Music_icon.svg" 
-                             alt="YouTube Music"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiNGRjAwMDAiLz4KPHRleHQgeD0iNTAiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIj5Zb3VUdWJlPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTAiPk11c2ljPC90ZXh0Pgo8L3N2Zz4='">
-                    </div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png" alt="Spotify"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/640px-Apple_Music_logo.svg.png" alt="Apple Music"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/YT_Music.svg/640px-YT_Music.svg.png" alt="YouTube Music"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Amazon_Music_%28Logo%29.svg/640px-Amazon_Music_%28Logo%29.svg.png" alt="Amazon Music"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Deezer_logo_2019.svg/640px-Deezer_logo_2019.svg.png" alt="Deezer"></div>
+                               <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png" alt="Spotify"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/640px-Apple_Music_logo.svg.png" alt="Apple Music"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/YT_Music.svg/640px-YT_Music.svg.png" alt="YouTube Music"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Amazon_Music_%28Logo%29.svg/640px-Amazon_Music_%28Logo%29.svg.png" alt="Amazon Music"></div>
+                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Deezer_logo_2019.svg/640px-Deezer_logo_2019.svg.png" alt="Deezer"></div>
+
                 </div>
             </div>
         </div>
     </section>
+
     <!-- Albums Section -->
     <section class="albums-section">
         <div class="container">
             <h2 class="section-title">Featured Albums</h2>
             <div class="albums-grid">
-                <div class="album-card">
-                    <img src="https://source.unsplash.com/random/500x500/?album,hiphop" alt="Album Cover" class="album-cover">
-                    <div class="album-info">
-                        <h3 class="album-title">Midnight Vibes</h3>
-                        <p class="album-artist">DJ Nyasa</p>
-                        <div class="album-meta">
-                            <span>12 Tracks</span>
-                            <span>2023</span>
+                {% for album in featured_albums %}
+                    <div class="album-card">
+                        <img src="{{ album.cover_art.url }}" alt="{{ album.title }}" class="album-cover">
+                        <div class="album-info">
+                            <h3 class="album-title">{{ album.title }}</h3>
+                            <p class="album-artist">{{ album.artist }}</p>
+                            <div class="album-meta">
+                                <span>{{ album.tracks.count }} Tracks</span>
+                                <span>{{ album.release_date.year }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="album-card">
-                    <img src="https://source.unsplash.com/random/500x500/?album,rnb" alt="Album Cover" class="album-cover">
-                    <div class="album-info">
-                        <h3 class="album-title">Soulful Nights</h3>
-                        <p class="album-artist">Amina Soul</p>
-                        <div class="album-meta">
-                            <span>10 Tracks</span>
-                            <span>2023</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="album-card">
-                    <img src="https://source.unsplash.com/random/500x500/?album,reggae" alt="Album Cover" class="album-cover">
-                    <div class="album-info">
-                        <h3 class="album-title">Island Rhythm</h3>
-                        <p class="album-artist">Kingston Vibes</p>
-                        <div class="album-meta">
-                            <span>8 Tracks</span>
-                            <span>2023</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="album-card">
-                    <img src="https://source.unsplash.com/random/500x500/?album,electronic" alt="Album Cover" class="album-cover">
-                    <div class="album-info">
-                        <h3 class="album-title">Digital Dreams</h3>
-                        <p class="album-artist">Electro Pulse</p>
-                        <div class="album-meta">
-                            <span>15 Tracks</span>
-                            <span>2023</span>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -613,51 +943,17 @@
         <div class="container">
             <h2 class="section-title">Popular Tracks</h2>
             <div class="tracks-list">
-                <div class="track-item">
-                    <div class="track-number">1</div>
-                    <div class="track-info">
-                        <h3 class="track-title">Sunset Dreams</h3>
-                        <p class="track-artist">DJ Nyasa</p>
+                {% for track in popular_tracks %}
+                    <div class="track-item">
+                        <div class="track-number">{{ forloop.counter }}</div>
+                        <div class="track-info">
+                            <h3 class="track-title">{{ track.title }}</h3>
+                            <p class="track-artist">{{ track.artist }}</p>
+                        </div>
+                        <div class="track-duration">{{ track.get_formatted_duration }}</div>
+                        <div class="track-play"><span class="material-icons">play_circle</span></div>
                     </div>
-                    <div class="track-duration">3:45</div>
-                    <div class="track-play"><span class="material-icons">play_circle</span></div>
-                </div>
-                <div class="track-item">
-                    <div class="track-number">2</div>
-                    <div class="track-info">
-                        <h3 class="track-title">Ocean Breeze</h3>
-                        <p class="track-artist">Amina Soul</p>
-                    </div>
-                    <div class="track-duration">4:12</div>
-                    <div class="track-play"><span class="material-icons">play_circle</span></div>
-                </div>
-                <div class="track-item">
-                    <div class="track-number">3</div>
-                    <div class="track-info">
-                        <h3 class="track-title">Mountain High</h3>
-                        <p class="track-artist">Kingston Vibes</p>
-                    </div>
-                    <div class="track-duration">3:28</div>
-                    <div class="track-play"><span class="material-icons">play_circle</span></div>
-                </div>
-                <div class="track-item">
-                    <div class="track-number">4</div>
-                    <div class="track-info">
-                        <h3 class="track-title">City Lights</h3>
-                        <p class="track-artist">Electro Pulse</p>
-                    </div>
-                    <div class="track-duration">5:06</div>
-                    <div class="track-play"><span class="material-icons">play_circle</span></div>
-                </div>
-                <div class="track-item">
-                    <div class="track-number">5</div>
-                    <div class="track-info">
-                        <h3 class="track-title">Desert Wind</h3>
-                        <p class="track-artist">DJ Nyasa ft. Amina Soul</p>
-                    </div>
-                    <div class="track-duration">4:33</div>
-                    <div class="track-play"><span class="material-icons">play_circle</span></div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -671,15 +967,16 @@
                     <p>The leading music distribution platform for African artists, helping you reach global audiences.</p>
                     <div class="social-links">
                         <a href="#"><span class="material-icons">facebook</span></a>
-                        <a href="#"><span class="material-icons">instagram</span></a>
-                        <a href="#"><span class="material-icons">twitter</span></a>
-                        <a href="#"><span class="material-icons">youtube</span></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+<a href="#"><i class="fab fa-twitter"></i></a>
+<a href="#"><i class="fab fa-youtube"></i></a>
+                        
                     </div>
                 </div>
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
+                        <li><a href="{% url 'website' %}">Home</a></li>
                         <li><a href="#">Discover</a></li>
                         <li><a href="#">Charts</a></li>
                         <li><a href="#">Artists</a></li>
@@ -690,7 +987,7 @@
                     <h3>Resources</h3>
                     <ul class="footer-links">
                         <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Blog</a></li>
+                        <li><a href="{% url 'blog_list' %}">Blog</a></li>
                         <li><a href="#">Tutorials</a></li>
                         <li><a href="#">API Documentation</a></li>
                         <li><a href="#">Community</a></li>
@@ -708,15 +1005,38 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 NyasaBox. All rights reserved.</p>
+                <p>&copy; {% now "Y" %} NyasaBox. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Hero slideshow functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Hero slideshow
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('.material-icons');
+            
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'light' || (!savedTheme && !prefersDark)) {
+                document.body.classList.add('light-mode');
+                themeIcon.textContent = 'light_mode';
+            } else {
+                themeIcon.textContent = 'dark_mode';
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                const isLightMode = document.body.classList.toggle('light-mode');
+                
+                if (isLightMode) {
+                    themeIcon.textContent = 'light_mode';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    themeIcon.textContent = 'dark_mode';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
             const slides = document.querySelectorAll('.hero-slide');
             let currentSlide = 0;
             
@@ -730,16 +1050,99 @@
                 showSlide(currentSlide + 1);
             }
             
-            // Change slide every 5 seconds
             setInterval(nextSlide, 5000);
             
-            // Play button functionality
             document.querySelectorAll('.track-play').forEach(button => {
                 button.addEventListener('click', function() {
                     const trackItem = this.closest('.track-item');
                     const trackTitle = trackItem.querySelector('.track-title').textContent;
                     alert(`Now playing: ${trackTitle}`);
                 });
+            });
+
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            
+            searchInput.addEventListener('input', async function() {
+                const query = this.value.trim();
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/search/?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    searchResults.innerHTML = '';
+                    
+                    if (data.tracks.length > 0) {
+                        const tracksHeader = document.createElement('div');
+                        tracksHeader.classList.add('search-result-item');
+                        tracksHeader.innerHTML = '<strong>Tracks</strong>';
+                        tracksHeader.style.cursor = 'default';
+                        searchResults.appendChild(tracksHeader);
+                        
+                        data.tracks.forEach(track => {
+                            const item = document.createElement('div');
+                            item.classList.add('search-result-item');
+                            item.innerHTML = `
+                                <img src="${track.image}" alt="${track.title}" class="search-result-image">
+                                <div class="search-result-info">
+                                    <div class="search-result-title">${track.title}</div>
+                                    <div class="search-result-artist">${track.artist}</div>
+                                </div>
+                            `;
+                            item.addEventListener('click', () => {
+                                window.location.href = track.url;
+                            });
+                            searchResults.appendChild(item);
+                        });
+                    }
+                    
+                    if (data.albums.length > 0) {
+                        const albumsHeader = document.createElement('div');
+                        albumsHeader.classList.add('search-result-item');
+                        albumsHeader.innerHTML = '<strong>Albums</strong>';
+                        albumsHeader.style.cursor = 'default';
+                        searchResults.appendChild(albumsHeader);
+                        
+                        data.albums.forEach(album => {
+                            const item = document.createElement('div');
+                            item.classList.add('search-result-item');
+                            item.innerHTML = `
+                                <img src="${album.image}" alt="${album.title}" class="search-result-image">
+                                <div class="search-result-info">
+                                    <div class="search-result-title">${album.title}</div>
+                                    <div class="search-result-artist">${album.artist}</div>
+                                </div>
+                            `;
+                            item.addEventListener('click', () => {
+                                window.location.href = album.url;
+                            });
+                            searchResults.appendChild(item);
+                        });
+                    }
+                    
+                    if (data.tracks.length === 0 && data.albums.length === 0) {
+                        const noResults = document.createElement('div');
+                        noResults.classList.add('search-result-item');
+                        noResults.textContent = 'No results found';
+                        noResults.style.cursor = 'default';
+                        searchResults.appendChild(noResults);
+                    }
+                    
+                    searchResults.classList.add('active');
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.remove('active');
+                }
             });
         });
     </script>
