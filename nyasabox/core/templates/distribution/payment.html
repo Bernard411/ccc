@@ -552,6 +552,7 @@
 {% endblock %}
 
 
+
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -570,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusModal = new bootstrap.Modal(document.getElementById('paymentStatusModal'));
     let currentTransactionId = null;
     let pollAttempts = 0;
-    const maxPollAttempts = 40; // 2 minutes at 3-second intervals
+    const maxPollAttempts = 60; // Increased to 3 minutes at 3-second intervals
     const initialPollInterval = 3000; // 3 seconds
 
     function normalizeMobileNumber(number) {
@@ -705,8 +706,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 pollAttempts = 0;
                 pollPaymentStatus(data.transaction_id);
             } else {
-                const errorMsg = data.message ? (typeof data.message === 'string' ? JSON.parse(data.message) : data.message) : { error: 'Payment initiation failed' };
-                const message = typeof errorMsg === 'object' ? Object.values(errorMsg).map(field => Array.isArray(field) ? field[0]?.message || field : field).join(', ') : errorMsg;
+                let errorMsg = data.message || 'Payment initiation failed';
+                if (typeof errorMsg === 'string') {
+                    try {
+                        errorMsg = JSON.parse(errorMsg);
+                    } catch (e) {
+                        // Not JSON, use as is
+                    }
+                }
+                const message = typeof errorMsg === 'object' 
+                    ? Object.values(errorMsg).map(field => Array.isArray(field) ? field[0]?.message || field : field).join(', ')
+                    : errorMsg;
                 showModalState('paymentError', message || 'Payment service is temporarily unavailable. Please try again later.');
             }
         } catch (error) {
@@ -729,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function pollPaymentStatus(transactionId) {
         if (pollAttempts >= maxPollAttempts) {
-            showModalState('paymentError', 'Payment timed out. Please try again.');
+            showModalState('serverError', 'Payment verification timed out. Please try again or contact support.');
             return;
         }
 
@@ -740,12 +750,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (pollAttempts < maxPollAttempts) {
                     setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
                 } else {
-                    showModalState('serverError', 'Unable to verify payment status. Please try again later.');
+                    showModalState('serverError', 'Unable to verify payment status. Please try again or contact support.');
                 }
                 return;
             }
 
             const data = await response.json();
+            console.log('Polling response:', data); // Debug log
             if (data.status === 'success') {
                 showModalState('paymentSuccess');
             } else if (data.status === 'failed') {
@@ -756,10 +767,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
             }
         } catch (error) {
+            console.error('Polling error:', error);
             if (pollAttempts < maxPollAttempts) {
                 setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
             } else {
-                showModalState('serverError', 'Failed to check payment status. Please try again later.');
+                showModalState('serverError', 'Failed to check payment status. Please try again or contact support.');
             }
         }
     }

@@ -660,6 +660,18 @@ def distribution_request(request):
     }
     return render(request, 'distribution/request.html', context)
 
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+import logging
+import uuid
+import requests
+from django.conf import settings
+from .models import DistributionRequest, PaymentTransaction
+from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
+import time
+
 logger = logging.getLogger(__name__)
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), retry=retry_if_exception_type(requests.exceptions.RequestException))
@@ -722,7 +734,7 @@ def process_distribution_payment(request, request_id):
             user_email = form.cleaned_data['email']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
-            charge_id = f"nyasa-{uuid.uuid4()}"  # Prefix to ensure uniqueness
+            charge_id = f"nyasa-{uuid.uuid4()}-{int(time.time())}"  # Added timestamp for extra uniqueness
 
             transaction = PaymentTransaction.objects.create(
                 distribution_request=distribution_request,
@@ -790,6 +802,7 @@ def process_distribution_payment(request, request_id):
         logger.error(f"Unexpected error in process_distribution_payment: {str(e)}", exc_info=True)
         return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred. Please try again later.'}, status=500)
 
+
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def check_distribution_payment_status(request, transaction_id):
     try:
@@ -811,34 +824,32 @@ def check_distribution_payment_status(request, transaction_id):
         response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
+            logger.debug(f"PayChangu verify response for {transaction_id}: {data}")
             transaction.response_data = data
             transaction.save()
 
-            if data.get('status') == 'successful':
-                transaction_data = data.get('data', {})
-                if transaction_data.get('status') == 'success':
-                    transaction.status = 'success'
-                    transaction.completed_at = timezone.now()
-                    transaction.save()
-                    transaction.distribution_request.status = 'paid'
-                    transaction.distribution_request.payment_date = timezone.now()
-                    transaction.distribution_request.save()
-                    send_distribution_payment_notification(transaction, success=True)
-                    return JsonResponse({'status': 'success'})
-                elif transaction_data.get('status') == 'failed':
-                    transaction.status = 'failed'
-                    transaction.completed_at = timezone.now()
-                    transaction.save()
-                    send_distribution_payment_notification(transaction, success=False)
-                    return JsonResponse({'status': 'failed', 'message': transaction_data.get('message', 'Transaction failed')})
-                elif transaction_data.get('status') == 'cancelled' or 'user_cancelled' in transaction_data.get('message', '').lower():
-                    transaction.status = 'cancelled'
-                    transaction.completed_at = timezone.now()
-                    transaction.save()
-                    send_distribution_payment_notification(transaction, success=False)
-                    return JsonResponse({'status': 'cancelled', 'message': 'You cancelled the payment'})
-                else:
-                    return JsonResponse({'status': 'pending'})
+            transaction_data = data.get('data', {})
+            if data.get('status') == 'successful' or (transaction_data.get('status') == 'success' and data.get('gateway_response', {}).get('status', {}).get('success')):
+                transaction.status = 'success'
+                transaction.completed_at = timezone.now()
+                transaction.save()
+                transaction.distribution_request.status = 'paid'
+                transaction.distribution_request.payment_date = timezone.now()
+                transaction.distribution_request.save()
+                send_distribution_payment_notification(transaction, success=True)
+                return JsonResponse({'status': 'success'})
+            elif transaction_data.get('status') == 'failed':
+                transaction.status = 'failed'
+                transaction.completed_at = timezone.now()
+                transaction.save()
+                send_distribution_payment_notification(transaction, success=False)
+                return JsonResponse({'status': 'failed', 'message': transaction_data.get('message', 'Transaction failed')})
+            elif transaction_data.get('status') == 'cancelled' or 'user_cancelled' in transaction_data.get('message', '').lower():
+                transaction.status = 'cancelled'
+                transaction.completed_at = timezone.now()
+                transaction.save()
+                send_distribution_payment_notification(transaction, success=False)
+                return JsonResponse({'status': 'cancelled', 'message': 'You cancelled the payment'})
             else:
                 return JsonResponse({'status': 'pending'})
         else:

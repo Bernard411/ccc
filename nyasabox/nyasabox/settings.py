@@ -146,6 +146,8 @@ EMAIL_HOST_USER = 'nyasabox@pezamw.com'
 EMAIL_HOST_PASSWORD = 'w{V}Jj!Go0r7'
 DEFAULT_FROM_EMAIL = 'NyasaBox <nyasabox@pezamw.com>'
 
+SITE_URL = 'http://localhost:8000'
+
 # OTP settings
 OTP_LENGTH = 6
 OTP_TIMEOUT = 300  # 5 minutes in seconds
