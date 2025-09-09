@@ -551,6 +551,7 @@
 </div>
 {% endblock %}
 
+
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -705,11 +706,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 pollPaymentStatus(data.transaction_id);
             } else {
                 const errorMsg = data.message ? (typeof data.message === 'string' ? JSON.parse(data.message) : data.message) : { error: 'Payment initiation failed' };
-                const message = typeof errorMsg === 'object' ? Object.values(errorMsg).map(field => Array.isArray(field) ? field[0].message : field).join(', ') : errorMsg;
-                showModalState('paymentError', message);
+                const message = typeof errorMsg === 'object' ? Object.values(errorMsg).map(field => Array.isArray(field) ? field[0]?.message || field : field).join(', ') : errorMsg;
+                showModalState('paymentError', message || 'Payment service is temporarily unavailable. Please try again later.');
             }
         } catch (error) {
-            showModalState('paymentError', 'Failed to initiate payment. Please try again.');
+            showModalState('paymentError', 'Failed to initiate payment. Please try again later.');
         }
     });
 
@@ -758,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pollAttempts < maxPollAttempts) {
                 setTimeout(() => pollPaymentStatus(transactionId), initialPollInterval * Math.pow(1.5, pollAttempts));
             } else {
-                showModalState('serverError', 'Failed to check payment status. Please try again.');
+                showModalState('serverError', 'Failed to check payment status. Please try again later.');
             }
         }
     }

@@ -187,6 +187,7 @@ class Track(models.Model):
     artist = models.CharField(max_length=200)
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, blank=True)
     audio_file = models.FileField(upload_to='tracks/')
+    cover_art = models.ImageField(upload_to='track_covers/')
     duration = models.DurationField(blank=True, null=True)
     track_number = models.PositiveIntegerField(null=True, blank=True)
     uploader = models.ForeignKey(User, on_delete=models.CASCADE)

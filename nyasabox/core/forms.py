@@ -25,7 +25,7 @@ class AlbumForm(forms.ModelForm):
 class TrackForm(forms.ModelForm):
     class Meta:
         model = Track
-        fields = ['title', 'album', 'artist', 'genre', 'audio_file', 'track_number']
+        fields = ['title', 'album', 'artist', 'genre', 'audio_file', 'track_number', 'cover_art',]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
             'album': forms.Select(attrs={'class': 'form-control'}),
@@ -33,6 +33,7 @@ class TrackForm(forms.ModelForm):
             'genre': forms.Select(attrs={'class': 'form-control', 'required': True}, choices=GENRE_CHOICES),
             'audio_file': forms.FileInput(attrs={'class': 'form-control', 'required': True}),
             'track_number': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+            'cover_art': forms.FileInput(attrs={'class': 'form-control', 'required': True}),
         }
 
     audio_file = forms.FileField(
