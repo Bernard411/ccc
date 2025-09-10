@@ -860,52 +860,9 @@ body {
         </div>
     </section> -->
 
-        <section class="distribution-section">
-        <div class="container">
-            <h2 class="section-title">We Distribute To</h2>
-            <div class="partners-scroll">
-                <div class="partners-track">
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png" alt="Spotify"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/640px-Apple_Music_logo.svg.png" alt="Apple Music"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/YT_Music.svg/640px-YT_Music.svg.png" alt="YouTube Music"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Amazon_Music_%28Logo%29.svg/640px-Amazon_Music_%28Logo%29.svg.png" alt="Amazon Music"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Deezer_logo_2019.svg/640px-Deezer_logo_2019.svg.png" alt="Deezer"></div>
-                               <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png" alt="Spotify"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Apple_Music_logo.svg/640px-Apple_Music_logo.svg.png" alt="Apple Music"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/YT_Music.svg/640px-YT_Music.svg.png" alt="YouTube Music"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Amazon_Music_%28Logo%29.svg/640px-Amazon_Music_%28Logo%29.svg.png" alt="Amazon Music"></div>
-                    <div class="partner-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Deezer_logo_2019.svg/640px-Deezer_logo_2019.svg.png" alt="Deezer"></div>
-
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
 
-<div class="container">
-  <section class="tracks-section">
-     
-     
-        <div class="container">
-            <h2 class="section-title">Popular Tracks</h2>
-            <div class="tracks-list">
-                {% for track in popular_tracks %}
-                    <div class="track-item">
-                        <div class="track-number">{{ forloop.counter }}</div>
-                        <div class="track-info">
-                            <h3 class="track-title">{{ track.title }}</h3>
-                            <p class="track-artist">{{ track.artist }}</p>
-                        </div>
-                        <div class="track-duration">{{ track.get_formatted_duration }}</div>
-                        <div class="track-play"><span class="material-icons">play_circle</span></div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-
-
-</div>
 {% endblock %}
 
 {% block extra_js %}
