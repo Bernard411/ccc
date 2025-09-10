@@ -972,6 +972,118 @@ body {
             transform: scale(1);
         }
 
+          .music-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .music-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 0.8rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(0.5rem);
+        }
+
+        .music-card:hover {
+            transform: translateY(-0.4rem) scale(1.02);
+            box-shadow: var(--shadow-heavy);
+            background: var(--bg-card-hover);
+        }
+
+        .music-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 0.8rem;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .music-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .music-info {
+            text-align: center;
+        }
+
+        .music-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-artist {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-stats {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 0.4rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            right: 0.8rem;
+            transform: translateY(-50%) scale(0);
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: var(--shadow-light);
+            z-index: 2;
+        }
+
+        .music-card:hover .play-btn {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .play-btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+
 </style>
 {% endblock %}
 
@@ -1066,6 +1178,67 @@ body {
             </div>
         </div>
     </div>
+
+        <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="material-icons">album</span>
+                Latest Albums & EP
+            </h2>
+            <a href="{% url 'search' %}?type=album" class="see-all">View all albums</a>
+        </div>
+        <div class="music-grid">
+            {% for album in latest_albums %}
+            <a href="{% url 'album_detail' album.slug %}" class="music-card" data-type="album" data-id="{{ album.id }}" style="text-decoration: none;">
+                <div class="music-cover">
+                    {% if album.cover_art %}
+                    <img src="{{ album.cover_art.url }}" alt="{{ album.title }}">
+                    {% else %}
+                    <span class="material-icons">album</span>
+                    {% endif %}
+                </div>
+                <div class="music-info">
+                    <div class="music-title">{{ album.title }}</div>
+                    <div class="music-artist">{{ album.artist }}</div>
+                    <div class="music-stats">
+                        <span class="stat">{{ album.track_count }} track{{ album.track_count|pluralize }}</span>
+                    </div>
+                </div>
+                <button class="play-btn" data-type="album" data-id="{{ album.id }}">
+                    <span class="material-icons">play_arrow</span>
+                </button>
+            </a>
+            {% empty %}
+            <p>No albums available yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+ <section class="tracks-section">
+        <div class="containner">
+            <!-- <h2 class="section-title">Popular Tracks</h2> -->
+            <div class="tracks-list">
+                {% for track in popular_tracks %}
+                  
+                
+                    <div class="track-item">
+                        
+                        <div class="track-number">{{ forloop.counter }}</div>
+                        <div class="track-info">
+                            <h3 class="track-title">{{ track.title }}</h3>
+                            <p class="track-artist">{{ track.artist }}</p>
+                        </div>
+                        <!-- <div class="track-duration">{{ track.get_formatted_duration }}</div> -->
+                         <a href="{% url 'track_detail' track.slug %}"  data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
+                        <div class="track-play  btn" data-type="track" data-id="{{ track.id }}"><span class="material-icons">play_circle</span></div>
+                         </a>
+                           
+                    </div>
+                    
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
 
 
 {% endblock %}
