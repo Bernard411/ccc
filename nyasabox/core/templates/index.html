@@ -1604,15 +1604,22 @@
             <!-- <h2 class="section-title">Popular Tracks</h2> -->
             <div class="tracks-list">
                 {% for track in popular_tracks %}
+                  
+                
                     <div class="track-item">
+                        
                         <div class="track-number">{{ forloop.counter }}</div>
                         <div class="track-info">
                             <h3 class="track-title">{{ track.title }}</h3>
                             <p class="track-artist">{{ track.artist }}</p>
                         </div>
-                        <div class="track-duration">{{ track.get_formatted_duration }}</div>
-                        <div class="track-play"><span class="material-icons">play_circle</span></div>
+                        <!-- <div class="track-duration">{{ track.get_formatted_duration }}</div> -->
+                         <a href="{% url 'track_detail' track.slug %}"  data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
+                        <div class="track-play  btn" data-type="track" data-id="{{ track.id }}"><span class="material-icons">play_circle</span></div>
+                         </a>
+                           
                     </div>
+                    
                 {% endfor %}
             </div>
         </div>
