@@ -891,6 +891,56 @@ body {
     </div>
 </div>
 
+    <!-- Latest Tracks Section with Slider -->
+    <div class="section" id="latest-tracks">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="material-icons">music_note</span>
+                Latest Singles
+            </h2>
+            <a href="{% url 'search' %}?type=track" class="see-all">View all tracks</a>
+        </div>
+        
+        <div class="tracks-slider">
+            <div class="tracks-slider-container" id="tracksSlider">
+                {% for track in latest_tracks %}
+                <a href="{% url 'track_detail' track.slug %}" class="track-slide" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
+                    <div class="track-slide-cover">
+                        {% if track.album and track.album.cover_art %}
+                        <img src="{{ track.cover_art.url }}" alt="{{ track.title }}">
+                        {% else %}
+                        <!-- <span class="material-icons">music_note</span> -->
+                           <img src="{{ track.cover_art.url }}" alt="{{ track.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="track-slide-info">
+                        <div class="track-slide-title">{{ track.title }}</div>
+                        <div class="track-slide-artist">{{ track.artist }}</div>
+                        <div class="track-slide-duration">
+                            <span class="material-icons" style="font-size: 0.8rem;">schedule</span>
+                            {{ track.get_formatted_duration }}
+                        </div>
+                    </div>
+                    <button class="play-btn" data-type="track" data-id="{{ track.id }}">
+                        <span class="material-icons">play_arrow</span>
+                    </button>
+                </a>
+                {% empty %}
+                <p>No tracks available yet.</p>
+                {% endfor %}
+            </div>
+            
+            <div class="slider-controls">
+                <button class="slider-btn" id="sliderPrevBtn" disabled>
+                    <span class="material-icons">chevron_left</span>
+                </button>
+                <button class="slider-btn" id="sliderNextBtn">
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}
 
