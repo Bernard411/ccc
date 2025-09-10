@@ -820,7 +820,23 @@
     --bg-card-hover: rgba(200, 200, 200, 0.2);
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+html {
+    font-size: clamp(14px, 2.5vw, 16px); /* Fluid typography base */
+}
+
+body {
+    font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 </style>
 {% endblock %}
 
@@ -868,42 +884,8 @@
 
 <div class="container">
   <section class="tracks-section">
-       <div class="section">
-        <!-- <div class="section-header"> -->
-               <h2 class="section-title">Popular Tracks</h2>
-            <!-- <h2 class="section-title">
-                <span class="material-icons">trending_up</span>
-                Popular Tracks
-            </h2> -->
-            <!-- <a href="{% url 'search' %}?sort=popular" class="see-all">View more</a>
-        </div> -->
-        <div class="music-grid">
-            {% for track in popular_tracks %}
-            <div class="music-card" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
-                <div class="music-cover">
-                    {% if track.album and track.album.cover_art %}
-                    <img src="{{ track.album.cover_art.url }}" alt="{{ track.title }}">
-                    {% else %}
-                    <!-- <span class="material-icons">music_note</span> -->
-                       <img src="{{ track.cover_art.url }}" alt="{{ track.title }}">
-                    {% endif %}
-                </div>
-                <div class="music-info">
-                    <div class="music-title">{{ track.title }}</div>
-                    <div class="music-artist">{{ track.artist }}</div>
-                    <div class="music-stats">
-                        <span class="stat">{{ track.downloads }} download{{ track.downloads|pluralize }}</span>
-                    </div>
-                </div>
-                <button class="play-btn" data-type="track" data-id="{{ track.id }}">
-                    <span class="material-icons">play_arrow</span>
-                </button>
-            </div>
-            {% empty %}
-            <p>No popular tracks yet.</p>
-            {% endfor %}
-        </div>
-   </div>
+     
+     
         <div class="container">
             <h2 class="section-title">Popular Tracks</h2>
             <div class="tracks-list">
