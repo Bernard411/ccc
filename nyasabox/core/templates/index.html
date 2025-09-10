@@ -1008,6 +1008,135 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
         }
+           .hero-section {
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-carousel {
+        position: relative;
+        height: 16rem;
+        border-radius: 1.2rem;
+        overflow: hidden;
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        color: white;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .hero-slide::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 0;
+    }
+
+    .hero-slide.active {
+        opacity: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 60%;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(1.5rem, 3.5vw, 2rem);
+        font-weight: 800;
+        margin-bottom: 0.6rem;
+        line-height: 1.1;
+        color: #ffffff; /* Explicitly set white color */
+    }
+
+    .hero-content p {
+        font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+        opacity: 0.9;
+        margin-bottom: 1.2rem;
+        max-width: 28rem;
+        color: #ffffff; /* Explicitly set white color */
+    }
+
+    .hero-cta {
+        padding: 0.6rem 1.2rem;
+        background: #ff6b6b;
+        border: none;
+        border-radius: 1.2rem;
+        color: white;
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .hero-cta:hover {
+        background: #4ecdc4;
+        transform: translateY(-0.1rem);
+    }
+
+    .hero-visual {
+        font-size: clamp(4rem, 8vw, 6rem);
+        opacity: 0.3;
+        animation: float 6s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+        color: #ffffff; /* Explicitly set white color */
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-1rem); }
+    }
+
+    .carousel-dots {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    .dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+
+    .content {
+        padding: 0 1.2rem 1.5rem;
+        flex: 1;
+    }
+
 
         .footer-column h3 {
             font-size: 1.1rem;
@@ -1263,7 +1392,7 @@
     </style>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <!-- <section class="hero">
         <div class="hero-slideshow">
             <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
             <div class="hero-slide" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');"></div>
@@ -1280,10 +1409,10 @@
                 <p>Get 20% off your first distribution. Use code: NYASA20</p>
             </div>
         </div>
-    </section>
+    </section> -->
 
        <!-- Distribution Partners -->
-    <section class="distribution-section">
+    <!-- <section class="distribution-section">
         <div class="contailner mx-2">
             <h2 class="section-title">We Distribute To</h2>
             <div class="partners-scroll">
@@ -1302,10 +1431,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
 
-<!-- <div class="hero-section">
+<div class="hero-section">
     <div class="hero-carousel" id="heroCarousel">
         <div class="hero-slide active" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');">
             <div class="hero-content">
@@ -1343,7 +1472,7 @@
             <div class="dot" data-slide="2"></div>
         </div>
     </div>
-</div> -->
+</div>
 
 <div class="content">
     <!-- Latest Albums Section -->
@@ -1434,13 +1563,14 @@
 
     <!-- Popular Tracks Section -->
     <div class="section">
-        <div class="section-header">
-            <h2 class="section-title">
+        <!-- <div class="section-header"> -->
+               <h2 class="section-title">Popular Tracks</h2>
+            <!-- <h2 class="section-title">
                 <span class="material-icons">trending_up</span>
                 Popular Tracks
-            </h2>
-            <a href="{% url 'search' %}?sort=popular" class="see-all">View more</a>
-        </div>
+            </h2> -->
+            <!-- <a href="{% url 'search' %}?sort=popular" class="see-all">View more</a>
+        </div> -->
         <div class="music-grid">
             {% for track in popular_tracks %}
             <div class="music-card" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
@@ -1467,37 +1597,30 @@
             <p>No popular tracks yet.</p>
             {% endfor %}
         </div>
-    </div>
+    <!-- </div> -->
 
-    <!-- Top Artists Section -->
-    <div class="section" id="top-artists">
-        <div class="section-header">
-            <h2 class="section-title">
-                <span class="material-icons">people</span>
-                Top Artists
-            </h2>
-            <a href="{% url 'search' %}?type=artist" class="see-all">View all artists</a>
-        </div>
-        <div class="artist-grid">
-            {% for artist in top_artists %}
-            <div class="artist-card" data-artist="{{ artist.name }}">
-                <div class="artist-avatar">
-                    {{ artist.name|slice:":1"|upper }}
-                </div>
-                <div class="artist-name">{{ artist.name }}</div>
-                <div class="artist-stats">
-                    {{ artist.track_count }} track{{ artist.track_count|pluralize }}<br>
-                    {{ artist.total_downloads }} downloads
-                </div>
+    <section class="tracks-section">
+        <div class="containner">
+            <!-- <h2 class="section-title">Popular Tracks</h2> -->
+            <div class="tracks-list">
+                {% for track in popular_tracks %}
+                    <div class="track-item">
+                        <div class="track-number">{{ forloop.counter }}</div>
+                        <div class="track-info">
+                            <h3 class="track-title">{{ track.title }}</h3>
+                            <p class="track-artist">{{ track.artist }}</p>
+                        </div>
+                        <div class="track-duration">{{ track.get_formatted_duration }}</div>
+                        <div class="track-play"><span class="material-icons">play_circle</span></div>
+                    </div>
+                {% endfor %}
             </div>
-            {% empty %}
-            <p>No artists yet.</p>
-            {% endfor %}
         </div>
-    </div>
+    </section>
+
 
     <!-- Popular Albums Section -->
-    <div class="section">
+    <!-- <div class="section">
         <div class="section-header">
             <h2 class="section-title">
                 <span class="material-icons">library_music</span>
@@ -1530,7 +1653,7 @@
             <p>No popular albums yet.</p>
             {% endfor %}
         </div>
-    </div>
+    </div> -->
 </div>
 
 
