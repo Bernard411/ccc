@@ -1376,13 +1376,6 @@ function restrictZoom() {
         }
     }, { passive: false });
 
-    // Prevent Ctrl/Cmd + scroll zoom
-    document.addEventListener('wheel', function(event) {
-        if (event.ctrlKey) {
-            event.preventDefault();
-        }
-    }, { passive: false });
-
     // Prevent Ctrl/Cmd + +/- zoom
     document.addEventListener('keydown', function(event) {
         if (event.ctrlKey || event.metaKey) {
@@ -1392,7 +1385,7 @@ function restrictZoom() {
         }
     });
 
-    // Set viewport meta tag to disable zooming (added dynamically for control)
+    // Set viewport meta tag to disable zooming
     let metaViewport = document.querySelector('meta[name="viewport"]');
     if (!metaViewport) {
         metaViewport = document.createElement('meta');
@@ -1406,7 +1399,7 @@ function restrictZoom() {
 function restrictRightClick() {
     document.addEventListener('contextmenu', function(event) {
         event.preventDefault();
-        // Optional: Show a custom message
+        // Show a custom message
         const errorMessage = document.getElementById('errorMessage');
         if (errorMessage) {
             errorMessage.textContent = 'Right-click is disabled.';
