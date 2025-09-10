@@ -5,6 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NyasaBox - Music Distribution</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ff6b6b">
+    <meta name="description" content="Distribute your music worldwide with NyasaBox and keep 100% of your royalties.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NyasaBox">
+    
+    <!-- Favicon and PWA Icons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'icon/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icon/favicon-32x32.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'icon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'icon/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'icon/android-chrome-512x512.png' %}">
+    <link rel="manifest" href="{% static 'icon/site.webmanifest' %}">
+
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -125,36 +142,106 @@
             gap: 0.75rem;
         }
 
-        .search-container {
-            position: relative;
-            flex: 1;
-        }
+        /* Add to your existing styles */
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+}
 
-        .search-input {
-            padding: 0.5rem 1rem 0.5rem 2.2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            outline: none;
-            transition: all 0.3s;
-            width: 100%;
-            max-width: 200px;
-        }
+.search-input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    border-radius: 2rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
 
-        .search-input:focus {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
-        }
+.search-input:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-primary);
+    outline: none;
+}
 
-        .search-icon {
-            position: absolute;
-            left: 0.7rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-        }
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-heavy);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    animation: fadeIn 0.2s ease;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-result-item:hover,
+.search-result-item.selected {
+    background: var(--bg-secondary);
+}
+
+.search-result-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+}
+
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-artist {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
         .theme-toggle {
             padding: 0.4rem;
@@ -1011,6 +1098,19 @@
     </footer>
 
     <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "icon/service-worker.js" %}')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = themeToggle.querySelector('.material-icons');
@@ -1145,6 +1245,109 @@
                 }
             });
         });
+
+        // Add inside the existing script tag in website.html
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+
+        // Hide results if query is empty
+        if (!query) {
+            searchResults.classList.remove('active');
+            searchResults.innerHTML = '';
+            return;
+        }
+
+        // Set new timeout for search
+        searchTimeout = setTimeout(() => {
+            fetch(`/search/?q=${encodeURIComponent(query)}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear previous results
+                    searchResults.innerHTML = '';
+
+                    if (data.results.length === 0) {
+                        searchResults.innerHTML = `
+                            <div class="search-result-item" style="text-align: center;">
+                                <span class="text-muted">No results found</span>
+                            </div>`;
+                        searchResults.classList.add('active');
+                        return;
+                    }
+
+                    // Add new results
+                    data.results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+
+                        let coverUrl = result.cover_url || '{% static 'images/default-cover.png' %}';
+
+                        resultItem.innerHTML = `
+                            <img src="${coverUrl}" alt="${result.title}" class="search-result-image">
+                            <div class="search-result-info">
+                                <div class="search-result-title">${result.title}</div>
+                                <div class="search-result-artist">${result.artist || 'Unknown Artist'}</div>
+                            </div>
+                        `;
+                        
+                        resultItem.addEventListener('click', () => {
+                            window.location.href = result.url;
+                        });
+                        
+                        searchResults.appendChild(resultItem);
+                    });
+
+                    // Show results container
+                    searchResults.classList.add('active');
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                });
+        }, 300); // Delay search by 300ms for better performance
+    });
+
+    // Close search results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.remove('active');
+        }
+    });
+
+    // Handle keyboard navigation
+    searchInput.addEventListener('keydown', function(e) {
+        const items = searchResults.querySelectorAll('.search-result-item');
+        const currentIndex = Array.from(items).findIndex(item => item.classList.contains('selected'));
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                if (currentIndex < items.length - 1) {
+                    if (currentIndex >= 0) items[currentIndex].classList.remove('selected');
+                    items[currentIndex + 1].classList.add('selected');
+                }
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    items[currentIndex].classList.remove('selected');
+                    items[currentIndex - 1].classList.add('selected');
+                }
+                break;
+            case 'Enter':
+                e.preventDefault();
+                const selectedItem = searchResults.querySelector('.search-result-item.selected');
+                if (selectedItem) selectedItem.click();
+                break;
+        }
+    });
+});
     </script>
 </body>
 </html>

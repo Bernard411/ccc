@@ -746,6 +746,26 @@ Not Found: /media/profile_pics/default.png
 C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+<<<<<<< HEAD
+C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+C:\Users\dell\Desktop\personal\ccc\nyasabox\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /media/1
+Not Found: /media/tracks/ElevenLabs_2025-02-15T20_22_40_Bill_pre_s84_sb93_se0_b_m2_2.mp3
+Not Found: /media/1
+Not Found: /media/tracks/WhatsApp_Ptt_2025-09-04_at_2.20.52_PM.ogg
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+Not Found: /media/1
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+Not Found: /media/1
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+Not Found: /media/1
+C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
+Watching for file changes with StatReloader
+=======
 Watching for file changes with StatReloader
 Not Found: /favicon.ico
 Not Found: /media/1
@@ -793,6 +813,7 @@ Not Found: /favicon.ico
 Not Found: /media/1
 Not Found: /favicon.ico
 Not Found: /media/1
+<<<<<<< HEAD
 Not Found: /media/1
 Not Found: /media/1
 Not Found: /media/1
@@ -930,3 +951,10 @@ django.template.exceptions.TemplateSyntaxError: 'block' tag with name 'extra_js'
 Not Found: /media/1
 Not Found: /media/tracks/Offset_Ft_Gunna_-_Different_Species_1_WFp6SPx.mp3
 Not Found: /media/1
+=======
+>>>>>>> b9c5aba8b02a2c11f9ac20a7a4f46e1006b96264
+Watching for file changes with StatReloader
+Not Found: /media/1
+Not Found: /media/1
+C:\Users\dell\Desktop\personal\ccc\nyasabox\nyasabox\settings.py changed, reloading.
+>>>>>>> 7b4ae65809a1b3e0cfe3a40f45948a9a13a27128

@@ -250,6 +250,56 @@ def search(request):
 
     total_results = sum(qs.count() for qs in [track_results, album_results, blog_results] if qs is not None)
 
+    is_json = request.GET.get('format') == 'json'
+
+    if not query:
+        if is_json:
+            return JsonResponse({'results': []})
+        return render(request, 'search.html', {'query': query})
+
+    # Search in tracks
+    tracks = Track.objects.filter(
+        Q(title__icontains=query) |
+        Q(artist__icontains=query) |
+        Q(album__title__icontains=query)
+    )[:5]
+
+    # Search in albums
+    albums = Album.objects.filter(
+        Q(title__icontains=query) |
+        Q(artist__icontains=query)
+    )[:5]
+
+    if is_json:
+        results = []
+        
+        # Add track results
+        for track in tracks:
+            cover_url = track.cover_art.url if track.cover_art else (
+                track.album.cover_art.url if track.album and track.album.cover_art else None
+            )
+            results.append({
+                'type': 'track',
+                'title': track.title,
+                'artist': track.artist,
+                'cover_url': cover_url,
+                'url': reverse('track_detail', kwargs={'slug': track.slug})
+            })
+        
+        # Add album results
+        for album in albums:
+            results.append({
+                'type': 'album',
+                'title': album.title,
+                'artist': album.artist,
+                'cover_url': album.cover_art.url if album.cover_art else None,
+                'url': reverse('album_detail', kwargs={'slug': album.slug})
+            })
+
+        return JsonResponse({
+            'results': results[:8]  # Limit total results to 8
+        })
+
     context = {
         'track_results': track_results or Track.objects.none(),
         'album_results': album_results or Album.objects.none(),
@@ -258,6 +308,9 @@ def search(request):
         'content_type': content_type,
         'sort_by': sort_by,
         'total_results': total_results,
+
+        'tracks': tracks,
+        'albums': albums,
     }
     return render(request, 'search.html', context)
 
