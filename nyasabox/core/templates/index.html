@@ -841,26 +841,46 @@ body {
 {% endblock %}
 
 {% block content %}
- <section class="hero">
-        <div class="hero-slideshow">
-            <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
-            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/632/841/8bc/thumb_883376_900_0_0_0_auto.png');"></div>
-            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/667/4a0/708/thumb_1022849_900_0_0_0_auto.png');"></div>
-        </div>
-        <div class="container hero-content">
-            <h1 class="hero-title">Distribute Your Music Worldwide</h1>
-            <p class="hero-subtitle">Get your music on all major streaming platforms while keeping 100% of your royalties.</p>
-            <div class="hero-cta">
-                <a href="#" class="btn btn-primary">Get Started Today</a>
-            </div>
-            <div class="hero-ad">
-                <h3>Special Limited Offer!</h3>
-                <p>Get 20% off your first distribution. Use code: NYASA20</p>
-            </div>
-        </div>
-    </section>
 
-    
+<div class="hero-section">
+    <div class="hero-carousel" id="heroCarousel">
+        <div class="hero-slide active" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');">
+            <div class="hero-content">
+                <h1>Discover Amazing Music</h1>
+                <p>Explore thousands of songs from Malawian artists and discover new sounds tailored just for you.</p>
+                <a href="#latest-tracks" class="hero-cta">Start Listening</a>
+            </div>
+            <div class="hero-visual">
+                <span class="material-icons">music_note</span>
+            </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('https://cdn.dribbble.com/userupload/42463813/file/original-00945ba2db181dd1f345d1b2436dc2d7.gif');">
+            <div class="hero-content">
+                <h1>Share Your Music</h1>
+                <p>Upload your tracks and reach listeners across Malawi and beyond with our distribution platform.</p>
+                <a href="{% url 'upload' %}" class="hero-cta">Upload Now</a>
+            </div>
+            <div class="hero-visual">
+                <span class="material-icons">cloud_upload</span>
+            </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('https://watercolorartsa.com/wp-content/uploads/2024/01/madalitso-108jpg.png-56.jpg');">
+            <div class="hero-content">
+                <h1>Support Local Artists</h1>
+                <p>Discover and support talented Malawian musicians. Your listens help artists grow their careers.</p>
+                <a href="#top-artists" class="hero-cta">Explore Artists</a>
+            </div>
+            <div class="hero-visual">
+                <span class="material-icons">people</span>
+            </div>
+        </div>
+        <div class="carousel-dots">
+            <div class="dot active" data-slide="0"></div>
+            <div class="dot" data-slide="1"></div>
+            <div class="dot" data-slide="2"></div>
+        </div>
+    </div>
+</div>
 
 
 {% endblock %}
