@@ -69,6 +69,27 @@
             --shadow-light: 0 0.2rem 1rem rgba(255, 107, 107, 0.2);
             --shadow-heavy: 0 1rem 2rem rgba(0, 0, 0, 0.1);
         }
+   :root {
+            --bg-primary: #000000;
+            --bg-secondary: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent-primary: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+        }
+
+        .light-mode {
+            --bg-primary: #f8fafc;
+            --bg-secondary: rgba(255, 255, 255, 0.8);
+            --text-primary: #1e293b;
+            --text-secondary: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(30, 41, 59, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+        }
 
         .app {
             display: grid;
@@ -1009,7 +1030,11 @@
             <div class="nav-section">
                 <div class="nav-item {% if request.path == '/' %}active{% endif %}">
                     <span class="material-icons">home</span>
-                    <a href="{% url 'index' %}">Home</a>
+                    <a href="{% url 'website' %}">Home</a>
+                </div>
+                  <div class="nav-item {% if request.path == '/' %}active{% endif %}">
+                    <span class="material-icons">local_fire_department</span>
+                    <a href="{% url 'index' %}">Start Listening</a>
                 </div>
                 <div class="nav-item">
                     <span class="material-icons">search</span>
