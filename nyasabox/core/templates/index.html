@@ -1,206 +1,686 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}NyasaBox - Discover Music{% endblock %}
+{% block title %}Profile - {{ user.username }} - NyasaBox{% endblock %}
 
 {% block extra_styles %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NyasaBox - Discover Music</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-     
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
 
+    .profile-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        position: relative;
+        overflow: hidden;
+    }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-1rem); }
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--accent-gradient);
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-heavy);
+        transition: all 0.3s ease;
+    }
+
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-primary);
+    }
+
+    .profile-name {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .artist-badge {
+        display: inline-block;
+        background: var(--accent-gradient);
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-left: 1rem;
+        vertical-align: middle;
+        box-shadow: var(--shadow-light);
+    }
+
+    .pending-badge {
+        background: linear-gradient(135deg, #ffd000 0%, #ff9500 100%);
+    }
+
+    .rejected-badge {
+        background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+    }
+
+    .profile-bio {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 500px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        min-width: 120px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .profile-meta {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .meta-item i {
+        color: var(--accent-primary);
+    }
+
+    .profile-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-light);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-title i {
+        color: var(--accent-primary);
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-primary);
+        transform: translateX(5px);
+    }
+
+    .action-btn i {
+        color: var(--accent-primary);
+        font-size: 1.2rem;
+    }
+
+    .action-btn.danger:hover {
+        border-color: #ff4757;
+    }
+
+    .action-btn.danger i {
+        color: #ff4757;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-radius: 0.8rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.15);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+    }
+
+    input[type="file"].form-control {
+        padding: 0.8rem;
+        cursor: pointer;
+    }
+
+    input[type="file"].form-control::file-selector-button {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    input[type="file"].form-control::file-selector-button:hover {
+        background: var(--accent-secondary);
+    }
+
+    input[type="date"].form-control {
+        padding: 0.9rem 1.2rem;
+    }
+
+    .text-danger {
+        color: #ff4757;
+        font-size: 0.8rem;
+        margin-top: 0.4rem;
+    }
+
+    .submit-btn {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .upload-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .upload-stat {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .upload-stat:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .upload-stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-stat-label {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    @media (max-width: 968px) {
+        .profile-content {
+            grid-template-columns: 1fr;
         }
-
-        .carousel-dots {
-            position: absolute;
-            bottom: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 0.6rem;
+        
+        .form-grid {
+            grid-template-columns: 1fr;
         }
-
-        .dot {
-            width: 0.6rem;
-            height: 0.6rem;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
+        
+        .profile-stats {
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-
-        .dot.active {
-            background: var(--text-primary);
-            transform: scale(1.2);
-        }
-
-        .content {
-            padding: 0 1.2rem 1.5rem;
+        
+        .stat-item {
+            min-width: 100px;
             flex: 1;
         }
+        
+        .upload-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 
-        .section {
-            margin-bottom: 2.5rem;
+    @media (max-width: 576px) {
+        .profile-container {
+            padding: 1rem;
+        }
+        
+        .profile-header {
+            padding: 1.5rem;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .profile-name {
+            font-size: 1.8rem;
+        }
+        
+        .upload-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .profile-meta {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+    }
+
+    .file-preview {
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .file-preview img {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 0.8rem;
+        border: 2px solid var(--border-color);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(1rem); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .artist-info {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        text-align: center;
+    }
+
+    .artist-status {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .status-pending {
+        color: #ffd000;
+    }
+
+    .status-verified {
+        color: #2ed573;
+    }
+
+    .status-rejected {
+        color: #ff4757;
+    }
+
+    .verification-proof {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.8rem;
+    }
+
+    .proof-link {
+        color: var(--accent-primary);
+        text-decoration: none;
+        word-break: break-all;
+    }
+
+    .proof-link:hover {
+        text-decoration: underline;
+    }
+      /* Tracks Section */
+        .tracks-section {
+            padding: 2rem 0;
         }
 
-        .section-header {
+        .tracks-list {
+            background: var(--card-bg);
+            border-radius: 0.8rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .track-item {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.2rem;
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s;
         }
 
-    
+        .track-item:last-child {
+            border-bottom: none;
+        }
 
-        .see-all {
-            color: var(--accent-primary);
-            font-weight: 600;
+        .track-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .track-number {
+            width: 25px;
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        .track-info {
+            flex: 1;
+            margin: 0 1rem;
+        }
+
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .track-artist {
             font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .track-duration {
+            opacity: 0.7;
+            font-size: 0.8rem;
+        }
+
+        .track-play {
+            color: var(--accent-primary);
+            margin-left: 0.75rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
+            font-size: 1.2rem;
         }
 
-        .see-all:hover {
-            color: var(--accent-secondary);
-            transform: translateX(0.2rem);
-        }
-
-        /* New Slider Styles for Latest Tracks */
-        .tracks-slider {
+          /* Hero Section */
+        .hero {
+            height: 40vh;
             position: relative;
-            margin: 0 -0.6rem 1.5rem;
             overflow: hidden;
-        }
-
-        .tracks-slider-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            padding: 0.5rem 0.6rem;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
-        }
-
-        .tracks-slider-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari */
-        }
-
-        .track-slide {
-            flex: 0 0 auto;
-            width: 16rem;
-            margin-right: 1rem;
-            background: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1rem;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(0.5rem);
-        }
-
-        .track-slide:hover {
-            transform: translateY(-0.4rem) scale(1.02);
-            box-shadow: var(--shadow-heavy);
-            background: var(--bg-card-hover);
-        }
-
-        .track-slide-cover {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 0.8rem;
-            background: var(--accent-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            color: var(--text-primary);
-            margin-bottom: 0.8rem;
-            position: relative;
-            overflow: hidden;
         }
 
-        .track-slide-cover img {
+        .hero-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            z-index: 1;
         }
 
-        .track-slide-info {
+        .hero-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            z-index: 2;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            max-width: 90%;
+            padding: 0 15px;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .hero-cta {
+            margin-top: 1.5rem;
+        }
+
+        .hero-ad {
+            background: var(--bg-secondary);
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            margin-top: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-ad h3 {
+            font-size: 1.2rem;
+        }
+
+        .hero-ad p {
+            font-size: 0.9rem;
+        }
+           /* Distribution Partners */
+        .distribution-section {
+            padding: 2rem 0;
             text-align: center;
         }
 
-        .track-slide-title {
+        .section-title {
+            font-size: 1.8rem;
             font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
-        .track-slide-artist {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-weight: 500;
-            white-space: nowrap;
+        .partners-scroll {
+            display: flex;
             overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 0.5rem;
+            position: relative;
+            padding: 1rem 0;
         }
 
-        .track-slide-duration {
-            color: var(--text-muted);
-            font-size: 0.75rem;
+        .partners-track {
+            display: flex;
+            animation: scroll 30s linear infinite;
+        }
+
+        .partner-item {
+            flex: 0 0 auto;
+            margin: 0 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.3rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
         }
 
-        .slider-controls {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.8rem;
-            margin-top: 0.8rem;
+        .partner-item:hover {
+            opacity: 1;
         }
 
-        .slider-btn {
-            background: var(--bg-card);
-            border: none;
-            border-radius: 50%;
-            width: 2rem;
-            height: 2rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+        .partner-item img {
+            height: 32px;
+            filter: grayscale(100%) brightness(200%);
+            transition: filter 0.3s;
         }
 
-        .slider-btn:hover {
-            background: var(--accent-primary);
-            transform: scale(1.1);
+        .light-mode .partner-item img {
+            filter: grayscale(100%) brightness(20%);
         }
 
-        .slider-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: scale(1);
+        .partner-item:hover img {
+            filter: grayscale(0%) brightness(100%);
         }
 
-        /* Music grid styles */
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+  /* Music grid styles */
         .music-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
@@ -312,1091 +792,60 @@
             transform: translateY(-50%) scale(1.1);
         }
 
-        /* Artist grid layout */
-        .artist-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
+        :root {
+    --bg-primary: #000000;
+    --bg-secondary: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --accent-primary: #ff6b6b;
+    --accent-secondary: #4ecdc4;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+    --shadow-light: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    --shadow-heavy: 0 1.5rem 3rem rgba(0, 0, 0, 0.4);
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-card-hover: rgba(255, 255, 255, 0.1);
+}
 
-        .artist-card {
-            text-align: center;
-            background: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
+.light-mode {
+    --bg-primary: #f8fafc;
+    --bg-secondary: rgba(255, 255, 255, 0.8);
+    --text-primary: #1e293b;
+    --text-secondary: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(30, 41, 59, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(200, 200, 200, 0.2);
+}
 
-        .artist-card:hover {
-            transform: translateY(-0.2rem);
-            box-shadow: var(--shadow-light);
-            background: var(--bg-card-hover);
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .artist-avatar {
-            width: 5rem;
-            height: 5rem;
-            border-radius: 50%;
-            margin: 0 auto 0.8rem;
-            background: var(--accent-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--text-primary);
-            font-weight: bold;
-        }
+html {
+    font-size: clamp(14px, 2.5vw, 16px); /* Fluid typography base */
+}
 
-        .artist-name {
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 0.4rem;
-            color: var(--text-primary);
-        }
-
-        .artist-stats {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        /* Loading states */
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .now-playing {
-            background: linear-gradient(90deg, var(--accent-primary) 0%, transparent 100%);
-            border-left: 3px solid var(--accent-primary);
-        }
-
-        .now-playing .music-title,
-        .now-playing .track-slide-title {
-            color: var(--accent-primary);
-            font-weight: 700;
-        }
-
-        /* Error message styling */
-        .error-message {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff4757;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            z-index: 10000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 75rem) {
-            .music-grid {
-                grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-            }
-        }
-
-        @media (max-width: 60.5rem) {
-            .hero-content {
-                max-width: 100%;
-                text-align: center;
-            }
-            
-            .hero-visual {
-                display: none;
-            }
-            
-            .music-grid {
-                grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-                gap: 0.8rem;
-            }
-            
-            .track-slide {
-                width: 14rem;
-            }
-        }
-
-        @media (max-width: 40rem) {
-            .content {
-                padding: 0 0.6rem 1.5rem;
-            }
-            
-            .hero-section {
-                padding: 0.6rem;
-            }
-            
-            .hero-carousel {
-                height: 14rem;
-            }
-            
-            .hero-slide {
-                padding: 1.2rem;
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .music-grid {
-                grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
-                gap: 0.6rem;
-            }
-            
-            .artist-grid {
-                grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
-            }
-            
-            .artist-avatar {
-                width: 4rem;
-                height: 4rem;
-                font-size: 1.5rem;
-            }
-            
-            .track-slide {
-                width: 12rem;
-            }
-        }
-    </style>
-
+body {
+    font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<!-- Error message container -->
-<div class="error-message" id="errorMessage"></div>
-
-    <style>
-        :root {
-            --bg-primary: #000000;
-            --bg-secondary: rgba(255, 255, 255, 0.05);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --accent-primary: #ff6b6b;
-            --accent-secondary: #4ecdc4;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
-        }
-
-        .light-mode {
-            --bg-primary: #f8fafc;
-            --bg-secondary: rgba(255, 255, 255, 0.8);
-            --text-primary: #1e293b;
-            --text-secondary: rgba(30, 41, 59, 0.7);
-            --border-color: rgba(30, 41, 59, 0.1);
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        @font-face {
-            font-family: 'Troy';
-            src: url('{% static 'troy.woff2' %}') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        html {
-            font-size: 16px;
-        }
-
-        body {
-            font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            font-size: 0.875rem;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--accent-primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo img {
-            height: 32px;
-            margin-right: 8px;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 1.5rem;
-            margin: 0.5rem 0;
-        }
-
-        nav a {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: var(--accent-primary);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .search-container {
-            position: relative;
-            flex: 1;
-        }
-
-        .search-input {
-            padding: 0.5rem 1rem 0.5rem 2.2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            outline: none;
-            transition: all 0.3s;
-            width: 100%;
-            max-width: 200px;
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 0.7rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-        }
-
-     
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 1rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .btn-outline {
-            border: 1px solid var(--accent-primary);
-            color: var(--accent-primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--accent-primary);
-            color: #000;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 60vh;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-slideshow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .hero-slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
-            z-index: 2;
-        }
-
-        .hero-slide.active {
-            opacity: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            max-width: 90%;
-            padding: 0 15px;
-        }
-
-        .hero-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            opacity: 0.9;
-        }
-
-        .hero-cta {
-            margin-top: 1.5rem;
-        }
-
-        .hero-ad {
-            background: var(--bg-secondary);
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            margin-top: 1.5rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-        }
-
-        .hero-ad h3 {
-            font-size: 1.2rem;
-        }
-
-        .hero-ad p {
-            font-size: 0.9rem;
-        }
-
-        /* Distribution Partners */
-        .distribution-section {
-            padding: 2rem 0;
-            text-align: center;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .partners-scroll {
-            display: flex;
-            overflow: hidden;
-            position: relative;
-            padding: 1rem 0;
-        }
-
-        .partners-track {
-            display: flex;
-            animation: scroll 30s linear infinite;
-        }
-
-        .partner-item {
-            flex: 0 0 auto;
-            margin: 0 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .partner-item:hover {
-            opacity: 1;
-        }
-
-        .partner-item img {
-            height: 32px;
-            filter: grayscale(100%) brightness(200%);
-            transition: filter 0.3s;
-        }
-
-        .light-mode .partner-item img {
-            filter: grayscale(100%) brightness(20%);
-        }
-
-        .partner-item:hover img {
-            filter: grayscale(0%) brightness(100%);
-        }
-
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* Albums Section */
-        .albums-section {
-            padding: 2rem 0;
-        }
-
-        .albums-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .album-card {
-            background: var(--card-bg);
-            border-radius: 0.8rem;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid var(--border-color);
-        }
-
-        .album-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
-        }
-
-        .album-cover {
-            width: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-        }
-
-        .album-info {
-            padding: 1rem;
-        }
-
-        .album-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-        }
-
-        .album-artist {
-            color: var(--accent-primary);
-            margin-bottom: 0.4rem;
-            font-size: 0.85rem;
-        }
-
-        .album-meta {
-            display: flex;
-            justify-content: space-between;
-            opacity: 0.7;
-            font-size: 0.8rem;
-        }
-
-        /* Tracks Section */
-        .tracks-section {
-            padding: 2rem 0;
-        }
-
-        .tracks-list {
-            background: var(--card-bg);
-            border-radius: 0.8rem;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .track-item {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.3s;
-        }
-
-        .track-item:last-child {
-            border-bottom: none;
-        }
-
-        .track-item:hover {
-            background: var(--bg-secondary);
-        }
-
-        .track-number {
-            width: 25px;
-            opacity: 0.7;
-            font-size: 0.85rem;
-        }
-
-        .track-info {
-            flex: 1;
-            margin: 0 1rem;
-        }
-
-        .track-title {
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-            font-size: 0.9rem;
-        }
-
-        .track-artist {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        .track-duration {
-            opacity: 0.7;
-            font-size: 0.8rem;
-        }
-
-        .track-play {
-            color: var(--accent-primary);
-            margin-left: 0.75rem;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        /* Ad Sections */
-        .ad-section {
-            padding: 2rem 0;
-            text-align: center;
-        }
-
-        .ad-container {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
-            border-radius: 0.8rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .ad-title {
-            font-size: 1.3rem;
-            margin-bottom: 0.8rem;
-            color: var(--accent-primary);
-        }
-
-        .ad-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .ad-text {
-            flex: 1;
-            min-width: 250px;
-            text-align: left;
-        }
-
-        .ad-image {
-            flex: 1;
-            min-width: 250px;
-            border-radius: 0.8rem;
-            overflow: hidden;
-        }
-
-        .ad-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Search Results */
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            border-radius: 0 0 0.8rem 0.8rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            border-top: none;
-            max-height: 250px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .search-result-item {
-            padding: 0.6rem 0.8rem;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .search-result-item:hover {
-            background: var(--bg-secondary);
-        }
-
-        .search-result-image {
-            width: 32px;
-            height: 32px;
-            border-radius: 0.4rem;
-            margin-right: 0.8rem;
-            object-fit: cover;
-        }
-
-        .search-result-info {
-            flex: 1;
-        }
-
-        .search-result-title {
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-            font-size: 0.85rem;
-        }
-
-        .search-result-artist {
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-
-        /* Footer */
-        footer {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 2rem 0 1rem;
-            margin-top: 2rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .light-mode footer {
-            background: rgba(248, 250, 252, 0.9);
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-           .hero-section {
-        padding: 1.2rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero-carousel {
-        position: relative;
-        height: 16rem;
-        border-radius: 1.2rem;
-        overflow: hidden;
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.6);
-    }
-
-    .hero-slide {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.8s ease-in-out;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem;
-        color: white;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .hero-slide::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 0;
-    }
-
-    .hero-slide.active {
-        opacity: 1;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 1;
-        max-width: 60%;
-    }
-
-    .hero-content h1 {
-        font-size: clamp(1.5rem, 3.5vw, 2rem);
-        font-weight: 800;
-        margin-bottom: 0.6rem;
-        line-height: 1.1;
-        color: #ffffff; /* Explicitly set white color */
-    }
-
-    .hero-content p {
-        font-size: clamp(0.8rem, 1.8vw, 0.9rem);
-        opacity: 0.9;
-        margin-bottom: 1.2rem;
-        max-width: 28rem;
-        color: #ffffff; /* Explicitly set white color */
-    }
-
-    .hero-cta {
-        padding: 0.6rem 1.2rem;
-        background: #ff6b6b;
-        border: none;
-        border-radius: 1.2rem;
-        color: white;
-        font-weight: 600;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .hero-cta:hover {
-        background: #4ecdc4;
-        transform: translateY(-0.1rem);
-    }
-
-    .hero-visual {
-        font-size: clamp(4rem, 8vw, 6rem);
-        opacity: 0.3;
-        animation: float 6s ease-in-out infinite;
-        position: relative;
-        z-index: 1;
-        color: #ffffff; /* Explicitly set white color */
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-1rem); }
-    }
-
-    .carousel-dots {
-        position: absolute;
-        bottom: 1rem;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 0.6rem;
-    }
-
-    .dot {
-        width: 0.6rem;
-        height: 0.6rem;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .dot.active {
-        background: white;
-        transform: scale(1.2);
-    }
-
-    .content {
-        padding: 0 1.2rem 1.5rem;
-        flex: 1;
-    }
-
-
-        .footer-column h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            color: var(--accent-primary);
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.6rem;
-        }
-
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: var(--accent-primary);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            transition: background 0.3s;
-        }
-
-        .social-links a:hover {
-            background: var(--accent-primary);
-        }
-
-        .copyright {
-            text-align: center;
-            margin-top: 2rem;
-            opacity: 0.7;
-            font-size: 0.8rem;
-        }
-
-        /* Mobile Responsive Design */
-        @media (max-width: 768px) {
-            html {
-                font-size: 14px;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 0.75rem;
-                align-items: flex-start;
-            }
-
-            nav ul {
-                gap: 1rem;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                width: 100%;
-            }
-
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-                flex-wrap: wrap;
-            }
-
-            .search-input {
-                max-width: 100%;
-            }
-
-            .auth-buttons {
-                display: flex;
-                gap: 0.5rem;
-                width: 100%;
-                justify-content: flex-end;
-            }
-
-            .hero {
-                height: 50vh;
-            }
-
-            .hero-title {
-                font-size: 1.8rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.9rem;
-            }
-
-            .hero-ad h3 {
-                font-size: 1rem;
-            }
-
-            .hero-ad p {
-                font-size: 0.8rem;
-            }
-
-            .section-title {
-                font-size: 1.5rem;
-            }
-
-            .albums-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 1rem;
-            }
-
-            .album-card {
-                border-radius: 0.6rem;
-            }
-
-            .album-info {
-                padding: 0.8rem;
-            }
-
-            .album-title {
-                font-size: 0.9rem;
-            }
-
-            .album-artist {
-                font-size: 0.8rem;
-            }
-
-            .album-meta {
-                font-size: 0.75rem;
-            }
-
-            .track-item {
-                padding: 0.6rem 0.8rem;
-            }
-
-            .track-title {
-                font-size: 0.85rem;
-            }
-
-            .track-artist {
-                font-size: 0.75rem;
-            }
-
-            .track-duration {
-                font-size: 0.75rem;
-            }
-
-            .ad-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .ad-text, .ad-image {
-                text-align: center;
-                min-width: 100%;
-            }
-
-            .ad-title {
-                font-size: 1.1rem;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .footer-column h3 {
-                font-size: 1rem;
-            }
-
-            .footer-links a {
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 1.2rem;
-            }
-
-            .logo img {
-                height: 28px;
-            }
-
-            nav ul {
-                gap: 0.5rem;
-            }
-
-            nav a {
-                font-size: 0.8rem;
-            }
-
-            .btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.75rem;
-            }
-
-            .hero {
-                height: 40vh;
-            }
-
-            .hero-title {
-                font-size: 1.5rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.8rem;
-            }
-
-            .section-title {
-                font-size: 1.2rem;
-            }
-
-            .partner-item img {
-                height: 24px;
-            }
-        }
-
-
-        /* Additional mobile optimizations */
-.hero-slide {
-    background-size: cover;
-    background-position: center center;
-}
-
-/* Touch indicators for carousel */
-.carousel-dots {
-    bottom: 0.5rem; /* Position dots higher on mobile */
-}
-
-.dot {
-    width: 0.8rem; /* Larger dots for easier tapping */
-    height: 0.8rem;
-}
-
-/* Prevent zoom on input focus for iOS */
-@media (max-width: 768px) {
-    select:focus,
-    textarea:focus,
-    input:focus {
-        font-size: 16px; /* Prevents zoom on focus in iOS */
-    }
-}
-    </style>
-
-    <!-- Hero Section -->
-    <!-- <section class="hero">
+ <section class="hero">
         <div class="hero-slideshow">
             <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
-            <div class="hero-slide" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');"></div>
-            <div class="hero-slide" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
+            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/632/841/8bc/thumb_883376_900_0_0_0_auto.png');"></div>
+            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/667/4a0/708/thumb_1022849_900_0_0_0_auto.png');"></div>
         </div>
         <div class="container hero-content">
             <h1 class="hero-title">Distribute Your Music Worldwide</h1>
@@ -1409,11 +858,10 @@
                 <p>Get 20% off your first distribution. Use code: NYASA20</p>
             </div>
         </div>
-    </section> -->
+    </section>
 
-       <!-- Distribution Partners -->
-    <!-- <section class="distribution-section">
-        <div class="contailner mx-2">
+        <section class="distribution-section">
+        <div class="container">
             <h2 class="section-title">We Distribute To</h2>
             <div class="partners-scroll">
                 <div class="partners-track">
@@ -1431,138 +879,12 @@
                 </div>
             </div>
         </div>
-    </section> -->
+    </section>
 
 
-<div class="hero-section">
-    <div class="hero-carousel" id="heroCarousel">
-        <div class="hero-slide active" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');">
-            <div class="hero-content">
-                <h1>Discover Amazing Music</h1>
-                <p>Explore thousands of songs from Malawian artists and discover new sounds tailored just for you.</p>
-                <a href="#latest-tracks" class="hero-cta">Start Listening</a>
-            </div>
-            <div class="hero-visual">
-                <span class="material-icons">music_note</span>
-            </div>
-        </div>
-        <div class="hero-slide" style="background-image: url('https://cdn.dribbble.com/userupload/42463813/file/original-00945ba2db181dd1f345d1b2436dc2d7.gif');">
-            <div class="hero-content">
-                <h1>Share Your Music</h1>
-                <p>Upload your tracks and reach listeners across Malawi and beyond with our distribution platform.</p>
-                <a href="{% url 'upload' %}" class="hero-cta">Upload Now</a>
-            </div>
-            <div class="hero-visual">
-                <span class="material-icons">cloud_upload</span>
-            </div>
-        </div>
-        <div class="hero-slide" style="background-image: url('https://watercolorartsa.com/wp-content/uploads/2024/01/madalitso-108jpg.png-56.jpg');">
-            <div class="hero-content">
-                <h1>Support Local Artists</h1>
-                <p>Discover and support talented Malawian musicians. Your listens help artists grow their careers.</p>
-                <a href="#top-artists" class="hero-cta">Explore Artists</a>
-            </div>
-            <div class="hero-visual">
-                <span class="material-icons">people</span>
-            </div>
-        </div>
-        <div class="carousel-dots">
-            <div class="dot active" data-slide="0"></div>
-            <div class="dot" data-slide="1"></div>
-            <div class="dot" data-slide="2"></div>
-        </div>
-    </div>
-</div>
-
-<div class="content">
-    <!-- Latest Albums Section -->
-    <div class="section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <span class="material-icons">album</span>
-                Latest Albums
-            </h2>
-            <a href="{% url 'search' %}?type=album" class="see-all">View all albums</a>
-        </div>
-        <div class="music-grid">
-            {% for album in latest_albums %}
-            <a href="{% url 'album_detail' album.slug %}" class="music-card" data-type="album" data-id="{{ album.id }}" style="text-decoration: none;">
-                <div class="music-cover">
-                    {% if album.cover_art %}
-                    <img src="{{ album.cover_art.url }}" alt="{{ album.title }}">
-                    {% else %}
-                    <span class="material-icons">album</span>
-                    {% endif %}
-                </div>
-                <div class="music-info">
-                    <div class="music-title">{{ album.title }}</div>
-                    <div class="music-artist">{{ album.artist }}</div>
-                    <div class="music-stats">
-                        <span class="stat">{{ album.track_count }} track{{ album.track_count|pluralize }}</span>
-                    </div>
-                </div>
-                <button class="play-btn" data-type="album" data-id="{{ album.id }}">
-                    <span class="material-icons">play_arrow</span>
-                </button>
-            </a>
-            {% empty %}
-            <p>No albums available yet.</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Latest Tracks Section with Slider -->
-    <div class="section" id="latest-tracks">
-        <div class="section-header">
-            <h2 class="section-title">
-                <span class="material-icons">music_note</span>
-                Latest Singles
-            </h2>
-            <a href="{% url 'search' %}?type=track" class="see-all">View all tracks</a>
-        </div>
-        
-        <div class="tracks-slider">
-            <div class="tracks-slider-container" id="tracksSlider">
-                {% for track in latest_tracks %}
-                <a href="{% url 'track_detail' track.slug %}" class="track-slide" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
-                    <div class="track-slide-cover">
-                        {% if track.album and track.album.cover_art %}
-                        <img src="{{ track.cover_art.url }}" alt="{{ track.title }}">
-                        {% else %}
-                        <!-- <span class="material-icons">music_note</span> -->
-                           <img src="{{ track.cover_art.url }}" alt="{{ track.title }}">
-                        {% endif %}
-                    </div>
-                    <div class="track-slide-info">
-                        <div class="track-slide-title">{{ track.title }}</div>
-                        <div class="track-slide-artist">{{ track.artist }}</div>
-                        <div class="track-slide-duration">
-                            <span class="material-icons" style="font-size: 0.8rem;">schedule</span>
-                            {{ track.get_formatted_duration }}
-                        </div>
-                    </div>
-                    <button class="play-btn" data-type="track" data-id="{{ track.id }}">
-                        <span class="material-icons">play_arrow</span>
-                    </button>
-                </a>
-                {% empty %}
-                <p>No tracks available yet.</p>
-                {% endfor %}
-            </div>
-            
-            <div class="slider-controls">
-                <button class="slider-btn" id="sliderPrevBtn" disabled>
-                    <span class="material-icons">chevron_left</span>
-                </button>
-                <button class="slider-btn" id="sliderNextBtn">
-                    <span class="material-icons">chevron_right</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Popular Tracks Section -->
-    <div class="section">
+<div class="container">
+  <section class="tracks-section">
+       <div class="section">
         <!-- <div class="section-header"> -->
                <h2 class="section-title">Popular Tracks</h2>
             <!-- <h2 class="section-title">
@@ -1597,76 +919,103 @@
             <p>No popular tracks yet.</p>
             {% endfor %}
         </div>
-    <!-- </div> -->
-
-    <section class="tracks-section">
-        <div class="containner">
-            <!-- <h2 class="section-title">Popular Tracks</h2> -->
+   </div>
+        <div class="container">
+            <h2 class="section-title">Popular Tracks</h2>
             <div class="tracks-list">
                 {% for track in popular_tracks %}
-                  
-                
                     <div class="track-item">
-                        
                         <div class="track-number">{{ forloop.counter }}</div>
                         <div class="track-info">
                             <h3 class="track-title">{{ track.title }}</h3>
                             <p class="track-artist">{{ track.artist }}</p>
                         </div>
-                        <!-- <div class="track-duration">{{ track.get_formatted_duration }}</div> -->
-                         <a href="{% url 'track_detail' track.slug %}"  data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
-                        <div class="track-play  btn" data-type="track" data-id="{{ track.id }}"><span class="material-icons">play_circle</span></div>
-                         </a>
-                           
+                        <div class="track-duration">{{ track.get_formatted_duration }}</div>
+                        <div class="track-play"><span class="material-icons">play_circle</span></div>
                     </div>
-                    
                 {% endfor %}
             </div>
         </div>
     </section>
 
 
-    <!-- Popular Albums Section -->
-    <!-- <div class="section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <span class="material-icons">library_music</span>
-                Popular Albums
-            </h2>
-            <a href="{% url 'search' %}?sort=popular" class="see-all">View more</a>
-        </div>
-        <div class="music-grid">
-            {% for album in popular_albums %}
-            <a href="{% url 'album_detail' album.slug %}" style="text-decoration: none;" class="music-card" data-type="album" data-id="{{ album.id }}">
-                <div class="music-cover">
-                    {% if album.cover_art %}
-                    <img src="{{ album.cover_art.url }}" alt="{{ album.title }}">
-                    {% else %}
-                    <span class="material-icons">album</span>
-                    {% endif %}
-                </div>
-                <div class="music-info">
-                    <div class="music-title">{{ album.title }}</div>
-                    <div class="music-artist">{{ album.artist }}</div>
-                    <div class="music-stats">
-                        <span class="stat">{{ album.total_downloads }} downloads</span>
-                    </div>
-                </div>
-                <button class="play-btn" data-type="album" data-id="{{ album.id }}">
-                    <span class="material-icons">play_arrow</span>
-                </button>
-            </a>
-            {% empty %}
-            <p>No popular albums yet.</p>
-            {% endfor %}
-        </div>
-    </div> -->
 </div>
-
-
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Avatar preview
+        const avatarInput = document.querySelector('input[type="file"]');
+        const avatarPreview = document.getElementById('avatarPreview');
+        
+        if (avatarInput) {
+            avatarInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview" style="max-width: 100%; max-height: 200px; border-radius: 0.8rem; border: 2px solid var(--border-color);">`;
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Form validation
+        const form = document.getElementById('profileForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const username = document.querySelector('input[name="username"]');
+                const email = document.querySelector('input[name="email"]');
+                
+                if (username.value.trim() === '') {
+                    e.preventDefault();
+                    alert('Username is required');
+                    username.focus();
+                    return false;
+                }
+                
+                if (email.value.trim() === '') {
+                    e.preventDefault();
+                    alert('Email is required');
+                    email.focus();
+                    return false;
+                }
+            });
+        }
+        
+        // Animate stats on load
+        const stats = document.querySelectorAll('.stat-item, .upload-stat');
+        stats.forEach((stat, index) => {
+            stat.style.opacity = '0';
+            stat.style.transform = 'translateY(1rem)';
+            
+            setTimeout(() => {
+                stat.style.transition = 'all 0.5s ease';
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+        
+        // Animate artist badge if present
+        const artistBadge = document.querySelector('.artist-badge');
+        if (artistBadge) {
+            artistBadge.style.animation = 'pulse 1.5s infinite';
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.05); opacity: 0.8; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    });
+</script>
+
 <script>
     // Initialize music player with real tracks
     document.addEventListener('DOMContentLoaded', function() {
@@ -1958,4 +1307,7 @@
         updateSliderButtons();
     });
 </script>
+
+</div>
 {% endblock %}
+

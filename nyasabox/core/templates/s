@@ -1008,6 +1008,135 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
         }
+           .hero-section {
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-carousel {
+        position: relative;
+        height: 16rem;
+        border-radius: 1.2rem;
+        overflow: hidden;
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        color: white;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .hero-slide::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 0;
+    }
+
+    .hero-slide.active {
+        opacity: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 60%;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(1.5rem, 3.5vw, 2rem);
+        font-weight: 800;
+        margin-bottom: 0.6rem;
+        line-height: 1.1;
+        color: #ffffff; /* Explicitly set white color */
+    }
+
+    .hero-content p {
+        font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+        opacity: 0.9;
+        margin-bottom: 1.2rem;
+        max-width: 28rem;
+        color: #ffffff; /* Explicitly set white color */
+    }
+
+    .hero-cta {
+        padding: 0.6rem 1.2rem;
+        background: #ff6b6b;
+        border: none;
+        border-radius: 1.2rem;
+        color: white;
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .hero-cta:hover {
+        background: #4ecdc4;
+        transform: translateY(-0.1rem);
+    }
+
+    .hero-visual {
+        font-size: clamp(4rem, 8vw, 6rem);
+        opacity: 0.3;
+        animation: float 6s ease-in-out infinite;
+        position: relative;
+        z-index: 1;
+        color: #ffffff; /* Explicitly set white color */
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-1rem); }
+    }
+
+    .carousel-dots {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.6rem;
+    }
+
+    .dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+
+    .content {
+        padding: 0 1.2rem 1.5rem;
+        flex: 1;
+    }
+
 
         .footer-column h3 {
             font-size: 1.1rem;
@@ -1262,8 +1391,644 @@
 }
     </style>
 
+<style>
+/* Reset and Base Styles */
+:root {
+    --bg-primary: #000000;
+    --bg-secondary: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --accent-primary: #ff6b6b;
+    --accent-secondary: #4ecdc4;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+    --shadow-light: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    --shadow-heavy: 0 1.5rem 3rem rgba(0, 0, 0, 0.4);
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-card-hover: rgba(255, 255, 255, 0.1);
+}
+
+.light-mode {
+    --bg-primary: #f8fafc;
+    --bg-secondary: rgba(255, 255, 255, 0.8);
+    --text-primary: #1e293b;
+    --text-secondary: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(30, 41, 59, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(200, 200, 200, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: clamp(14px, 2.5vw, 16px); /* Fluid typography base */
+}
+
+body {
+    font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Container for consistent padding */
+.container {
+    max-width: 1400px; /* Increased max-width for larger screens */
+    margin: 0 auto;
+    padding: 0 clamp(0.5rem, 3vw, 1rem);
+}
+
+/* Hero Section */
+.hero-section {
+    padding: clamp(0.8rem, 2vw, 1.2rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-carousel {
+    position: relative;
+    height: clamp(12rem, 40vw, 18rem); /* Responsive height */
+    border-radius: clamp(0.8rem, 2vw, 1.2rem);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.hero-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: clamp(1rem, 3vw, 1.5rem);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 0;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: clamp(50%, 60vw, 70%);
+}
+
+.hero-content h1 {
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    font-weight: 800;
+    margin-bottom: clamp(0.4rem, 1vw, 0.6rem);
+    line-height: 1.1;
+    color: #ffffff;
+}
+
+.hero-content p {
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    opacity: 0.9;
+    margin-bottom: clamp(0.8rem, 2vw, 1.2rem);
+    max-width: 100%;
+    color: #ffffff;
+}
+
+.hero-cta {
+    padding: clamp(0.4rem, 1.5vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 1.2rem;
+    color: white;
+    font-weight: 600;
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    touch-action: manipulation; /* Improves touch responsiveness */
+}
+
+.hero-cta:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-0.1rem);
+}
+
+.hero-visual {
+    font-size: clamp(3rem, 10vw, 5rem);
+    opacity: 0.3;
+    animation: float 6s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+    position: absolute;
+    bottom: clamp(0.5rem, 2vw, 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: clamp(0.4rem, 1vw, 0.6rem);
+}
+
+.dot {
+    width: clamp(0.6rem, 1.5vw, 0.8rem);
+    height: clamp(0.6rem, 1.5vw, 0.8rem);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    touch-action: manipulation; /* Improves touch interaction */
+}
+
+.dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+/* Content Section */
+.content {
+    padding: clamp(0, 2vw, 1.2rem) clamp(0.6rem, 2vw, 1.2rem) clamp(1rem, 2vw, 1.5rem);
+}
+
+/* Music Grid */
+.music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(7rem, 25vw, 10rem), 1fr));
+    gap: clamp(0.6rem, 2vw, 1rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.music-card {
+    background: var(--bg-card);
+    border-radius: clamp(0.6rem, 2vw, 1rem);
+    padding: clamp(0.5rem, 2vw, 0.8rem);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(0.5rem);
+}
+
+.music-card:hover {
+    transform: translateY(-0.4rem) scale(1.02);
+    box-shadow: var(--shadow-heavy);
+    background: var(--bg-card-hover);
+}
+
+.music-cover {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: clamp(0.5rem, 2vw, 0.8rem);
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    color: var(--text-primary);
+    margin-bottom: clamp(0.4rem, 1vw, 0.6rem);
+    position: relative;
+    overflow: hidden;
+}
+
+.music-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.music-info {
+    text-align: center;
+}
+
+.music-title {
+    font-weight: 700;
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    margin-bottom: clamp(0.1rem, 0.5vw, 0.2rem);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-artist {
+    color: var(--text-secondary);
+    font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-stats {
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.5vw, 0.8rem);
+    margin-top: clamp(0.2rem, 0.8vw, 0.4rem);
+    font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+    color: var(--text-muted);
+}
+
+/* Tracks Slider */
+.tracks-slider {
+    position: relative;
+    margin: 0 clamp(-0.4rem, -1vw, -0.6rem) clamp(1rem, 2vw, 1.5rem);
+    overflow: hidden;
+}
+
+.tracks-slider-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.4rem, 1vw, 0.6rem);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    touch-action: pan-x; /* Enable horizontal touch scrolling */
+}
+
+.tracks-slider-container::-webkit-scrollbar {
+    display: none;
+}
+
+.track-slide {
+    flex: 0 0 auto;
+    width: clamp(10rem, 30vw, 16rem);
+    margin-right: clamp(0.6rem, 2vw, 1rem);
+    background: var(--bg-card);
+    border-radius: clamp(0.6rem, 2vw, 1rem);
+    padding: clamp(0.6rem, 2vw, 1rem);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(0.5rem);
+}
+
+.track-slide:hover {
+    transform: translateY(-0.4rem) scale(1.02);
+    box-shadow: var(--shadow-heavy);
+    background: var(--bg-card-hover);
+}
+
+.track-slide-cover {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: clamp(0.5rem, 2vw, 0.8rem);
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    color: var(--text-primary);
+    margin-bottom: clamp(0.5rem, 1.5vw, 0.8rem);
+    position: relative;
+    overflow: hidden;
+}
+
+.track-slide-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.track-slide-info {
+    text-align: center;
+}
+
+.track-slide-title {
+    font-weight: 700;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    margin-bottom: clamp(0.2rem, 0.8vw, 0.3rem);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-slide-artist {
+    color: var(--text-secondary);
+    font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: clamp(0.3rem, 1vw, 0.5rem);
+}
+
+.track-slide-duration {
+    color: var(--text-muted);
+    font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.2rem, 0.8vw, 0.3rem);
+}
+
+.slider-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: clamp(0.5rem, 1.5vw, 0.8rem);
+    margin-top: clamp(0.5rem, 1.5vw, 0.8rem);
+}
+
+.slider-btn {
+    background: var(--bg-card);
+    border: none;
+    border-radius: 50%;
+    width: clamp(1.5rem, 4vw, 2rem);
+    height: clamp(1.5rem, 4vw, 2rem);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    touch-action: manipulation; /* Improve touch responsiveness */
+}
+
+.slider-btn:hover {
+    background: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+.slider-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: scale(1);
+}
+
+/* Play Button */
+.play-btn {
+    position: absolute;
+    top: 50%;
+    right: clamp(0.5rem, 2vw, 0.8rem);
+    transform: translateY(-50%) scale(0);
+    background: var(--accent-primary);
+    border: none;
+    border-radius: 50%;
+    width: clamp(1.5rem, 4vw, 2rem);
+    height: clamp(1.5rem, 4vw, 2rem);
+    color: var(--text-primary);
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: var(--shadow-light);
+    z-index: 2;
+}
+
+.music-card:hover .play-btn,
+.track-slide:hover .play-btn {
+    transform: translateY(-50%) scale(1);
+}
+
+.play-btn:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Tracks Section */
+.tracks-section {
+    padding: clamp(1rem, 3vw, 2rem) 0;
+}
+
+.tracks-list {
+    background: var(--card-bg);
+    border-radius: clamp(0.6rem, 2vw, 0.8rem);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.track-item {
+    display: flex;
+    align-items: center;
+    padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.6rem, 1.5vw, 1rem);
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s;
+}
+
+.track-item:last-child {
+    border-bottom: none;
+}
+
+.track-item:hover {
+    background: var(--bg-secondary);
+}
+
+.track-number {
+    width: clamp(20px, 5vw, 25px);
+    opacity: 0.7;
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+}
+
+.track-info {
+    flex: 1;
+    margin: 0 clamp(0.5rem, 2vw, 1rem);
+}
+
+.track-title {
+    font-weight: 500;
+    margin-bottom: clamp(0.1rem, 0.5vw, 0.2rem);
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+}
+
+.track-artist {
+    font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    opacity: 0.7;
+}
+
+.track-play {
+    color: var(--accent-primary);
+    margin-left: clamp(0.5rem, 1.5vw, 0.75rem);
+    cursor: pointer;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+}
+
+/* Error Message */
+.error-message {
+    display: none;
+    position: fixed;
+    top: clamp(0.8rem, 2vw, 1rem);
+    right: clamp(0.8rem, 2vw, 1rem);
+    background: #ff4757;
+    color: white;
+    padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.8rem, 2vw, 1rem);
+    border-radius: clamp(0.3rem, 1vw, 0.5rem);
+    z-index: 10000;
+    box-shadow: var(--shadow-light);
+}
+
+/* Optimized Media Queries */
+@media (max-width: 1024px) {
+    .hero-content {
+        max-width: 80%;
+    }
+
+    .music-grid {
+        grid-template-columns: repeat(auto-fill, minmax(clamp(8rem, 22vw, 9rem), 1fr));
+        gap: clamp(0.5rem, 1.5vw, 0.8rem);
+    }
+
+    .track-slide {
+        width: clamp(9rem, 28vw, 14rem);
+    }
+
+    .hero-visual {
+        display: none; /* Hide visual on tablets for cleaner layout */
+    }
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: clamp(13px, 2.2vw, 14px);
+    }
+
+    .hero-section {
+        padding: clamp(0.5rem, 1.5vw, 0.8rem);
+    }
+
+    .hero-carousel {
+        height: clamp(10rem, 35vw, 14rem);
+    }
+
+    .hero-slide {
+        flex-direction: column;
+        text-align: center;
+        padding: clamp(0.8rem, 2vw, 1.2rem);
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(1rem, 3.5vw, 1.8rem);
+    }
+
+    .hero-content p {
+        font-size: clamp(0.6rem, 1.8vw, 0.8rem);
+    }
+
+    .music-grid {
+        grid-template-columns: repeat(auto-fill, minmax(clamp(6.5rem, 20vw, 8rem), 1fr));
+        gap: clamp(0.4rem, 1.2vw, 0.6rem);
+    }
+
+    .track-slide {
+        width: clamp(8rem, 25vw, 12rem);
+    }
+
+    .content {
+        padding: clamp(0, 1.5vw, 0.8rem) clamp(0.4rem, 1.2vw, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+    }
+
+    .slider-btn,
+    .play-btn {
+        width: clamp(1.8rem, 5vw, 2.2rem);
+        height: clamp(1.8rem, 5vw, 2.2rem);
+        font-size: clamp(0.8rem, 2.5vw, 1rem);
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: clamp(12px, 2vw, 13px);
+    }
+
+    .hero-carousel {
+        height: clamp(8rem, 30vw, 12rem);
+    }
+
+    .hero-content h1 {
+        font-size: clamp(0.9rem, 3vw, 1.5rem);
+    }
+
+    .hero-content p {
+        font-size: clamp(0.55rem, 1.5vw, 0.7rem);
+    }
+
+    .hero-cta {
+        padding: clamp(0.3rem, 1.2vw, 0.5rem) clamp(0.6rem, 1.8vw, 1rem);
+        font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+    }
+
+    .music-grid {
+        grid-template-columns: repeat(auto-fill, minmax(clamp(6rem, 18vw, 7rem), 1fr));
+        gap: clamp(0.3rem, 1vw, 0.5rem);
+    }
+
+    .track-slide {
+        width: clamp(7rem, 22vw, 10rem);
+    }
+
+    .section-title {
+        font-size: clamp(1rem, 3vw, 1.2rem);
+    }
+
+    .music-title,
+    .track-slide-title {
+        font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    }
+
+    .music-artist,
+    .track-slide-artist {
+        font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+    }
+
+    .music-stats,
+    .track-slide-duration {
+        font-size: clamp(0.6rem, 1.2vw, 0.65rem);
+    }
+
+    .slider-controls {
+        justify-content: center;
+    }
+}
+
+/* High-Density Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .music-cover img,
+    .track-slide-cover img {
+        image-rendering: crisp-edges; /* Optimize for high-DPI displays */
+    }
+}
+
+/* Prevent iOS zoom on input focus */
+@media (max-width: 768px) {
+    select:focus,
+    textarea:focus,
+    input:focus {
+        font-size: 16px;
+    }
+}
+</style>
+
+
     <!-- Hero Section -->
-    <section class="hero">
+    <!-- <section class="hero">
         <div class="hero-slideshow">
             <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
             <div class="hero-slide" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');"></div>
@@ -1280,10 +2045,10 @@
                 <p>Get 20% off your first distribution. Use code: NYASA20</p>
             </div>
         </div>
-    </section>
+    </section> -->
 
        <!-- Distribution Partners -->
-    <section class="distribution-section">
+    <!-- <section class="distribution-section">
         <div class="contailner mx-2">
             <h2 class="section-title">We Distribute To</h2>
             <div class="partners-scroll">
@@ -1302,10 +2067,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
 
-<!-- <div class="hero-section">
+<div class="hero-section">
     <div class="hero-carousel" id="heroCarousel">
         <div class="hero-slide active" style="background-image: url('https://w0.peakpx.com/wallpaper/260/859/HD-wallpaper-malawian-metal-flag-grunge-art-african-countries-day-of-malawi-national-symbols-malawi-flag-metal-flags-flag-of-malawi-africa-malawian-flag-malawi.jpg');">
             <div class="hero-content">
@@ -1343,7 +2108,7 @@
             <div class="dot" data-slide="2"></div>
         </div>
     </div>
-</div> -->
+</div>
 
 <div class="content">
     <!-- Latest Albums Section -->
@@ -1434,13 +2199,14 @@
 
     <!-- Popular Tracks Section -->
     <div class="section">
-        <div class="section-header">
-            <h2 class="section-title">
+        <!-- <div class="section-header"> -->
+               <h2 class="section-title">Popular Tracks</h2>
+            <!-- <h2 class="section-title">
                 <span class="material-icons">trending_up</span>
                 Popular Tracks
-            </h2>
-            <a href="{% url 'search' %}?sort=popular" class="see-all">View more</a>
-        </div>
+            </h2> -->
+            <!-- <a href="{% url 'search' %}?sort=popular" class="see-all">View more</a>
+        </div> -->
         <div class="music-grid">
             {% for track in popular_tracks %}
             <div class="music-card" data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
@@ -1467,37 +2233,37 @@
             <p>No popular tracks yet.</p>
             {% endfor %}
         </div>
-    </div>
+    <!-- </div> -->
 
-    <!-- Top Artists Section -->
-    <div class="section" id="top-artists">
-        <div class="section-header">
-            <h2 class="section-title">
-                <span class="material-icons">people</span>
-                Top Artists
-            </h2>
-            <a href="{% url 'search' %}?type=artist" class="see-all">View all artists</a>
-        </div>
-        <div class="artist-grid">
-            {% for artist in top_artists %}
-            <div class="artist-card" data-artist="{{ artist.name }}">
-                <div class="artist-avatar">
-                    {{ artist.name|slice:":1"|upper }}
-                </div>
-                <div class="artist-name">{{ artist.name }}</div>
-                <div class="artist-stats">
-                    {{ artist.track_count }} track{{ artist.track_count|pluralize }}<br>
-                    {{ artist.total_downloads }} downloads
-                </div>
+    <section class="tracks-section">
+        <div class="containner">
+            <!-- <h2 class="section-title">Popular Tracks</h2> -->
+            <div class="tracks-list">
+                {% for track in popular_tracks %}
+                  
+                
+                    <div class="track-item">
+                        
+                        <div class="track-number">{{ forloop.counter }}</div>
+                        <div class="track-info">
+                            <h3 class="track-title">{{ track.title }}</h3>
+                            <p class="track-artist">{{ track.artist }}</p>
+                        </div>
+                        <!-- <div class="track-duration">{{ track.get_formatted_duration }}</div> -->
+                         <a href="{% url 'track_detail' track.slug %}"  data-type="track" data-id="{{ track.id }}" style="text-decoration: none;">
+                        <div class="track-play  btn" data-type="track" data-id="{{ track.id }}"><span class="material-icons">play_circle</span></div>
+                         </a>
+                           
+                    </div>
+                    
+                {% endfor %}
             </div>
-            {% empty %}
-            <p>No artists yet.</p>
-            {% endfor %}
         </div>
-    </div>
+    </section>
+
 
     <!-- Popular Albums Section -->
-    <div class="section">
+    <!-- <div class="section">
         <div class="section-header">
             <h2 class="section-title">
                 <span class="material-icons">library_music</span>
@@ -1530,7 +2296,7 @@
             <p>No popular albums yet.</p>
             {% endfor %}
         </div>
-    </div>
+    </div> -->
 </div>
 
 
