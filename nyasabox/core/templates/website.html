@@ -990,8 +990,10 @@
 
     <!-- Albums Section -->
     <section class="albums-section">
+        
         <div class="container">
             <h2 class="section-title">Featured Albums</h2>
+             
             <div class="albums-grid">
                 {% for album in featured_albums %}
                     <div class="album-card">
@@ -1007,6 +1009,10 @@
                     </div>
                 {% endfor %}
             </div>
+            <br>
+            <center>
+             <a href="{% url 'album_list' %}" class="btn btn-primary">View More</a>
+            </center>
         </div>
     </section>
 
@@ -1287,6 +1293,10 @@
                     </div>
                 {% endfor %}
             </div>
+             <br>
+            <center>
+             <a href="{% url 'track_list' %}" class="btn btn-primary">View More</a>
+            </center>
         </div>
     </section>
 
