@@ -708,7 +708,7 @@ def distribution_request(request):
     context = {
         'form': form,
         'platforms': DistributionPlatform.objects.filter(is_active=True),
-        'base_price_per_track': 50.00,
+        'base_price_per_track': 5000.00,
         'user_has_tracks': user_tracks.exists(),
     }
     return render(request, 'distribution/request.html', context)
