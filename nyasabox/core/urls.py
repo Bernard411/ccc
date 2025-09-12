@@ -66,4 +66,8 @@ urlpatterns = [
     path('blogs/', views.blog_list, name='blog_list'),
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
 
+    path('tracks/', views.track_list, name='track_list'),
+    path('albums/', views.album_list, name='album_list'),
+    # ... your other URLs
+
 ]

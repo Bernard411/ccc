@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Albums - NyasaBox{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .container-main {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .filter-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-radius: 0.8rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.15);
+    }
+
+    .genre-select {
+        padding: 0.9rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        border-radius: 0.8rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+    }
+
+    .filter-btn {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 0.9rem 1.5rem;
+        border-radius: 0.8rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .albums-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .album-card {
+        background: var(--bg-card);
+        border-radius: 1.2rem;
+        padding: 1.5rem;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(0.5rem);
+        text-align: center;
+    }
+
+    .album-card:hover {
+        transform: translateY(-0.4rem) scale(1.02);
+        box-shadow: var(--shadow-heavy);
+        background: var(--bg-card-hover);
+    }
+
+    .album-cover {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 1rem;
+        margin-bottom: 1.2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-light);
+    }
+
+    .album-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .album-card:hover .album-cover img {
+        transform: scale(1.05);
+    }
+
+    .album-info {
+        text-align: center;
+    }
+
+    .album-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .album-artist {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0.8rem;
+    }
+
+    .album-meta {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .meta-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--accent-primary);
+    }
+
+    .meta-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .album-genre {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        padding: 0.3rem 0.8rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .play-btn {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        transform: scale(0);
+        background: var(--accent-primary);
+        border: none;
+        border-radius: 50%;
+        width: 2.5rem;
+        height: 2.5rem;
+        color: var(--text-primary);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: var(--shadow-light);
+        z-index: 2;
+    }
+
+    .album-card:hover .play-btn {
+        transform: scale(1);
+    }
+
+    .play-btn:hover {
+        background: var(--accent-secondary);
+        transform: scale(1.1);
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .page-item {
+        list-style: none;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0 0.5rem;
+        border-radius: 0.8rem;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .page-link:hover {
+        background: var(--accent-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .page-item.active .page-link {
+        background: var(--accent-gradient);
+        color: white;
+        box-shadow: var(--shadow-light);
+    }
+
+    .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+        grid-column: 1 / -1;
+    }
+
+    .no-results-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 968px) {
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+        
+        .albums-grid {
+            grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container-main {
+            padding: 1rem;
+        }
+        
+        .page-header {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .albums-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .pagination {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .album-meta {
+            gap: 1rem;
+        }
+    }
+            :root {
+    --bg-primary: #000000;
+    --bg-secondary: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --accent-primary: #ff6b6b;
+    --accent-secondary: #4ecdc4;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+    --shadow-light: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    --shadow-heavy: 0 1.5rem 3rem rgba(0, 0, 0, 0.4);
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-card-hover: rgba(255, 255, 255, 0.1);
+}
+
+.light-mode {
+    --bg-primary: #f8fafc;
+    --bg-secondary: rgba(255, 255, 255, 0.8);
+    --text-primary: #1e293b;
+    --text-secondary: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(30, 41, 59, 0.1);
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(200, 200, 200, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: clamp(14px, 2.5vw, 16px); /* Fluid typography base */
+}
+
+body {
+    font-family: 'Troy', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-main" style="margin: 10px;">
+    <div class="page-header">
+        <h1 class="page-title">Explore All Albums</h1>
+        <p class="page-subtitle">Discover complete albums and EPs from our talented artists</p>
+    </div>
+
+    <div class="filter-section">
+        <form method="get" class="filter-form">
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input" 
+                placeholder="Search albums by title, artist, or genre..." 
+                value="{{ search_query }}"
+            >
+            <select name="genre" class="genre-select">
+                <option value="">All Genres</option>
+                {% for value, label in genres.items %}
+                    <option value="{{ value }}" {% if selected_genre == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="filter-btn">
+                <span class="material-icons">filter_list</span>
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <div class="albums-grid">
+        {% for album in albums %}
+        <div class="album-card" data-type="album" data-id="{{ album.id }}">
+            <div class="album-cover">
+                <img src="{{ album.cover_art.url }}" alt="{{ album.title }}">
+                <button class="play-btn" data-type="album" data-id="{{ album.id }}">
+                    <span class="material-icons">play_arrow</span>
+                </button>
+            </div>
+            <div class="album-info">
+                <h3 class="album-title">{{ album.title }}</h3>
+                <p class="album-artist">{{ album.artist }}</p>
+                <div class="album-meta">
+                    <div class="meta-item">
+                        <span class="meta-number">{{ album.tracks.count }}</span>
+                        <span class="meta-label">Tracks</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-number">{{ album.downloads }}</span>
+                        <span class="meta-label">Downloads</span>
+                    </div>
+                </div>
+                <span class="album-genre">{{ album.get_genre_display }}</span>
+            </div>
+            <a href="{% url 'album_detail' album.slug %}" class="stretched-link"></a>
+        </div>
+        {% empty %}
+        <div class="no-results">
+            <div class="no-results-icon">
+                <span class="material-icons">album</span>
+            </div>
+            <h3>No albums found</h3>
+            <p>Try adjusting your search criteria or browse all albums</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if albums.has_other_pages %}
+    <div class="pagination-container">
+        <ul class="pagination">
+            {% if albums.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">
+                        <span class="material-icons">first_page</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ albums.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">
+                        <span class="material-icons">chevron_left</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><span class="material-icons">first_page</span></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><span class="material-icons">chevron_left</span></span>
+                </li>
+            {% endif %}
+
+            {% for i in albums.paginator.page_range %}
+                {% if albums.number == i %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }}</span>
+                    </li>
+                {% elif i > albums.number|add:'-3' and i < albums.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if albums.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ albums.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">
+                        <span class="material-icons">chevron_right</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ albums.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">
+                        <span class="material-icons">last_page</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><span class="material-icons">chevron_right</span></span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link"><span class="material-icons">last_page</span></span>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

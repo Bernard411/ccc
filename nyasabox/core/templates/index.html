@@ -1083,7 +1083,66 @@ body {
             transform: translateY(-50%) scale(1.1);
         }
 
+.see-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: var(--accent-gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: var(--shadow-light);
+    border: none;
+    cursor: pointer;
+}
 
+.see-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-heavy);
+    background: linear-gradient(135deg, #ff7b7b 0%, #53d0c9 100%);
+}
+
+.see-all-btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-light);
+}
+
+.see-all-btn .material-icons {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.see-all-btn:hover .material-icons {
+    transform: translateX(3px);
+}
+
+/* Alternative outline version */
+.see-all-btn.outline {
+    background: transparent;
+    color: var(--accent-primary);
+    border: 2px solid var(--accent-primary);
+    box-shadow: none;
+}
+
+.see-all-btn.outline:hover {
+    background: var(--accent-primary);
+    color: white;
+}
+
+/* For light mode */
+.light-mode .see-all-btn.outline {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.light-mode .see-all-btn.outline:hover {
+    background: var(--accent-primary);
+    color: white;
+}
 </style>
 {% endblock %}
 
@@ -1130,13 +1189,16 @@ body {
 </div>
 
     <!-- Latest Tracks Section with Slider -->
-    <div class="section" id="latest-tracks">
+    <div class="section" id="latest-tracks" style="margin: 10px;">
         <div class="section-header">
             <h2 class="section-title">
                 <span class="material-icons">music_note</span>
                 Latest Singles
             </h2>
-            <a href="{% url 'search' %}?type=track" class="see-all">View all tracks</a>
+          <a href="{% url 'track_list' %}" class="see-all-btn">
+    <span>View all tracks</span>
+    <span class="material-icons">arrow_forward</span>
+</a>
         </div>
         
         <div class="tracks-slider">
@@ -1179,15 +1241,20 @@ body {
         </div>
     </div>
 
-        <div class="section">
+        <div class="section" style="margin: 10px;">
         <div class="section-header">
             <h2 class="section-title">
                 <span class="material-icons">album</span>
                 Latest Albums & EP
             </h2>
-            <a href="{% url 'search' %}?type=album" class="see-all">View all albums</a>
+                      <a href="{% url 'album_list' %}" class="see-all-btn">
+    <span>View all albums</span>
+    <span class="material-icons">arrow_forward</span>
+</a>
+<br>
+         
         </div>
-        <div class="music-grid">
+        <div class="music-grid" style="margin-top: 10px;">
             {% for album in latest_albums %}
             <a href="{% url 'album_detail' album.slug %}" class="music-card" data-type="album" data-id="{{ album.id }}" style="text-decoration: none;">
                 <div class="music-cover">

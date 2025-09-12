@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NyasaBox - Music Distribution</title>
+    <title>NyasaBox - Music </title>
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#ff6b6b">
@@ -942,26 +942,30 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-slideshow">
-            <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
-            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/632/841/8bc/thumb_883376_900_0_0_0_auto.png');"></div>
-            <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/667/4a0/708/thumb_1022849_900_0_0_0_auto.png');"></div>
+  <section class="hero">
+    <div class="hero-slideshow">
+        <div class="hero-slide active" style="background-image: url('https://www.lagosjumpradio.com/wp-content/uploads/2025/03/Spotify-Afrobeats.jpg');"></div>
+        <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/632/841/8bc/thumb_883376_900_0_0_0_auto.png');"></div>
+        <div class="hero-slide" style="background-image: url('https://s3.eu-central-1.amazonaws.com/sol-assets/uploads/public/667/4a0/708/thumb_1022849_900_0_0_0_auto.png');"></div>
+    </div>
+    <div class="container hero-content">
+        <h1 class="hero-title">Empowering African Artists</h1>
+        <p class="hero-subtitle">Share your music with the world, connect with fans, and grow your audience on our platform built for African creators.</p>
+        <div class="hero-cta">
+            {% if user.is_authenticated and user.profile.is_artist and user.profile.artist_status == 'verified' %}
+                <a href="{% url 'upload' %}" class="btn btn-primary">Upload Your Music</a>
+            {% elif user.is_authenticated %}
+                <a href="{% url 'become_artist' %}" class="btn btn-primary">Become an Artist</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary">Join Our Community</a>
+            {% endif %}
         </div>
-        <div class="container hero-content">
-            <h1 class="hero-title">Distribute Your Music Worldwide</h1>
-            <p class="hero-subtitle">Get your music on all major streaming platforms while keeping 100% of your royalties.</p>
-            <div class="hero-cta">
-                <a href="#" class="btn btn-primary">Get Started Today</a>
-            </div>
-            <div class="hero-ad">
-                <h3>Special Limited Offer!</h3>
-                <p>Get 20% off your first distribution. Use code: NYASA20</p>
-            </div>
+        <div class="hero-ad">
+            <h3>Special Welcome Offer!</h3>
+            <p>Get featured placement for new artists. Use code: WELCOME20</p>
         </div>
-    </section>
-
+    </div>
+</section>
        <!-- Distribution Partners -->
     <section class="distribution-section">
         <div class="container">
@@ -1007,23 +1011,264 @@
     </section>
 
     <!-- Ad Section -->
-    <section class="ad-section">
-        <div class="container">
-            <div class="ad-container">
-                <h2 class="ad-title">Premium Distribution Services</h2>
-                <div class="ad-content">
-                    <div class="ad-text">
-                        <p>Upgrade to our premium plan and get your music distributed to 150+ platforms with detailed analytics, promotional tools, and dedicated support.</p>
-                        <p>Special offer: 3 months free when you sign up for our annual plan!</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+
+<section class="ad-section">
+    <div class="container">
+        <div class="ad-container">
+            <h2 class="ad-title">Your Music, Your Platform</h2>
+            <div class="ad-content">
+                <div class="ad-text">
+                    <p>NyasaBox is more than just a distribution service - we're a complete ecosystem for African artists. Upload your music, share with fans, get discovered, and distribute to global platforms.</p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="material-icons">music_note</span>
+                            <span>Upload & share your music</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="material-icons">download</span>
+                            <span>Direct downloads for fans</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="material-icons">public</span>
+                            <span>Global distribution options</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="material-icons">analytics</span>
+                            <span>Track your performance</span>
+                        </div>
                     </div>
-                    <div class="ad-image">
-                        <img src="https://source.unsplash.com/random/600x400/?music,production" alt="Premium Distribution">
-                    </div>
+                    {% if user.is_authenticated and user.profile.is_artist and user.profile.artist_status == 'verified' %}
+                        <a href="{% url 'upload' %}" class="btn btn-primary">Start Uploading</a>
+                    {% else %}
+                        <a href="{% url 'become_artist' %}" class="btn btn-primary">Get Started</a>
+                    {% endif %}
+                </div>
+                <div class="ad-image">
+                    <img src="https://source.unsplash.com/random/600x400/?african,music" alt="African Music Platform">
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+<style>
+
+.hero-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.hero-cta .btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 2rem;
+    background: var(--accent-gradient);
+    border: none;
+    box-shadow: var(--shadow-heavy);
+    transition: all 0.3s ease;
+}
+
+.hero-cta .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+}
+
+.hero-ad {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-ad h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #ff6b6b;
+}
+
+.hero-ad p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Ad Section */
+.ad-section {
+    padding: 5rem 0;
+    background: var(--bg-secondary);
+}
+
+.ad-container {
+    background: var(--bg-card);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(0.5rem);
+}
+
+.ad-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ad-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.ad-text p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+}
+
+.feature-list {
+    margin-bottom: 2.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.feature-item .material-icons {
+    color: var(--accent-primary);
+    background: rgba(255, 107, 107, 0.1);
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.ad-text .btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 2rem;
+}
+
+.ad-image {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-heavy);
+}
+
+.ad-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.ad-image:hover img {
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .ad-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .ad-image {
+        order: -1;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero {
+        height: auto;
+        min-height: 500px;
+        padding: 2rem 0;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .ad-container {
+        padding: 2rem;
+    }
+    
+    .ad-title {
+        font-size: 2rem;
+    }
+}
+</style>
 
     <!-- Tracks Section -->
     <section class="tracks-section">

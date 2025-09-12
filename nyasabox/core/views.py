@@ -1054,3 +1054,85 @@ def website(request):
 
 
 
+
+
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+from .models import Track, Album
+
+def track_list(request):
+    # Get all tracks
+    tracks_list = Track.objects.all().order_by('-created_at')
+    
+    # Search functionality
+    search_query = request.GET.get('q')
+    if search_query:
+        tracks_list = tracks_list.filter(
+            Q(title__icontains=search_query) |
+            Q(artist__icontains=search_query) |
+            Q(genre__icontains=search_query)
+        )
+    
+    # Genre filter
+    genre_filter = request.GET.get('genre')
+    if genre_filter:
+        tracks_list = tracks_list.filter(genre=genre_filter)
+    
+    # Pagination
+    paginator = Paginator(tracks_list, 20)  # Show 20 tracks per page
+    page = request.GET.get('page')
+    
+    try:
+        tracks = paginator.page(page)
+    except PageNotAnInteger:
+        tracks = paginator.page(1)
+    except EmptyPage:
+        tracks = paginator.page(paginator.num_pages)
+    
+    context = {
+        'tracks': tracks,
+        'genres': dict(GENRE_CHOICES),
+        'search_query': search_query or '',
+        'selected_genre': genre_filter or '',
+    }
+    
+    return render(request, 'tracks.html', context)
+
+def album_list(request):
+    # Get all albums
+    albums_list = Album.objects.all().order_by('-created_at')
+    
+    # Search functionality
+    search_query = request.GET.get('q')
+    if search_query:
+        albums_list = albums_list.filter(
+            Q(title__icontains=search_query) |
+            Q(artist__icontains=search_query) |
+            Q(genre__icontains=search_query)
+        )
+    
+    # Genre filter
+    genre_filter = request.GET.get('genre')
+    if genre_filter:
+        albums_list = albums_list.filter(genre=genre_filter)
+    
+    # Pagination
+    paginator = Paginator(albums_list, 12)  # Show 12 albums per page
+    page = request.GET.get('page')
+    
+    try:
+        albums = paginator.page(page)
+    except PageNotAnInteger:
+        albums = paginator.page(1)
+    except EmptyPage:
+        albums = paginator.page(paginator.num_pages)
+    
+    context = {
+        'albums': albums,
+        'genres': dict(GENRE_CHOICES),
+        'search_query': search_query or '',
+        'selected_genre': genre_filter or '',
+    }
+    
+    return render(request, 'ulbums.html', context)
