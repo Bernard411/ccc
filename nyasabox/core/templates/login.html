@@ -93,7 +93,8 @@
         body.light-mode .form-label {
             color: rgba(30, 41, 59, 0.7);
         }
-        .form-input {
+        .form-control {
+            display: block;
             width: 100%;
             padding: 0.8rem 1rem;
             border-radius: 0.8rem;
@@ -104,12 +105,12 @@
             outline: none;
             transition: all 0.3s ease;
         }
-        body.light-mode .form-input {
+        body.light-mode .form-control {
             border: 1px solid rgba(30, 41, 59, 0.1);
             background: rgba(248, 250, 252, 0.8);
             color: #1e293b;
         }
-        .form-input:focus {
+        .form-control:focus {
             border-color: #ff6b6b;
             box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
         }
@@ -234,30 +235,28 @@
                 font-size: 1.5rem;
             }
         }
-
-        .form-control {
-    display: block;
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border-radius: 0.8rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(10, 10, 10, 0.8);
-    color: #ffffff;
-    font-size: 0.9rem;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-body.light-mode .form-control {
-    border: 1px solid rgba(30, 41, 59, 0.1);
-    background: rgba(248, 250, 252, 0.8);
-    color: #1e293b;
-}
-
-.form-control:focus {
-    border-color: #ff6b6b;
-    box-shadow: 0 0 0 0.1rem rgba(255, 107, 107, 0.3);
-}
+        /* New styles for password visibility toggle */
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper .form-control {
+            padding-right: 3rem;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
+        }
+        body.light-mode .toggle-password {
+            color: rgba(30, 41, 59, 0.7);
+        }
+        .toggle-password:hover {
+            color: #ff6b6b;
+        }
     </style>
 </head>
 <body>
@@ -286,7 +285,10 @@ body.light-mode .form-control {
                 
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
-                    {{ form.password }}
+                    <div class="password-wrapper">
+                        {{ form.password }}
+                        <span class="material-icons toggle-password" data-target="id_password">visibility</span>
+                    </div>
                     {% if form.password.errors %}
                         {% for error in form.password.errors %}
                             <p class="error-message">
@@ -360,6 +362,20 @@ body.light-mode .form-control {
                         notification.remove();
                     }, 300);
                 }, 3000);
+            });
+
+            // Password visibility toggle
+            const togglePassword = document.querySelector('.toggle-password');
+            const passwordInput = document.getElementById('id_password');
+
+            togglePassword.addEventListener('click', () => {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    togglePassword.textContent = 'visibility_off';
+                } else {
+                    passwordInput.type = 'password';
+                    togglePassword.textContent = 'visibility';
+                }
             });
         });
     </script>

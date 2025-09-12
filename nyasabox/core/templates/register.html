@@ -382,6 +382,51 @@ input[type="password"].form-control {
                 font-size: 1.5rem;
             }
         }
+
+        /* New styles for password features */
+        .password-wrapper {
+            position: relative;
+        }
+        .password-wrapper .form-control {
+            padding-right: 3rem;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
+        }
+        body.light-mode .toggle-password {
+            color: rgba(30, 41, 59, 0.7);
+        }
+        .toggle-password:hover {
+            color: #ff6b6b;
+        }
+        .strength-indicator, .match-indicator {
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .strength-weak {
+            color: #ff4757;
+        }
+        .strength-medium {
+            color: #ffc048;
+        }
+        .strength-strong {
+            color: #2ed573;
+        }
+        .match-match {
+            color: #2ed573;
+        }
+        .match-nomatch {
+            color: #ff4757;
+        }
     </style>
 </head>
 <body>
@@ -421,31 +466,46 @@ input[type="password"].form-control {
                     {% endif %}
                 </div>
                 
-         <div class="form-group">
-    <label for="password1" class="form-label">Password</label>
-    <input type="password" name="password1" class="form-control" id="id_password1" required>
-    {% if form.password1.errors %}
-        {% for error in form.password1.errors %}
-            <p class="error-message">
-                <span class="material-icons">error</span>
-                <span>{{ error }}</span>
-            </p>
-        {% endfor %}
-    {% endif %}
-</div>
+                <div class="form-group">
+                    <label for="password1" class="form-label">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password1" class="form-control" id="id_password1" required>
+                        <span class="material-icons toggle-password" data-target="id_password1">visibility</span>
+                    </div>
+                    <p class="strength-indicator" id="strength-indicator">
+                        <span class="material-icons">info</span>
+                        <span>Password strength: None</span>
+                    </p>
+                    {% if form.password1.errors %}
+                        {% for error in form.password1.errors %}
+                            <p class="error-message">
+                                <span class="material-icons">error</span>
+                                <span>{{ error }}</span>
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
                 
-          <div class="form-group">
-    <label for="password2" class="form-label">Comfim Password</label>
-    <input type="password" name="password2" class="form-control" id="id_password2" required>
-    {% if form.password1.errors %}
-        {% for error in form.password1.errors %}
-            <p class="error-message">
-                <span class="material-icons">error</span>
-                <span>{{ error }}</span>
-            </p>
-        {% endfor %}
-    {% endif %}
-</div>
+                <div class="form-group">
+                    <label for="password2" class="form-label">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password2" class="form-control" id="id_password2" required>
+                        <span class="material-icons toggle-password" data-target="id_password2">visibility</span>
+                    </div>
+                    <p class="match-indicator" id="match-indicator">
+                        <span class="material-icons">info</span>
+                        <span>Passwords do not match</span>
+                    </p>
+                    {% if form.password2.errors %}
+                        {% for error in form.password2.errors %}
+                            <p class="error-message">
+                                <span class="material-icons">error</span>
+                                <span>{{ error }}</span>
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
                 <div class="form-checkbox">
                     {{ form.is_artist }}
                     <label for="id_is_artist">Register as an Artist</label>
@@ -514,6 +574,78 @@ input[type="password"].form-control {
                     }, 300);
                 }, 3000);
             });
+
+            // New JavaScript for password features
+            const password1 = document.getElementById('id_password1');
+            const password2 = document.getElementById('id_password2');
+            const strengthIndicator = document.getElementById('strength-indicator').querySelector('span:last-child');
+            const strengthIcon = document.getElementById('strength-indicator').querySelector('.material-icons');
+            const matchIndicator = document.getElementById('match-indicator').querySelector('span:last-child');
+            const matchIcon = document.getElementById('match-indicator').querySelector('.material-icons');
+            const togglePasswords = document.querySelectorAll('.toggle-password');
+
+            // Toggle password visibility
+            togglePasswords.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const targetId = toggle.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        toggle.textContent = 'visibility_off';
+                    } else {
+                        input.type = 'password';
+                        toggle.textContent = 'visibility';
+                    }
+                });
+            });
+
+            // Password strength check
+            function checkStrength(password) {
+                let strength = 0;
+                if (password.length >= 8) strength += 1;
+                if (password.match(/[a-z]/)) strength += 1;
+                if (password.match(/[A-Z]/)) strength += 1;
+                if (password.match(/[0-9]/)) strength += 1;
+                if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
+
+                if (strength < 3) {
+                    return { text: 'Weak', class: 'strength-weak', icon: 'error' };
+                } else if (strength < 5) {
+                    return { text: 'Medium', class: 'strength-medium', icon: 'warning' };
+                } else {
+                    return { text: 'Strong', class: 'strength-strong', icon: 'check_circle' };
+                }
+            }
+
+            // Update strength indicator
+            password1.addEventListener('input', () => {
+                const result = checkStrength(password1.value);
+                strengthIndicator.textContent = `Password strength: ${result.text}`;
+                strengthIndicator.parentElement.className = 'strength-indicator ' + result.class;
+                strengthIcon.textContent = result.icon;
+                checkMatch(); // Also check match when password1 changes
+            });
+
+            // Password match check
+            function checkMatch() {
+                if (password2.value === '') {
+                    matchIndicator.textContent = 'Passwords do not match';
+                    matchIndicator.parentElement.className = 'match-indicator match-nomatch';
+                    matchIcon.textContent = 'error';
+                    return;
+                }
+                if (password1.value === password2.value) {
+                    matchIndicator.textContent = 'Passwords match';
+                    matchIndicator.parentElement.className = 'match-indicator match-match';
+                    matchIcon.textContent = 'check_circle';
+                } else {
+                    matchIndicator.textContent = 'Passwords do not match';
+                    matchIndicator.parentElement.className = 'match-indicator match-nomatch';
+                    matchIcon.textContent = 'error';
+                }
+            }
+
+            password2.addEventListener('input', checkMatch);
         });
     </script>
 </body>
